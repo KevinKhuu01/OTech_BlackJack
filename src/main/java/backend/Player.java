@@ -1,3 +1,5 @@
+package backend;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -6,7 +8,7 @@ public class Player {
     private String name;
     private Random random = new Random();
     private int cardValue;
-    private List<Integer> hand;
+    private List<Card> hand;
     private int handTotal;
     public enum STATUS { WIN, LOST, STAY, PLAYING };
     private STATUS status;
@@ -17,7 +19,7 @@ public class Player {
     {
         this.name = name;
         this.cardValue = 0;
-        this.hand = new ArrayList<Integer>();
+        this.hand = new ArrayList<Card>();
         this.handTotal = 0;
         this.status = status.PLAYING;
         this.balance = 1000;
@@ -53,41 +55,21 @@ public class Player {
         this.status = status;
     }
 
-    public List<Integer> getHand() {
+    public List<Card> getHand() {
         return this.hand;
     }
 
     public int getHandTotal()
     {
         handTotal = 0;
-        for(int i : hand)
+        for(Card c : hand)
         {
-            handTotal += i;
+            handTotal += c.getValue();
         }
         return handTotal;
     }
 
-    public void setCardValue(int cardValue) {
-        this.hand.add(cardValue);
-    }
-
-    // Methods
-    public void playerHit()
-    {
-        if(this.status == STATUS.LOST || this.status == STATUS.WIN)
-        {
-            return;
-        }
-        int randomCard = 0;
-
-        for(int i = 0; i < 2; i++)
-        {
-            randomCard = random.nextInt(13) + 1;
-            if(randomCard > 11)
-            {
-                randomCard = 10;
-            }
-        }
-        setCardValue(randomCard);
+    public void setCardValue(Card card) {
+        this.hand.add(card);
     }
 }

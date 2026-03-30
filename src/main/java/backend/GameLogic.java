@@ -1,12 +1,16 @@
+package backend;
+
 import java.util.*;
+import static java.util.Collections.shuffle;
 
 public class GameLogic {
     private static Map<String, Player> playerList;
-    private static int betAmount;
-
+    private static HashMap<Player, Integer> betList;
+    private static Stack<Card> deck = new Stack<Card>();
     public GameLogic()
     {
         playerList = new HashMap<String, Player>();
+        betList = new HashMap<Player, Integer>();
         addPlayer("dealer");
     }
 
@@ -16,20 +20,16 @@ public class GameLogic {
         playerList.put(name, p);
     }
 
-    public static void startGame(int bet)
+    public static void startGame()
     {
-        printBalance();
-        betAmount = bet;
-        System.out.println("Bet amount: " + betAmount);
+        newDeck();
         for(Player p : playerList.values())
         {
-            p.withdrawBalance(betAmount);
             for(int i = 0; i < 2; i++)
             {
-                p.playerHit();
+                hit(p);
             }
         }
-        printBalance();
         printGame();
     }
 
@@ -42,10 +42,14 @@ public class GameLogic {
         System.out.println();
     }
 
-    public static void hit(String name)
+    public static void hit(Player p)
     {
-        playerList.get(name).playerHit();
-        printGame();
+        if(p.getStatus() == Player.STATUS.LOST || p.getStatus() == Player.STATUS.WIN)
+        {
+            return;
+        }
+
+        p.getHand().add(deck.pop());
     }
 
     public static void printGame()
@@ -62,7 +66,8 @@ public class GameLogic {
         if(p.getHandTotal() == 21)
         {
             p.setStatus(Player.STATUS.WIN);
-            p.depositBalance(betAmount*2);
+            int depositAmount = betList.get(p) * 2;
+            p.depositBalance(depositAmount);
         }
         else if(p.getHandTotal() > 21)
         {
@@ -73,8 +78,8 @@ public class GameLogic {
                 {
                     if(!player.getName().equals("dealer"))
                     {
-                        player.setStatus(Player.STATUS.WIN);
-                        player.depositBalance(betAmount*2);
+                        int depositAmount = betList.get(p) * 2;
+                        p.depositBalance(depositAmount);
                     }
                 }
             }
@@ -83,16 +88,34 @@ public class GameLogic {
         return p.getStatus().toString();
     }
 
+    private static void newDeck()
+    {
+        for(Card.Face face : Card.Face.values())
+        {
+            for(Card.Suit suit : Card.Suit.values())
+            {
+                deck.push(new Card(face, suit));
+            }
+        }
+        shuffleDeck();
+    }
+
+    private static void shuffleDeck()
+    {
+        shuffle(deck);
+    }
+
+    private static void playerBet(Player p, int bet)
+    {
+        betList.put(p, bet);
+    }
+
     public static void main(String[] args)
     {
         GameLogic game1 = new GameLogic();
         addPlayer("Kevin");
         addPlayer("bob");
-        startGame(100);
-
-        hit("Kevin");
-        hit("bob");
-        hit("dealer");
+        startGame();
         printBalance();
     }
 }
