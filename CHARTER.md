@@ -16,9 +16,9 @@
 
 | Task / Module | Assigned Member (Plan) | Actual Contribution (Final) |
 | :--- | :--- | :--- |
-| **Multi-threaded Server** | Awrron Kavian, Gabriel Valerio | Sockets and clientconnectionhandler |
-| **Frontend** | Maria Jose | GUI, client communications |
-| **Backend** | Kevin Khuu | Game Logic, server communications |
+| **Multi-threaded s** | Awrron Kavian, Gabriel Valerio | Sockets and clientconnectionhandler |
+| **Frontend** | Maria Jose | frontend.GUI, client communications |
+| **Backend** | Kevin Khuu | Game Logic, s communications |
 | **Documentation/README** | Zakariah Patel | Project Charter, Readme, Progress Reports |
 | **Github Maintenance** | Kevin Khuu | Managing branches, template code, merging |
 
