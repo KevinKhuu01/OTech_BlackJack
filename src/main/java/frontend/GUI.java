@@ -18,6 +18,7 @@ public class GUI extends JFrame{
         mainPanel = new JPanel(cardLayout);
 
         mainPanel.add(createStartMenu(), "start");
+        mainPanel.add(createGamePanel(), "game");
 
         setContentPane(mainPanel);
         cardLayout.show(mainPanel, "start");
@@ -52,6 +53,8 @@ public class GUI extends JFrame{
         newGameButton.setMaximumSize(new Dimension(220, 45));
         joinGameButton.setMaximumSize(new Dimension(220, 45));
 
+        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "game"));
+
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
         menuPanel.add(Box.createVerticalStrut(35));
@@ -63,6 +66,39 @@ public class GUI extends JFrame{
         backgroundPanel.add(menuPanel);
 
         return backgroundPanel;
+    }
+
+    private JPanel  createGamePanel() {
+        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.jpeg");
+        backgroundPanel.setLayout(new BorderLayout());
+
+        JPanel gamePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                g.setColor(new Color(0, 0, 0, 120));
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+        };
+        gamePanel.setOpaque(false);
+
+        JButton hitButton = new JButton("Hit");
+        JButton standButton = new JButton("Stand");
+
+        Font buttonFont = loadCustomFont(25f);
+        hitButton.setFont(buttonFont);
+        standButton.setFont(buttonFont);
+
+        hitButton.setMaximumSize(new Dimension(220, 45));
+        standButton.setMaximumSize(new Dimension(220, 45));
+        gamePanel.add(hitButton);
+        gamePanel.add(standButton);
+        gamePanel.add(Box.createVerticalGlue());
+        backgroundPanel.add(gamePanel, BorderLayout.SOUTH);
+
+
+
+        return   backgroundPanel;
     }
 
     private Font loadCustomFont(float size) {
@@ -83,6 +119,8 @@ public class GUI extends JFrame{
             return new Font("SansSerif", Font.BOLD, (int) size);
         }
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GUI::new);
