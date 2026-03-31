@@ -1,10 +1,14 @@
 package server;
 
+import frontend.GUI;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import static java.lang.Thread.sleep;
 
 public class Client {
     private Socket socket;
@@ -14,6 +18,14 @@ public class Client {
 
     public Client(String host, int port, String username) {
         this.username = username;
+        try
+        {
+            sleep(1000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
         try {
             socket = new Socket(host, port);
@@ -21,6 +33,7 @@ public class Client {
             output = new PrintWriter(socket.getOutputStream(), true);
 
             System.out.println("Connected to server.");
+            GUI gui = new GUI();
         } catch (IOException e) {
             System.out.println("Error connecting to server.");
             e.printStackTrace();
@@ -73,7 +86,7 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        Client client = new Client("localhost", 5000, "Player1");
+        Client client = new Client("localhost", 5050, "Player1");
         client.sendMessage();
     }
 }

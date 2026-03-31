@@ -7,7 +7,7 @@ public class GUI extends JFrame{
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
-    public  GUI(){
+    public GUI(){
         setTitle("OTech Blackjack");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
