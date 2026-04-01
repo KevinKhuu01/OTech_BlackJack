@@ -25,6 +25,10 @@ public class Client {
     }
 
     public void sendMessage() {
+        if (socket == null || input == null || output == null) {
+            System.out.println("Client is not connected to the server.");
+            return;
+        }
         try {
             BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
 
@@ -79,7 +83,7 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        Client client = new Client("localhost", 5000);
+        Client client = new Client("localhost", 5050);
         client.sendMessage();
     }
 }
