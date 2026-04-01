@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Player {
+    private int playerId;
     private String name;
     private Random random = new Random();
     private int cardValue;
@@ -15,7 +16,7 @@ public class Player {
     private int balance;
 
     // Constructor
-    public Player(String name)
+    public Player(String name, int id)
     {
         this.name = name;
         this.cardValue = 0;
@@ -23,6 +24,7 @@ public class Player {
         this.handTotal = 0;
         this.status = status.PLAYING;
         this.balance = 1000;
+        this.playerId = id;
     }
 
     // Getters and setters
@@ -59,17 +61,29 @@ public class Player {
         return this.hand;
     }
 
+    public int getPlayerId() {return this.playerId;}
+
     public int getHandTotal()
     {
         handTotal = 0;
         for(Card c : hand)
         {
-            handTotal += c.getValue();
+            if(c.getFace() == Card.Face.ACE)
+            {
+                if((handTotal + 11) > 21)
+                {
+                    handTotal += 1;
+                }
+                else
+                {
+                    handTotal += 11;
+                }
+            }
+            else
+            {
+                handTotal += c.getValue();
+            }
         }
         return handTotal;
-    }
-
-    public void setCardValue(Card card) {
-        this.hand.add(card);
     }
 }
