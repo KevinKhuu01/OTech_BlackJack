@@ -17,7 +17,7 @@ public class GameLogic {
     public static void addPlayer(String name)
     {
         if(!playerList.containsKey(name)) {
-            Player p = new Player(name);
+            Player p = new Player(name, playerList.size());
             playerList.put(name, p);
         }
     }
