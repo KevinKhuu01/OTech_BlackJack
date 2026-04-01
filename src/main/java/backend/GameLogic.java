@@ -16,13 +16,30 @@ public class GameLogic {
 
     public static void addPlayer(String name)
     {
-        Player p = new Player(name);
-        playerList.put(name, p);
+        if(!playerList.containsKey(name)) {
+            Player p = new Player(name);
+            playerList.put(name, p);
+        }
+    }
+
+    public static Player getPlayer(String name) {
+        return playerList.get(name);
+    }
+
+    public static Collection<Player> getPlayers() {
+        return playerList.values();
     }
 
     public static void startGame()
     {
+        deck.clear();
         newDeck();
+
+        for (Player p : playerList.values()) {
+            p.getHand().clear();
+            p.setStatus(Player.STATUS.PLAYING);
+        }
+
         for(Player p : playerList.values())
         {
             for(int i = 0; i < 2; i++)
@@ -44,12 +61,38 @@ public class GameLogic {
 
     public static void hit(Player p)
     {
-        if(p.getStatus() == Player.STATUS.LOST || p.getStatus() == Player.STATUS.WIN)
+        if(p.getStatus() == Player.STATUS.LOST || p.getStatus() == Player.STATUS.WIN || p.getStatus() == Player.STATUS.STAY)
         {
             return;
         }
 
-        p.getHand().add(deck.pop());
+        if (!deck.isEmpty()) {
+            p.getHand().add(deck.pop());
+        }
+
+        if (p.getHandTotal() > 21) {
+            p.setStatus(Player.STATUS.LOST);
+        } else if (p.getHandTotal() == 21) {
+            p.setStatus(Player.STATUS.WIN);
+        }
+    }
+
+    public static void stay(Player p) {
+        p.setStatus(Player.STATUS.STAY);
+    }
+
+    public static String getGameState() {
+        String result = "";
+
+        for (Player p : playerList.values()) {
+            result += p.getName() + ": ";
+            result += p.getHand() + " ";
+            result += "(" + p.getHandTotal() + ") ";
+            result += "[" + p.getStatus() + "]";
+            result += "\n";
+        }
+
+        return result;
     }
 
     public static void printGame()

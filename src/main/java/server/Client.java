@@ -10,11 +10,8 @@ public class Client {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-    private String username;
 
-    public Client(String host, int port, String username) {
-        this.username = username;
-
+    public Client(String host, int port) {
         try {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -31,19 +28,28 @@ public class Client {
         try {
             BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
 
-            String serverMessage = input.readLine();
-            System.out.println(serverMessage);
+            Thread readThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String serverMessage;
+                    try {
+                        while ((serverMessage = input.readLine()) != null) {
+                            System.out.println(serverMessage);
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Disconnected from server.");
+                    }
+                }
+            });
+            readThread.start();
 
-            while (socket != null && !socket.isClosed()) {
-                String message = keyboard.readLine();
+            String message;
+            while ((message = keyboard.readLine()) != null) {
                 output.println(message);
 
-                if (message.equalsIgnoreCase("bye")) {
+                if (message.equalsIgnoreCase("BYE")) {
                     break;
                 }
-
-                serverMessage = input.readLine();
-                System.out.println(serverMessage);
             }
 
             closeEverything();
@@ -73,7 +79,7 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        Client client = new Client("localhost", 5000, "Player1");
+        Client client = new Client("localhost", 5000);
         client.sendMessage();
     }
 }
