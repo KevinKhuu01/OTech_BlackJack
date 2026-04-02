@@ -70,11 +70,7 @@ public class GameLogic {
             p.getHand().add(deck.pop());
         }
 
-        if (p.getHandTotal() > 21) {
-            p.setStatus(Player.STATUS.LOST);
-        } else if (p.getHandTotal() == 21) {
-            p.setStatus(Player.STATUS.WIN);
-        }
+        checkWin(p);
     }
 
     public static void stay(Player p) {
@@ -153,12 +149,12 @@ public class GameLogic {
         betList.put(p, bet);
     }
 
-    public static void main(String[] args)
-    {
-        GameLogic game1 = new GameLogic();
-        addPlayer("Kevin");
-        addPlayer("bob");
-        startGame();
-        printBalance();
-    }
+//    public static void main(String[] args)
+//    {
+//        GameLogic game1 = new GameLogic();
+//        addPlayer("Kevin");
+//        addPlayer("bob");
+//        startGame();
+//        printBalance();
+//    }
 }

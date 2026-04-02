@@ -1,10 +1,13 @@
 package server;
 
+import frontend.GUI;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import static java.lang.Thread.sleep;
 
 public class Client {
     private Socket socket;
@@ -12,12 +15,24 @@ public class Client {
     private PrintWriter output;
 
     public Client(String host, int port) {
+
+        // 1 second delay added for compound run application
+        try
+        {
+            sleep(1000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
         try {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
             System.out.println("Connected to server.");
+            GUI gui = new GUI(); // Start graphical interface
         } catch (IOException e) {
             System.out.println("Error connecting to server.");
             e.printStackTrace();
