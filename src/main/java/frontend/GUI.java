@@ -12,10 +12,10 @@ public class GUI extends JFrame{
     private backend.Player player;
     private backend.Player dealer;
 
-//    private JLabel playerCardsLabel;
-//    private JLabel playerTotalLabel;
-//    private JLabel dealerCardsLabel;
-//    private JLabel dealerTotalLabel;
+    private JPanel playerCardsPanel;
+    private JPanel dealerCardsPanel;
+    private JLabel playerTotalLabel;
+    private JLabel dealerTotalLabel;
 
 
     public GUI(){
@@ -25,12 +25,12 @@ public class GUI extends JFrame{
         setLocationRelativeTo(null);
         setResizable(false);
 
-//        gameLogic = new backend.GameLogic();
-//        backend.GameLogic.addPlayer("player");
-//        backend.GameLogic.startGame();
-//
-//        player = backend.GameLogic.getPlayer("player");
-//        dealer = backend.GameLogic.getPlayer("dealer");
+        gameLogic = new backend.GameLogic();
+        backend.GameLogic.addPlayer("player");
+        backend.GameLogic.startGame();
+
+        player = backend.GameLogic.getPlayer("player");
+        dealer = backend.GameLogic.getPlayer("dealer");
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -43,6 +43,7 @@ public class GUI extends JFrame{
 
         setContentPane(mainPanel);
         cardLayout.show(mainPanel, "start");
+
         setVisible(true);
     }
 
@@ -88,7 +89,7 @@ public class GUI extends JFrame{
         return backgroundPanel;
     }
 
-    private JPanel  createGamePanel() {
+    private JPanel createGamePanel() {
         BackgroundPanel backgroundPanel = new BackgroundPanel("Table.jpeg");
         backgroundPanel.setLayout(new BorderLayout());
 
@@ -101,6 +102,36 @@ public class GUI extends JFrame{
             }
         };
         gamePanel.setOpaque(false);
+        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
+
+
+        dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -300, 0));
+        dealerCardsPanel.setOpaque(false);
+
+        dealerTotalLabel = new JLabel();
+        dealerTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        dealerTotalLabel.setForeground(Color.WHITE);
+        dealerTotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+        playerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -300, 0));
+        playerCardsPanel.setOpaque(false);
+
+        playerTotalLabel = new JLabel();
+        playerTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        playerTotalLabel.setForeground(Color.WHITE);
+        playerTotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(dealerCardsPanel);
+        gamePanel.add(dealerTotalLabel);
+        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(playerCardsPanel);
+        gamePanel.add(playerTotalLabel);
+        gamePanel.add(Box.createVerticalGlue());
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
 
         JButton hitButton = new JButton("Hit");
         JButton standButton = new JButton("Stand");
@@ -111,14 +142,39 @@ public class GUI extends JFrame{
 
         hitButton.setMaximumSize(new Dimension(220, 45));
         standButton.setMaximumSize(new Dimension(220, 45));
-        gamePanel.add(hitButton);
-        gamePanel.add(standButton);
-        gamePanel.add(Box.createVerticalGlue());
-        backgroundPanel.add(gamePanel, BorderLayout.SOUTH);
 
+        hitButton.addActionListener(e -> {
+            backend.GameLogic.hit(player);
+            updateGameDisplay();
 
+            if (player.getStatus() == backend.Player.STATUS.WIN) {
+                cardLayout.show(mainPanel, "won");
+            } else if (player.getStatus() == backend.Player.STATUS.LOST) {
+                cardLayout.show(mainPanel, "lost");
+            }
+        });
 
-        return   backgroundPanel;
+        standButton.addActionListener(e -> {
+            backend.GameLogic.stay(player);
+            updateGameDisplay();
+        });
+
+        buttonPanel.add(hitButton);
+        buttonPanel.add(standButton);
+
+        JScrollPane scrollPane = new JScrollPane(gamePanel);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
+        backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        updateGameDisplay();
+
+        return backgroundPanel;
     }
 
     private Font loadCustomFont(float size) {
@@ -237,6 +293,72 @@ public class GUI extends JFrame{
         backgroundPanel.add(menuPanel);
 
         return backgroundPanel;
+    }
+
+    private void updateGameDisplay() {
+        dealerCardsPanel.removeAll();
+        playerCardsPanel.removeAll();
+
+        for (backend.Card card : dealer.getHand()) {
+            dealerCardsPanel.add(createCardLabel(card));
+        }
+
+        for (backend.Card card : player.getHand()) {
+            playerCardsPanel.add(createCardLabel(card));
+        }
+
+        dealerTotalLabel.setText("Total: " + dealer.getHandTotal());
+        playerTotalLabel.setText("Total: " + player.getHandTotal());
+
+        dealerCardsPanel.revalidate();
+        dealerCardsPanel.repaint();
+        playerCardsPanel.revalidate();
+        playerCardsPanel.repaint();
+    }
+
+    private JLabel createCardLabel(backend.Card card) {
+        String fileName = getCardFileName(card);
+        java.net.URL imageUrl = getClass().getClassLoader().getResource(fileName);
+
+        if (imageUrl == null) {
+            JLabel fallback = new JLabel(fileName);
+            fallback.setForeground(Color.WHITE);
+            return fallback;
+        }
+
+        ImageIcon icon = new ImageIcon(imageUrl);
+        Image scaled = icon.getImage().getScaledInstance(460, 260, Image.SCALE_SMOOTH);
+        return new JLabel(new ImageIcon(scaled));
+    }
+
+    private String getCardFileName(backend.Card card) {
+        String face = "";
+        String suit = "";
+
+        switch (card.getFace()) {
+            case ACE: face = "A"; break;
+            case KING: face = "K"; break;
+            case QUEEN: face = "Q"; break;
+            case JACK: face = "J"; break;
+            case TEN: face = "10"; break;
+            case NINE: face = "9"; break;
+            case EIGHT: face = "8"; break;
+            case SEVEN: face = "7"; break;
+            case SIX: face = "6"; break;
+            case FIVE: face = "5"; break;
+            case FOUR: face = "4"; break;
+            case THREE: face = "3"; break;
+            case TWO: face = "2"; break;
+        }
+
+        switch (card.getSuit()) {
+            case HEARTS: suit = "H"; break;
+            case SPADES: suit = "S"; break;
+            case DIAMONDS: suit = "D"; break;
+            case CLUBS: suit = "C"; break;
+        }
+
+        return face + suit + ".png";
     }
 
     public static void main(String[] args) {
