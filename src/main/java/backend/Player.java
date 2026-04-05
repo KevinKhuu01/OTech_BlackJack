@@ -1,48 +1,44 @@
 package backend;
 
+import database.DatabaseManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Player {
     private int playerId;
-    private String name;
-    private Random random = new Random();
-    private int cardValue;
-    private List<Card> hand;
-    private int handTotal;
+    private String username;
     public enum STATUS { WIN, LOST, STAY, PLAYING };
     private STATUS status;
-    private int balance;
+    private double balance;
 
     // Constructor
     public Player(String name, int id)
     {
-        this.name = name;
-        this.cardValue = 0;
-        this.hand = new ArrayList<Card>();
-        this.handTotal = 0;
-        this.status = status.PLAYING;
-        this.balance = 1000;
+        this.username = name;
+        this.status = STATUS.PLAYING;
         this.playerId = id;
     }
 
     // Getters and setters
-    public String getName() {
-        return this.name;
+    public String getUsername() {
+        return this.username;
     }
 
-    public int getBalance()
+    public double getBalance()
     {
-        return this.balance;
+        return DatabaseManager.getBalance(this);
     }
+
+    public void setBalance(double balance) { DatabaseManager.setBalance(this, balance); }
 
     public void withdrawBalance(int amount)
     {
         this.balance -= amount;
-    }
+    } /** To Do **/
 
-    public void depositBalance(int amount)
+    public void depositBalance(int amount)  /** To Do **/
     {
         this.balance += amount;
     }
@@ -57,33 +53,7 @@ public class Player {
         this.status = status;
     }
 
-    public List<Card> getHand() {
-        return this.hand;
-    }
-
     public int getPlayerId() {return this.playerId;}
 
-    public int getHandTotal()
-    {
-        handTotal = 0;
-        for(Card c : hand)
-        {
-            if(c.getFace() == Card.Face.ACE)
-            {
-                if((handTotal + 11) > 21)
-                {
-                    handTotal += 1;
-                }
-                else
-                {
-                    handTotal += 11;
-                }
-            }
-            else
-            {
-                handTotal += c.getValue();
-            }
-        }
-        return handTotal;
-    }
+
 }

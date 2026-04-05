@@ -9,6 +9,8 @@ import static java.util.Collections.shuffle;
         // Fields
         private static Map<String, Player> playerList;
         private static HashMap<Player, Integer> betList;
+        private static HashMap<Player, List<Card>> playerHands;
+        private static HashMap<Player, Integer> playerHandTotals;
         private static Stack<Card> deck = new Stack<Card>();
 
         // Constructor
@@ -17,9 +19,41 @@ import static java.util.Collections.shuffle;
             playerList = new HashMap<String, Player>();
             betList = new HashMap<Player, Integer>();
             addPlayer("dealer");
+            playerHands = new HashMap<Player, List<Card>>();
+            playerHandTotals = new HashMap<Player, Integer>();
         }
 
-        // Methods
+        /** Methods **/
+        // Retrieve cards in hand
+        public static List<Card> getHand(Player p) {
+            return playerHands.get(p);
+        }
+
+        // Retrieve total sum of cards in hand
+        public static int getHandTotal(Player p)
+        {
+            int handTotal = 0;
+            for(Card c : getHand(p))
+            {
+                if(c.getFace() == Card.Face.ACE)
+                {
+                    if((handTotal + 11) > 21)
+                    {
+                        handTotal += 1;
+                    }
+                    else
+                    {
+                        handTotal += 11;
+                    }
+                }
+                else
+                {
+                    handTotal += c.getValue();
+                }
+            }
+            return handTotal;
+        }
+
         // Adds a new player to the current game
         public static void addPlayer(String name)
         {
@@ -37,12 +71,19 @@ import static java.util.Collections.shuffle;
                 {
                     throw new IOException("No players in game!");
                 }
+
+                // Reset game
                 newDeck();
+                playerHands.clear();
+                playerHandTotals.clear();
+
                 for(Player p : playerList.values())
                 {
+                    playerHands.put(p, new ArrayList<Card>());
+                    playerBet(p, 100); // change bet amount to bet method
+
                     for(int i = 0; i < 2; i++)
                     {
-                        playerBet(p, 100);
                         hit(p);
                     }
                 }
@@ -54,14 +95,10 @@ import static java.util.Collections.shuffle;
             }
         }
 
-        // Returns collection of current players in game
-        public static Collection<Player> getPlayers() {
-            return playerList.values();
-        }
-
         // Creates a new deck of cards
         private static void newDeck()
         {
+            deck.clear();
             for(Card.Face face : Card.Face.values())
             {
                 for(Card.Suit suit : Card.Suit.values())
@@ -69,12 +106,6 @@ import static java.util.Collections.shuffle;
                     deck.push(new Card(face, suit));
                 }
             }
-            shuffleDeck();
-        }
-
-        // randomizes deck order
-        private static void shuffleDeck()
-        {
             shuffle(deck);
         }
 
@@ -86,7 +117,7 @@ import static java.util.Collections.shuffle;
                 return;
             }
 
-            p.getHand().add(deck.pop());
+            getHand(p).add(deck.pop());
             checkWin(p);
         }
 
@@ -97,13 +128,13 @@ import static java.util.Collections.shuffle;
         // check if a player has won
         public static String checkWin(Player p)
         {
-            if(p.getHandTotal() == 21)
+            if(getHandTotal(p) == 21)
             {
                 p.setStatus(Player.STATUS.WIN);
                 int depositAmount = betList.get(p) * 2;
                 p.depositBalance(depositAmount);
             }
-            else if(p.getHandTotal() > 21)
+            else if(getHandTotal(p) > 21)
             {
                 p.setStatus(Player.STATUS.LOST);
                 if(p.getName().equals("dealer"))
@@ -145,8 +176,8 @@ import static java.util.Collections.shuffle;
 
             for (Player p : playerList.values()) {
                 result += p.getName() + ": ";
-                result += p.getHand() + " ";
-                result += "(" + p.getHandTotal() + ") ";
+                result += getHand(p) + " ";
+                result += "(" + getHandTotal(p) + ") ";
                 result += "[" + p.getStatus() + "]";
                 result += "\n";
             }
@@ -157,11 +188,5 @@ import static java.util.Collections.shuffle;
         public static Player getPlayer(String name) {
             return playerList.get(name);
         }
-//
-//    public static void main(String[] args)
-//    {
-//        GameLogic game1 = new GameLogic();
-//        startGame();
-//        printBalance();
-//    }
+
     }

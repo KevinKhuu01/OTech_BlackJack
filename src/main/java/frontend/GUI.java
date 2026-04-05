@@ -1,5 +1,7 @@
 package frontend;
 
+import backend.GameLogic;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -298,16 +300,16 @@ public class GUI extends JFrame{
         dealerCardsPanel.removeAll();
         playerCardsPanel.removeAll();
 
-        for (backend.Card card : dealer.getHand()) {
+        for (backend.Card card : GameLogic.getHand(dealer)) {
             dealerCardsPanel.add(createCardLabel(card));
         }
 
-        for (backend.Card card : player.getHand()) {
+        for (backend.Card card : GameLogic.getHand(player)) {
             playerCardsPanel.add(createCardLabel(card));
         }
 
-        dealerTotalLabel.setText("Total: " + dealer.getHandTotal());
-        playerTotalLabel.setText("Total: " + player.getHandTotal());
+        dealerTotalLabel.setText("Total: " + GameLogic.getHandTotal(dealer));
+        playerTotalLabel.setText("Total: " + GameLogic.getHandTotal(player));
 
         dealerCardsPanel.revalidate();
         dealerCardsPanel.repaint();
@@ -316,7 +318,7 @@ public class GUI extends JFrame{
     }
 
     private JLabel createCardLabel(backend.Card card) {
-        String fileName = getCardFileName(card);
+        String fileName = "CardImages/" + getCardFileName(card);
         java.net.URL imageUrl = getClass().getClassLoader().getResource(fileName);
 
         if (imageUrl == null) {

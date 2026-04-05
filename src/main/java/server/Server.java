@@ -1,6 +1,7 @@
 package server;
 
 import backend.GameLogic;
+import database.InitializeDB;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -65,5 +66,6 @@ public class Server {
     public static void main(String[] args) {
         Server server = new Server(5050);
         server.startServer();
+        InitializeDB.initialize();
     }
 }
