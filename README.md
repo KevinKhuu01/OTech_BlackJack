@@ -12,3 +12,12 @@ Saturday March 28 - Have basic logic completed and prototype game runnable (Sock
 Saturday April 4 - Complete first prototype version with complete logic (backend and most of front end)
 
 Saturday April 11 - Fully debugged and refined - Ready for submission (everything)
+
+Still need to do:
+- GUI / Client needs to communicate to server and the server communicates with game logic (not GUI to game logic)
+- Remove lose and win page. Game should auto restart after each hand
+- Add betting to GUI
+- Add data base for user accounts
+- add login page and create account page
+- Add music
+- Add graphical effects (cards moving from deck to players' hand)

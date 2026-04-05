@@ -42,6 +42,7 @@ import static java.util.Collections.shuffle;
                 {
                     for(int i = 0; i < 2; i++)
                     {
+                        playerBet(p, 100);
                         hit(p);
                     }
                 }

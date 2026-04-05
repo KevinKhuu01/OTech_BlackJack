@@ -17,7 +17,6 @@ public class GUI extends JFrame{
     private JLabel playerTotalLabel;
     private JLabel dealerTotalLabel;
 
-
     public GUI(){
         setTitle("OTech Blackjack");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
