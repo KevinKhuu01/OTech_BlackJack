@@ -1,17 +1,17 @@
 **** To be removed for actual README ****
 
 Remaining tasks:
-- GUI / Client needs to communicate to server and the server communicates with game logic (not GUI to game logic)
-- Remove lose and win page. Game should auto restart after each hand
-- Add betting to GUI
-- Add data base for user accounts
-- add login page and create account page
-- Add music
-- Add graphical effects (cards moving from deck to players' hand)
+- GUI / Client needs to communicate to server and the server communicates with game logic (not GUI to game logic) (Awrron)
+- Remove lose and win page. Game should auto restart after each hand (Awrron)
+- Add betting to GUI (Awrron)
 
-Meeting agenda April 5:
-- Progress check in
-- Address remaining tasks: Who will complete each part and when will they have it completed by
+- Add data base for user accounts (Kevin)
+- add login page and create account page (Kevin)
+
+- Add music (Gabe)
+- Add graphical effects (cards moving from deck to players' hand) (Gabe)
+
+Deadline : Friday April 10 2026
 
 ------------------------------------------------------------------------------------------------------------------------
 
