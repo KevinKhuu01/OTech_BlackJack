@@ -67,7 +67,7 @@ public class DatabaseManager {
         return false;
     }
 
-//    // Find a user by username without checking password
+//    // Find a.java user by username without checking password
 //    public Player getUserByUsername(String username) {
 //        String sql = "SELECT id, username, balance FROM users WHERE username = ?";
 //
@@ -114,7 +114,7 @@ public class DatabaseManager {
         return balance;
     }
 
-    // Update a user's balance
+    // Update a.java user's balance
     public static boolean setBalance(Player p, double newBalance) {
         String sql = "UPDATE users SET balance = ? WHERE username = ?";
 

@@ -1,4 +1,4 @@
-package frontend;
+package frontend.GUIClasses.Styling;
 
 import javax.swing.*;
 import java.awt.*;

@@ -4,7 +4,7 @@ import database.DatabaseManager;
 
 public class Player {
     private final String username;
-    public enum STATUS { WIN, LOST, STAY, PLAYING };
+    public enum STATUS { WIN, DRAW, LOST, STAY, PLAYING };
     private STATUS status;
     private double balance;
 
@@ -31,7 +31,6 @@ public class Player {
         {
             System.out.println("Database error with setting balance");
         }
-
     }
 
     public void withdrawBalance(int amount)
@@ -48,7 +47,6 @@ public class Player {
         {
             System.out.println("Database error with depositing amount");
         }
-
     }
 
     public STATUS getStatus()

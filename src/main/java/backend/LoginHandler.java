@@ -3,7 +3,7 @@ package backend;
 import database.DatabaseManager;
 
 public class LoginHandler {
-    // Create a new player / user
+    // Create a.java new player / user
     public LoginHandler(){}
 
     // check login information

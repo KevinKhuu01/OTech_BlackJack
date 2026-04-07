@@ -35,35 +35,36 @@ import static java.util.Collections.shuffle;
         public static int getHandTotal(Player p)
         {
             int handTotal = 0;
+            int numOfAces = 0;
             for(Card c : getHand(p))
             {
                 if(c.getFace() == Card.Face.ACE)
                 {
-                    if((handTotal + 11) > 21)
-                    {
-                        handTotal += 1;
-                    }
-                    else
-                    {
-                        handTotal += 11;
-                    }
+                    handTotal += 11;
+                    numOfAces++;
                 }
                 else
                 {
                     handTotal += c.getValue();
                 }
             }
+
+            while(handTotal > 21 && numOfAces > 0)
+            {
+                handTotal -= 10;
+                numOfAces--;
+            }
             return handTotal;
         }
 
-        // Adds a new player to the current game
+        // Adds a new player
         public static void addPlayer(String name)
         {
             Player p = new Player(name);
             playerList.put(name, p);
         }
 
-        // Starts game: Ensures there are players in the game, create a new randomized deck, deals 2 cards to each player
+        // Starts game: Ensures there are players in the game, create a new deck, deals 2 cards to each player
         public static void startGame()
         {
             try
@@ -82,7 +83,11 @@ import static java.util.Collections.shuffle;
                 {
                     p.setStatus(Player.STATUS.PLAYING);
                     playerHands.put(p, new ArrayList<Card>());
-                    playerBet(p, 100); // change bet amount to bet method
+
+                    if(!p.getUsername().equalsIgnoreCase("dealer"))
+                    {
+                        playerBet(p, 100); // change bet amount to bet method
+                    }
 
                     for(int i = 0; i < 2; i++)
                     {
@@ -97,7 +102,7 @@ import static java.util.Collections.shuffle;
             }
         }
 
-        // Creates a new deck of cards
+        // Generates new deck
         private static void newDeck()
         {
             deck.clear();
@@ -138,6 +143,7 @@ import static java.util.Collections.shuffle;
                 }
             }
 
+            // If everyone has stayed then finish the round by checking who has won
             if(checkAllStay)
             {
                 while (getHandTotal(dealer) < 17)
@@ -149,57 +155,102 @@ import static java.util.Collections.shuffle;
                 {
                     dealer.setStatus(Player.STATUS.STAY);
                 }
-                settleRound();
-            }
-        }
-
-        // check if a player has won
-        public static boolean checkWin(Player p)
-        {
-            if(getHandTotal(p) == 21)
-            {
-                p.setStatus(Player.STATUS.WIN);
-                int depositAmount = betList.get(p) * 2;
-                p.depositBalance(depositAmount);
-                return true;
-            }
-            else if(getHandTotal(p) > 21)
-            {
-                p.setStatus(Player.STATUS.LOST);
-                if(p.getUsername().equals("dealer"))
+                for (Player pl : playerList.values())
                 {
-                    for(Player player : playerList.values())
+                    if(!pl.getUsername().equalsIgnoreCase("dealer"))
                     {
-                        if(!player.getUsername().equals("dealer"))
-                        {
-                            int depositAmount = betList.get(p) * 2;
-                            p.depositBalance(depositAmount);
-                        }
+                        checkWin(pl);
                     }
                 }
             }
-
-            return false;
         }
 
-        // prints all player balances (to be removed or refractored to return list)
-        public static void printBalance()
+        // check if a.java player has won
+        public static String checkWin(Player p)
         {
-            for(Player p : playerList.values())
-            {
-                System.out.println(p.getUsername() + ": $" + p.getBalance());
+            int playerTotal = getHandTotal(p);
+            int dealerTotal = getHandTotal(dealer);
+
+            // If p is dealer
+            if (p.getUsername().equalsIgnoreCase("dealer")) {
+                // Check if dealer has lost
+                if (playerTotal > 21) {
+                    p.setStatus(Player.STATUS.LOST);
+                    return "lost";
+                }
+                // check if dealer has won
+                if (playerTotal == 21) {
+                    p.setStatus(Player.STATUS.WIN);
+                    return "won";
+                }
+                return "playing";
             }
-            System.out.println();
+
+            // if p is player and busts
+            if(playerTotal > 21)
+            {
+                p.setStatus(Player.STATUS.LOST);
+                return "lost";
+            }
+
+            // if p is player and has 21
+            if (playerTotal == 21) {
+                p.setStatus(Player.STATUS.WIN);
+                p.depositBalance(betList.get(p) * 2);
+                return "won";
+            }
+
+            // if dealer is still playing (not won, lost, or stay)
+            if (dealer.getStatus() != Player.STATUS.STAY && dealer.getStatus() != Player.STATUS.LOST) {
+                return "playing";
+            }
+
+            // if p is the player and dealer has busted (previous check was if p was dealer)
+            if (dealerTotal > 21) {
+                p.setStatus(Player.STATUS.WIN);
+                p.depositBalance(betList.get(p) * 2);
+                return "won";
+            }
+
+            // end of round comparisons
+            if (playerTotal > dealerTotal) {
+                p.setStatus(Player.STATUS.WIN);
+                p.depositBalance(betList.get(p) * 2);
+                return "won";
+            }
+            else if (playerTotal < dealerTotal) {
+                p.setStatus(Player.STATUS.LOST);
+                return "lost";
+            }
+
+            // if both players have won or have equal hands (remaining conditions), declare draw
+            p.setStatus(Player.STATUS.DRAW);
+            p.depositBalance(betList.get(p));
+
+            return "draw";
         }
 
-        // places a bet for a player
+        // places a bet for player p
         private static void playerBet(Player p, int bet)
         {
             betList.put(p, bet);
             p.withdrawBalance(bet);
         }
 
-        //
+
+
+
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+
+
+
+
+
         // prints out current game state with player's name, hand, hand total, and win/loss status
         public static String getGameState() {
             Player realDealer = playerList.get("dealer");
@@ -219,7 +270,9 @@ import static java.util.Collections.shuffle;
             return "UPDATE:"
                     + getHandTotal(realDealer) + ":" + handToCodes(realDealer)
                     + "|"
-                    + getHandTotal(player) + ":" + handToCodes(player);
+                    + getHandTotal(player) + ":" + handToCodes(player)
+                    + "|"
+                    + player.getBalance();
         }
 
         private static String handToCodes(Player p) {
@@ -284,33 +337,10 @@ import static java.util.Collections.shuffle;
             if (p.getStatus() == Player.STATUS.LOST) {
                 return "LOSE";
             }
-            return "PLAYING";
-        }
-
-        private static void settleRound() {
-            int dealerTotal = getHandTotal(dealer);
-
-            for (Player p : playerList.values()) {
-                if (p.getUsername().equalsIgnoreCase("dealer")) {
-                    continue;
-                }
-
-                if (p.getStatus() == Player.STATUS.WIN || p.getStatus() == Player.STATUS.LOST) {
-                    continue;
-                }
-
-                int playerTotal = getHandTotal(p);
-
-                if (dealerTotal > 21 || playerTotal > dealerTotal) {
-                    p.setStatus(Player.STATUS.WIN);
-
-                    Integer bet = betList.get(p);
-                    if (bet != null) {
-                        p.depositBalance(bet * 2);
-                    }
-                } else {
-                    p.setStatus(Player.STATUS.LOST);
-                }
+            if(p.getStatus() == Player.STATUS.DRAW)
+            {
+                return "DRAW";
             }
+            return "PLAYING";
         }
     }

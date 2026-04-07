@@ -1,12 +1,13 @@
 **** To be removed for actual README ****
 
 Remaining tasks:
-- GUI / Client needs to communicate to server and the server communicates with game logic (not GUI to game logic) (Awrron)
-- Remove lose and win page. Game should auto restart after each hand (Awrron)
-- Add betting to GUI (Awrron)
+- Login Page and create account page
+- Hide dealer's second card.
+- add chip buttons
+- Update win / loss message to be in the center of the table
 
-- Add data base for user accounts (Kevin)
-- add login page and create account page (Kevin)
+- Slow down dealing animations
+- Re-factor code
 
 - Add music (Gabe)
 - Add graphical effects (cards moving from deck to players' hand) (Gabe)

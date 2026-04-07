@@ -25,7 +25,7 @@ public class Server {
             System.out.println("Server started on port " + port);
 
             while (true) {
-                System.out.println("Waiting for a client...");
+                System.out.println("Waiting for a.java client...");
 
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("A client connected.");
