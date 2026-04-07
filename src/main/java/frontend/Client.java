@@ -1,5 +1,6 @@
 package frontend;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,7 @@ public class Client {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
+    private GUI gui;
 
     public Client(String host, int port) {
 
@@ -24,61 +26,56 @@ public class Client {
             e.printStackTrace();
         }
 
-        try {
+        try
+        {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
             System.out.println("Connected to server.");
-            GUI gui = new GUI(); // Start graphical interface
-        } catch (IOException e) {
+            gui = new GUI(this); // Start graphical interface
+            receiveMessage();
+
+        }
+        catch (IOException e)
+        {
             System.out.println("Error connecting to server.");
             e.printStackTrace();
         }
     }
 
-    public void sendMessage() {
+    public void receiveMessage() {
         if (socket == null || input == null || output == null) {
             System.out.println("Client is not connected to the server.");
-            return;
         }
-        try {
-            BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
 
-            Thread readThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String serverMessage;
-                    try {
-                        while ((serverMessage = input.readLine()) != null) {
-                            System.out.println(serverMessage);
+        Thread readThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String serverMessage;
+                try {
+                    while ((serverMessage = input.readLine()) != null) {
+                        System.out.println("Server: " + serverMessage);
+
+                        final String message = serverMessage;
+                        if (gui != null) {
+                            SwingUtilities.invokeLater(() -> gui.processServerResponse(message));
                         }
-                    } catch (IOException e) {
-                        System.out.println("Disconnected from server.");
                     }
-                }
-            });
-            readThread.start();
-
-            String message;
-            while ((message = keyboard.readLine()) != null) {
-                output.println(message);
-
-                if (message.equalsIgnoreCase("BYE")) {
-                    break;
+                } catch (IOException e) {
+                    System.out.println("Disconnected from server.");
                 }
             }
-
-            closeEverything();
-
-        } catch (IOException e) {
-            System.out.println("Error sending message.");
-            e.printStackTrace();
-            closeEverything();
-        }
+        });
+        readThread.start();
     }
 
-    public void closeEverything() {
+    public void sendMessage(String message)
+    {
+        output.println(message);
+    }
+
+    public void closeSockets() {
         try {
             if (input != null) {
                 input.close();
@@ -95,8 +92,8 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         Client client = new Client("localhost", 5050);
-        client.sendMessage();
     }
 }

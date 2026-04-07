@@ -15,8 +15,8 @@ public class DatabaseManager {
     }
 
     // Add new user in db
-    public boolean newUser(String username, String plainPassword) {
-        String sql = "INSERT INTO users (username, password_hash, balance) VALUES (?, ?, ?)"; // Insert query
+    public static boolean newUser(int id, String username, String plainPassword) {
+        String sql = "INSERT INTO users (id, username, password_hash, balance) VALUES (?, ?, ?, ?)"; // Insert query
 
         try (Connection conn = DatabaseManager.getConnection(); // open db connection
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) { //
@@ -24,9 +24,10 @@ public class DatabaseManager {
             String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt()); // encrypt password so no one can see it
 
             // Modify sql script. 1st parameter = ? index, 2nd is value
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, hashedPassword);
-            preparedStatement.setInt(3, 1000); // default balance = $1000
+            preparedStatement.setInt(1,id);
+            preparedStatement.setString(2, username);
+            preparedStatement.setString(3, hashedPassword);
+            preparedStatement.setInt(4, 1000); // default balance = $1000
 
             int rows = preparedStatement.executeUpdate(); // Execute code and return number of rows modified
             return rows > 0; // true if successful
@@ -39,7 +40,7 @@ public class DatabaseManager {
 
     // Login existing user and return Player object if password matches
     /** To Do: set up from client**/
-    public Player loginUser(String username, String plainPassword) {
+    public static boolean loginUser(String username, String plainPassword) {
         String sql = "SELECT id, username, password_hash, balance FROM users WHERE username = ?"; // search query
 
         try (Connection conn = DatabaseManager.getConnection();
@@ -52,49 +53,46 @@ public class DatabaseManager {
                 String storedHash = rs.getString("password_hash");
 
                 if (BCrypt.checkpw(plainPassword, storedHash)) {
-                    int id = rs.getInt("id");
-                    int balance = rs.getInt("balance");
-
-                    Player player = new Player(username, id);
-                    player.setBalance(balance);
-
-                    return player;
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return null;
+        return false;
     }
 
-    // Find a user by username without checking password
-    public Player getUserByUsername(String username) {
-        String sql = "SELECT id, username, balance FROM users WHERE username = ?";
-
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int id = rs.getInt("id");
-                int balance = rs.getInt("balance");
-
-                Player player = new Player(username, id);
-                player.setBalance(balance);
-
-                return player;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+//    // Find a user by username without checking password
+//    public Player getUserByUsername(String username) {
+//        String sql = "SELECT id, username, balance FROM users WHERE username = ?";
+//
+//        try (Connection conn = DatabaseManager.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            stmt.setString(1, username);
+//            ResultSet rs = stmt.executeQuery();
+//
+//            if (rs.next()) {
+//                int id = rs.getInt("id");
+//                int balance = rs.getInt("balance");
+//
+//                Player player = new Player(username);
+//                player.setBalance(balance);
+//
+//                return player;
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
 
     // Get balance
     public static double getBalance(Player p)
@@ -136,14 +134,14 @@ public class DatabaseManager {
     }
 
     // Add amount to current balance
-    public boolean deposit(int playerId, int amount) {
-        String sql = "UPDATE users SET balance = balance + ? WHERE id = ?";
+    public static boolean deposit(Player p, int amount) {
+        String sql = "UPDATE users SET balance = balance + ? WHERE username = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, amount);
-            stmt.setInt(2, playerId);
+            stmt.setString(2, p.getUsername());
 
             int rows = stmt.executeUpdate();
             return rows > 0;
@@ -155,14 +153,14 @@ public class DatabaseManager {
     }
 
     // Subtract amount from current balance
-    public boolean withdraw(int playerId, int amount) {
-        String sql = "UPDATE users SET balance = balance - ? WHERE id = ?";
+    public static boolean withdraw(Player p, int amount) {
+        String sql = "UPDATE users SET balance = balance - ? WHERE username = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, amount);
-            stmt.setInt(2, playerId);
+            stmt.setString(2, p.getUsername());
 
             int rows = stmt.executeUpdate();
             return rows > 0;

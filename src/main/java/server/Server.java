@@ -64,8 +64,8 @@ public class Server {
     }
 
     public static void main(String[] args) {
+        InitializeDB.initialize();
         Server server = new Server(5050);
         server.startServer();
-        InitializeDB.initialize();
     }
 }

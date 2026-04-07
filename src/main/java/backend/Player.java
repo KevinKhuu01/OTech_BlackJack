@@ -2,23 +2,17 @@ package backend;
 
 import database.DatabaseManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 public class Player {
-    private int playerId;
-    private String username;
+    private final String username;
     public enum STATUS { WIN, LOST, STAY, PLAYING };
     private STATUS status;
     private double balance;
 
     // Constructor
-    public Player(String name, int id)
+    public Player(String name)
     {
         this.username = name;
         this.status = STATUS.PLAYING;
-        this.playerId = id;
     }
 
     // Getters and setters
@@ -31,16 +25,30 @@ public class Player {
         return DatabaseManager.getBalance(this);
     }
 
-    public void setBalance(double balance) { DatabaseManager.setBalance(this, balance); }
+    public void setBalance(double balance)
+    {
+        if (!DatabaseManager.setBalance(this, balance))
+        {
+            System.out.println("Database error with setting balance");
+        }
+
+    }
 
     public void withdrawBalance(int amount)
     {
-        this.balance -= amount;
-    } /** To Do **/
+        if(!DatabaseManager.withdraw(this, amount))
+        {
+            System.out.println("Database Error with withdrawing amount");
+        }
+    }
 
     public void depositBalance(int amount)  /** To Do **/
     {
-        this.balance += amount;
+        if(!DatabaseManager.deposit(this, amount))
+        {
+            System.out.println("Database error with depositing amount");
+        }
+
     }
 
     public STATUS getStatus()
@@ -52,8 +60,5 @@ public class Player {
     {
         this.status = status;
     }
-
-    public int getPlayerId() {return this.playerId;}
-
 
 }

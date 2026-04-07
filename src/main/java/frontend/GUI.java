@@ -1,7 +1,5 @@
 package frontend;
 
-import backend.GameLogic;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,37 +8,27 @@ public class GUI extends JFrame{
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
-    private backend.GameLogic gameLogic;
-    private backend.Player player;
-    private backend.Player dealer;
-
     private JPanel playerCardsPanel;
     private JPanel dealerCardsPanel;
     private JLabel playerTotalLabel;
     private JLabel dealerTotalLabel;
 
-    public GUI(){
+    private final Client client;
+
+    public GUI(Client client){
+        this.client = client; // connect gui to client
+
         setTitle("OTech Blackjack");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        gameLogic = new backend.GameLogic();
-        backend.GameLogic.addPlayer("player");
-        backend.GameLogic.startGame();
-
-        player = backend.GameLogic.getPlayer("player");
-        dealer = backend.GameLogic.getPlayer("dealer");
-
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-
         mainPanel.add(createStartMenu(), "start");
         mainPanel.add(createGamePanel(), "game");
-        mainPanel.add(createWinPanel(), "won");
-        mainPanel.add(createLosePanel(), "lost");
 
         setContentPane(mainPanel);
         cardLayout.show(mainPanel, "start");
@@ -75,7 +63,12 @@ public class GUI extends JFrame{
         newGameButton.setMaximumSize(new Dimension(220, 45));
         joinGameButton.setMaximumSize(new Dimension(220, 45));
 
-        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "game"));
+        newGameButton.addActionListener(e ->
+        {
+            cardLayout.show(mainPanel, "game");
+            client.sendMessage("JOIN Kevin");
+            client.sendMessage("START");
+        });
 
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
@@ -145,19 +138,11 @@ public class GUI extends JFrame{
         standButton.setMaximumSize(new Dimension(220, 45));
 
         hitButton.addActionListener(e -> {
-            backend.GameLogic.hit(player);
-            updateGameDisplay();
-
-            if (player.getStatus() == backend.Player.STATUS.WIN) {
-                cardLayout.show(mainPanel, "won");
-            } else if (player.getStatus() == backend.Player.STATUS.LOST) {
-                cardLayout.show(mainPanel, "lost");
-            }
+            client.sendMessage("hit");
         });
 
         standButton.addActionListener(e -> {
-            backend.GameLogic.stay(player);
-            updateGameDisplay();
+            client.sendMessage("stay");
         });
 
         buttonPanel.add(hitButton);
@@ -172,8 +157,6 @@ public class GUI extends JFrame{
 
         backgroundPanel.add(scrollPane, BorderLayout.CENTER);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        updateGameDisplay();
 
         return backgroundPanel;
     }
@@ -197,128 +180,180 @@ public class GUI extends JFrame{
         }
     }
 
-    private JPanel createWinPanel() {
-        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.jpeg");
-        backgroundPanel.setLayout(new GridBagLayout());
+//    private JPanel createWinPanel() {
+//        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.jpeg");
+//        backgroundPanel.setLayout(new GridBagLayout());
+//
+//        JPanel menuPanel = new JPanel();
+//        menuPanel.setPreferredSize(new Dimension(350, 350));
+//        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+//        menuPanel.setBackground(new Color(0, 0, 0, 170));
+//
+//        JLabel titleLabel = new JLabel("You Won!");
+//        titleLabel.setFont(loadCustomFont(60f));
+//        titleLabel.setForeground(new Color(212, 175, 55));
+//        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//
+//        JButton newGameButton = new JButton("Play Again");
+//        JButton joinGameButton = new JButton("Join Game");
+//        JButton endGameButton = new JButton("Leave Game");
+//
+//        Font buttonFont = loadCustomFont(25f);
+//        newGameButton.setFont(buttonFont);
+//        joinGameButton.setFont(buttonFont);
+//        endGameButton.setFont(buttonFont);
+//
+//        newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        joinGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        endGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//
+//        newGameButton.setMaximumSize(new Dimension(220, 45));
+//        joinGameButton.setMaximumSize(new Dimension(220, 45));
+//        endGameButton.setMaximumSize(new Dimension(220, 45));
+//
+//
+//        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "game"));
+//        endGameButton.addActionListener(e -> System.exit(0));
+//
+//        menuPanel.add(Box.createVerticalStrut(30));
+//        menuPanel.add(titleLabel);
+//        menuPanel.add(Box.createVerticalStrut(35));
+//        menuPanel.add(newGameButton);
+//        menuPanel.add(Box.createVerticalStrut(20));
+//        menuPanel.add(joinGameButton);
+//        menuPanel.add(Box.createVerticalStrut(20));
+//        menuPanel.add(endGameButton);
+//        menuPanel.add(Box.createVerticalGlue());
+//
+//        backgroundPanel.add(menuPanel);
+//
+//        return backgroundPanel;
+//    }
+//
+//    private JPanel createLosePanel() {
+//        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.jpeg");
+//        backgroundPanel.setLayout(new GridBagLayout());
+//
+//        JPanel menuPanel = new JPanel();
+//        menuPanel.setPreferredSize(new Dimension(350, 350));
+//        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+//        menuPanel.setBackground(new Color(0, 0, 0, 170));
+//
+//        JLabel titleLabel = new JLabel("You Lost :(");
+//        titleLabel.setFont(loadCustomFont(60f));
+//        titleLabel.setForeground(new Color(139, 38, 53));
+//        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//
+//        JButton newGameButton = new JButton("Play Again");
+//        JButton joinGameButton = new JButton("Join Game");
+//        JButton endGameButton = new JButton("Leave Game");
+//
+//        Font buttonFont = loadCustomFont(25f);
+//        newGameButton.setFont(buttonFont);
+//        joinGameButton.setFont(buttonFont);
+//        endGameButton.setFont(buttonFont);
+//
+//        newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        joinGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        endGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//
+//        newGameButton.setMaximumSize(new Dimension(220, 45));
+//        joinGameButton.setMaximumSize(new Dimension(220, 45));
+//        endGameButton.setMaximumSize(new Dimension(220, 45));
+//
+//        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "game"));
+//        endGameButton.addActionListener(e -> System.exit(0));
+//
+//        menuPanel.add(Box.createVerticalStrut(30));
+//        menuPanel.add(titleLabel);
+//        menuPanel.add(Box.createVerticalStrut(35));
+//        menuPanel.add(newGameButton);
+//        menuPanel.add(Box.createVerticalStrut(20));
+//        menuPanel.add(joinGameButton);
+//        menuPanel.add(Box.createVerticalStrut(20));
+//        menuPanel.add(endGameButton);
+//        menuPanel.add(Box.createVerticalGlue());
+//
+//        backgroundPanel.add(menuPanel);
+//
+//        return backgroundPanel;
+//    }
 
-        JPanel menuPanel = new JPanel();
-        menuPanel.setPreferredSize(new Dimension(350, 350));
-        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(new Color(0, 0, 0, 170));
+    private void updateGameDisplay(String data) {
+//        dealerCardsPanel.removeAll();
+//        playerCardsPanel.removeAll();
+//
+//        for (backend.Card card : GameLogic.getHand(dealer)) {
+//            dealerCardsPanel.add(createCardLabel(card));
+//        }
+//
+//        for (backend.Card card : GameLogic.getHand(player)) {
+//            playerCardsPanel.add(createCardLabel(card));
+//        }
+//
+//        dealerTotalLabel.setText("Total: " + GameLogic.getHandTotal(dealer));
+//        playerTotalLabel.setText("Total: " + GameLogic.getHandTotal(player));
+//
+//        dealerCardsPanel.revalidate();
+//        dealerCardsPanel.repaint();
+//        playerCardsPanel.revalidate();
+//        playerCardsPanel.repaint();
+        try {
+            // Expected format: "DealerTotal:DCard1,DCard2|PlayerTotal:PCard1,PCard2"
+            String[] halves = data.split("\\|");
+            String[] dealerData = halves[0].split(":");
+            String[] playerData = halves[1].split(":");
 
-        JLabel titleLabel = new JLabel("You Won!");
-        titleLabel.setFont(loadCustomFont(60f));
-        titleLabel.setForeground(new Color(212, 175, 55));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            dealerTotalLabel.setText("Total: " + dealerData[0]);
+            playerTotalLabel.setText("Total: " + playerData[0]);
 
-        JButton newGameButton = new JButton("Play Again");
-        JButton joinGameButton = new JButton("Join Game");
-        JButton endGameButton = new JButton("Leave Game");
+            dealerCardsPanel.removeAll();
+            if (dealerData.length > 1 && !dealerData[1].isEmpty()) {
+                for (String cardStr : dealerData[1].split(",")) {
+                    dealerCardsPanel.add(createCardLabel(cardStr));
+                }
+            }
 
-        Font buttonFont = loadCustomFont(25f);
-        newGameButton.setFont(buttonFont);
-        joinGameButton.setFont(buttonFont);
-        endGameButton.setFont(buttonFont);
+            playerCardsPanel.removeAll();
+            if (playerData.length > 1 && !playerData[1].isEmpty()) {
+                for (String cardStr : playerData[1].split(",")) {
+                    playerCardsPanel.add(createCardLabel(cardStr));
+                }
+            }
 
-        newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        joinGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        endGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            dealerCardsPanel.revalidate();
+            dealerCardsPanel.repaint();
+            playerCardsPanel.revalidate();
+            playerCardsPanel.repaint();
 
-        newGameButton.setMaximumSize(new Dimension(220, 45));
-        joinGameButton.setMaximumSize(new Dimension(220, 45));
-        endGameButton.setMaximumSize(new Dimension(220, 45));
-
-
-        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "game"));
-        endGameButton.addActionListener(e -> System.exit(0));
-
-        menuPanel.add(Box.createVerticalStrut(30));
-        menuPanel.add(titleLabel);
-        menuPanel.add(Box.createVerticalStrut(35));
-        menuPanel.add(newGameButton);
-        menuPanel.add(Box.createVerticalStrut(20));
-        menuPanel.add(joinGameButton);
-        menuPanel.add(Box.createVerticalStrut(20));
-        menuPanel.add(endGameButton);
-        menuPanel.add(Box.createVerticalGlue());
-
-        backgroundPanel.add(menuPanel);
-
-        return backgroundPanel;
-    }
-
-    private JPanel createLosePanel() {
-        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.jpeg");
-        backgroundPanel.setLayout(new GridBagLayout());
-
-        JPanel menuPanel = new JPanel();
-        menuPanel.setPreferredSize(new Dimension(350, 350));
-        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(new Color(0, 0, 0, 170));
-
-        JLabel titleLabel = new JLabel("You Lost :(");
-        titleLabel.setFont(loadCustomFont(60f));
-        titleLabel.setForeground(new Color(139, 38, 53));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton newGameButton = new JButton("Play Again");
-        JButton joinGameButton = new JButton("Join Game");
-        JButton endGameButton = new JButton("Leave Game");
-
-        Font buttonFont = loadCustomFont(25f);
-        newGameButton.setFont(buttonFont);
-        joinGameButton.setFont(buttonFont);
-        endGameButton.setFont(buttonFont);
-
-        newGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        joinGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        endGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        newGameButton.setMaximumSize(new Dimension(220, 45));
-        joinGameButton.setMaximumSize(new Dimension(220, 45));
-        endGameButton.setMaximumSize(new Dimension(220, 45));
-
-        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "game"));
-        endGameButton.addActionListener(e -> System.exit(0));
-
-        menuPanel.add(Box.createVerticalStrut(30));
-        menuPanel.add(titleLabel);
-        menuPanel.add(Box.createVerticalStrut(35));
-        menuPanel.add(newGameButton);
-        menuPanel.add(Box.createVerticalStrut(20));
-        menuPanel.add(joinGameButton);
-        menuPanel.add(Box.createVerticalStrut(20));
-        menuPanel.add(endGameButton);
-        menuPanel.add(Box.createVerticalGlue());
-
-        backgroundPanel.add(menuPanel);
-
-        return backgroundPanel;
-    }
-
-    private void updateGameDisplay() {
-        dealerCardsPanel.removeAll();
-        playerCardsPanel.removeAll();
-
-        for (backend.Card card : GameLogic.getHand(dealer)) {
-            dealerCardsPanel.add(createCardLabel(card));
+        } catch (Exception e) {
+            System.err.println("Error parsing update string from server: " + data);
         }
-
-        for (backend.Card card : GameLogic.getHand(player)) {
-            playerCardsPanel.add(createCardLabel(card));
-        }
-
-        dealerTotalLabel.setText("Total: " + GameLogic.getHandTotal(dealer));
-        playerTotalLabel.setText("Total: " + GameLogic.getHandTotal(player));
-
-        dealerCardsPanel.revalidate();
-        dealerCardsPanel.repaint();
-        playerCardsPanel.revalidate();
-        playerCardsPanel.repaint();
     }
 
-    private JLabel createCardLabel(backend.Card card) {
-        String fileName = "CardImages/" + getCardFileName(card);
+    public void processServerResponse(String message) {
+        if (message.equals("WIN") || message.equals("LOSE")) {
+            // Wait 3 seconds, then automatically start a new game
+            javax.swing.Timer timer = new javax.swing.Timer(3000, e -> {
+                dealerCardsPanel.removeAll();
+                playerCardsPanel.removeAll();
+                dealerTotalLabel.setText("Total: 0");
+                playerTotalLabel.setText("Total: 0");
+                dealerCardsPanel.repaint();
+                playerCardsPanel.repaint();
+                client.sendMessage("START");
+            });
+            timer.setRepeats(false); // Only run once
+            timer.start();
+
+        } else if (message.startsWith("UPDATE:")) {
+            updateGameDisplay(message.substring(7));
+        }
+    }
+
+    private JLabel createCardLabel(String card) {
+        card = card.trim();
+        String fileName = "CardImages/" + card + ".png";
         java.net.URL imageUrl = getClass().getClassLoader().getResource(fileName);
 
         if (imageUrl == null) {
@@ -332,37 +367,34 @@ public class GUI extends JFrame{
         return new JLabel(new ImageIcon(scaled));
     }
 
-    private String getCardFileName(backend.Card card) {
-        String face = "";
-        String suit = "";
+//    private String getCardFileName(backend.Card card) {
+//        String face = "";
+//        String suit = "";
+//
+//        switch (card.getFace()) {
+//            case ACE: face = "A"; break;
+//            case KING: face = "K"; break;
+//            case QUEEN: face = "Q"; break;
+//            case JACK: face = "J"; break;
+//            case TEN: face = "10"; break;
+//            case NINE: face = "9"; break;
+//            case EIGHT: face = "8"; break;
+//            case SEVEN: face = "7"; break;
+//            case SIX: face = "6"; break;
+//            case FIVE: face = "5"; break;
+//            case FOUR: face = "4"; break;
+//            case THREE: face = "3"; break;
+//            case TWO: face = "2"; break;
+//        }
+//
+//        switch (card.getSuit()) {
+//            case HEARTS: suit = "H"; break;
+//            case SPADES: suit = "S"; break;
+//            case DIAMONDS: suit = "D"; break;
+//            case CLUBS: suit = "C"; break;
+//        }
+//
+//        return face + suit + ".png";
+//    }
 
-        switch (card.getFace()) {
-            case ACE: face = "A"; break;
-            case KING: face = "K"; break;
-            case QUEEN: face = "Q"; break;
-            case JACK: face = "J"; break;
-            case TEN: face = "10"; break;
-            case NINE: face = "9"; break;
-            case EIGHT: face = "8"; break;
-            case SEVEN: face = "7"; break;
-            case SIX: face = "6"; break;
-            case FIVE: face = "5"; break;
-            case FOUR: face = "4"; break;
-            case THREE: face = "3"; break;
-            case TWO: face = "2"; break;
-        }
-
-        switch (card.getSuit()) {
-            case HEARTS: suit = "H"; break;
-            case SPADES: suit = "S"; break;
-            case DIAMONDS: suit = "D"; break;
-            case CLUBS: suit = "C"; break;
-        }
-
-        return face + suit + ".png";
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GUI::new);
-    }
 }

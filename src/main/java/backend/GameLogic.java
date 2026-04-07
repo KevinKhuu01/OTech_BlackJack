@@ -12,15 +12,17 @@ import static java.util.Collections.shuffle;
         private static HashMap<Player, List<Card>> playerHands;
         private static HashMap<Player, Integer> playerHandTotals;
         private static Stack<Card> deck = new Stack<Card>();
+        private static Player dealer;
 
         // Constructor
         public GameLogic()
         {
             playerList = new HashMap<String, Player>();
             betList = new HashMap<Player, Integer>();
-            addPlayer("dealer");
             playerHands = new HashMap<Player, List<Card>>();
             playerHandTotals = new HashMap<Player, Integer>();
+            dealer = new Player("dealer");
+            playerList.put("dealer", dealer);
         }
 
         /** Methods **/
@@ -57,8 +59,7 @@ import static java.util.Collections.shuffle;
         // Adds a new player to the current game
         public static void addPlayer(String name)
         {
-            int random = (int)(Math.random() * 1000);
-            Player p = new Player(name, random);
+            Player p = new Player(name);
             playerList.put(name, p);
         }
 
@@ -79,6 +80,7 @@ import static java.util.Collections.shuffle;
 
                 for(Player p : playerList.values())
                 {
+                    p.setStatus(Player.STATUS.PLAYING);
                     playerHands.put(p, new ArrayList<Card>());
                     playerBet(p, 100); // change bet amount to bet method
 
@@ -121,27 +123,54 @@ import static java.util.Collections.shuffle;
             checkWin(p);
         }
 
-        public static void stay(Player p) {
+        public static void stay(Player p)
+        {
             p.setStatus(Player.STATUS.STAY);
+            boolean checkAllStay = true;
+
+            // check if everyone has stayed
+            for(Player pl : playerList.values())
+            {
+                if(!pl.getUsername().equalsIgnoreCase("dealer") && pl.getStatus() != Player.STATUS.STAY)
+                {
+                    checkAllStay = false;
+                    break;
+                }
+            }
+
+            if(checkAllStay)
+            {
+                while (getHandTotal(dealer) < 17)
+                {
+                    hit(dealer);
+                }
+
+                if (getHandTotal(dealer) >= 17 && getHandTotal(dealer) <= 21)
+                {
+                    dealer.setStatus(Player.STATUS.STAY);
+                }
+            }
+
         }
 
         // check if a player has won
-        public static String checkWin(Player p)
+        public static boolean checkWin(Player p)
         {
             if(getHandTotal(p) == 21)
             {
                 p.setStatus(Player.STATUS.WIN);
                 int depositAmount = betList.get(p) * 2;
                 p.depositBalance(depositAmount);
+                return true;
             }
             else if(getHandTotal(p) > 21)
             {
                 p.setStatus(Player.STATUS.LOST);
-                if(p.getName().equals("dealer"))
+                if(p.getUsername().equals("dealer"))
                 {
                     for(Player player : playerList.values())
                     {
-                        if(!player.getName().equals("dealer"))
+                        if(!player.getUsername().equals("dealer"))
                         {
                             int depositAmount = betList.get(p) * 2;
                             p.depositBalance(depositAmount);
@@ -150,7 +179,7 @@ import static java.util.Collections.shuffle;
                 }
             }
 
-            return p.getStatus().toString();
+            return false;
         }
 
         // prints all player balances (to be removed or refractored to return list)
@@ -158,7 +187,7 @@ import static java.util.Collections.shuffle;
         {
             for(Player p : playerList.values())
             {
-                System.out.println(p.getName() + ": $" + p.getBalance());
+                System.out.println(p.getUsername() + ": $" + p.getBalance());
             }
             System.out.println();
         }
@@ -172,17 +201,70 @@ import static java.util.Collections.shuffle;
 
         // prints out current game state with player's name, hand, hand total, and win/loss status
         public static String getGameState() {
-            String result = "";
+            Player realDealer = playerList.get("dealer");
+            Player player = null;
 
             for (Player p : playerList.values()) {
-                result += p.getName() + ": ";
-                result += getHand(p) + " ";
-                result += "(" + getHandTotal(p) + ") ";
-                result += "[" + p.getStatus() + "]";
-                result += "\n";
+                if (!p.getUsername().equalsIgnoreCase("dealer")) {
+                    player = p;
+                    break;
+                }
             }
 
-            return result;
+            if (realDealer == null || player == null) {
+                return "UPDATE:0:|0:";
+            }
+
+            return "UPDATE:"
+                    + getHandTotal(realDealer) + ":" + handToCodes(realDealer)
+                    + "|"
+                    + getHandTotal(player) + ":" + handToCodes(player);
+        }
+
+        private static String handToCodes(Player p) {
+            List<Card> hand = getHand(p);
+            if (hand == null || hand.isEmpty()) {
+                return "";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hand.size(); i++) {
+                sb.append(cardToCode(hand.get(i)));
+                if (i < hand.size() - 1) {
+                    sb.append(",");
+                }
+            }
+            return sb.toString();
+        }
+
+        private static String cardToCode(Card card) {
+            String face = "";
+            String suit = "";
+
+            switch (card.getFace()) {
+                case ACE: face = "A"; break;
+                case KING: face = "K"; break;
+                case QUEEN: face = "Q"; break;
+                case JACK: face = "J"; break;
+                case TEN: face = "10"; break;
+                case NINE: face = "9"; break;
+                case EIGHT: face = "8"; break;
+                case SEVEN: face = "7"; break;
+                case SIX: face = "6"; break;
+                case FIVE: face = "5"; break;
+                case FOUR: face = "4"; break;
+                case THREE: face = "3"; break;
+                case TWO: face = "2"; break;
+            }
+
+            switch (card.getSuit()) {
+                case HEARTS: suit = "H"; break;
+                case SPADES: suit = "S"; break;
+                case DIAMONDS: suit = "D"; break;
+                case CLUBS: suit = "C"; break;
+            }
+
+            return face + suit;
         }
 
         public static Player getPlayer(String name) {
