@@ -19,7 +19,7 @@ public class Client {
         // 1 second delay added for compound run application
         try
         {
-            sleep(1000);
+            sleep(2000);
         }
         catch (InterruptedException e)
         {

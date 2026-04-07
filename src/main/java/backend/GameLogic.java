@@ -199,6 +199,7 @@ import static java.util.Collections.shuffle;
             p.withdrawBalance(bet);
         }
 
+        //
         // prints out current game state with player's name, hand, hand total, and win/loss status
         public static String getGameState() {
             Player realDealer = playerList.get("dealer");
