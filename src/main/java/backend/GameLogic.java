@@ -149,8 +149,8 @@ import static java.util.Collections.shuffle;
                 {
                     dealer.setStatus(Player.STATUS.STAY);
                 }
+                settleRound();
             }
-
         }
 
         // check if a player has won
@@ -271,4 +271,45 @@ import static java.util.Collections.shuffle;
             return playerList.get(name);
         }
 
+        public static String getRoundResult(String playerName) {
+            Player p = playerList.get(playerName);
+
+            if (p == null) {
+                return "PLAYING";
+            }
+            if (p.getStatus() == Player.STATUS.WIN) {
+                return "WIN";
+            }
+            if (p.getStatus() == Player.STATUS.LOST) {
+                return "LOSE";
+            }
+            return "PLAYING";
+        }
+
+        private static void settleRound() {
+            int dealerTotal = getHandTotal(dealer);
+
+            for (Player p : playerList.values()) {
+                if (p.getUsername().equalsIgnoreCase("dealer")) {
+                    continue;
+                }
+
+                if (p.getStatus() == Player.STATUS.WIN || p.getStatus() == Player.STATUS.LOST) {
+                    continue;
+                }
+
+                int playerTotal = getHandTotal(p);
+
+                if (dealerTotal > 21 || playerTotal > dealerTotal) {
+                    p.setStatus(Player.STATUS.WIN);
+
+                    Integer bet = betList.get(p);
+                    if (bet != null) {
+                        p.depositBalance(bet * 2);
+                    }
+                } else {
+                    p.setStatus(Player.STATUS.LOST);
+                }
+            }
+        }
     }

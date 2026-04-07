@@ -42,6 +42,11 @@ public class ClientConnectionHandler implements Runnable {
                     GameLogic.startGame();
                     Server.broadcastMessage("Game started.");
                     Server.broadcastMessage(GameLogic.getGameState());
+                    String result = GameLogic.getRoundResult(playerName);
+                    if (!result.equals("PLAYING"))
+                    {
+                        output.println(result);
+                    }
                 }
                 else if (message.equalsIgnoreCase("HIT")) {
                     if (playerName != null) {
@@ -52,6 +57,11 @@ public class ClientConnectionHandler implements Runnable {
                     } else {
                         output.println("You must JOIN first.");
                     }
+                    String result = GameLogic.getRoundResult(playerName);
+                    if (!result.equals("PLAYING"))
+                    {
+                        output.println(result);
+                    }
                 }
                 else if (message.equalsIgnoreCase("STAY")) {
                     if (playerName != null) {
@@ -61,6 +71,11 @@ public class ClientConnectionHandler implements Runnable {
                         Server.broadcastMessage(GameLogic.getGameState());
                     } else {
                         output.println("You must JOIN first.");
+                    }
+                    String result = GameLogic.getRoundResult(playerName);
+                    if (!result.equals("PLAYING"))
+                    {
+                        output.println(result);
                     }
                 }
                 else if (message.equalsIgnoreCase("STATE")) {
@@ -104,4 +119,6 @@ public class ClientConnectionHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
+
 }

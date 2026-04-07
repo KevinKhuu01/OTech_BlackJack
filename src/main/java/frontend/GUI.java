@@ -12,6 +12,7 @@ public class GUI extends JFrame{
     private JPanel dealerCardsPanel;
     private JLabel playerTotalLabel;
     private JLabel dealerTotalLabel;
+    private JLabel resultLabel;
 
     private final Client client;
 
@@ -98,6 +99,12 @@ public class GUI extends JFrame{
         gamePanel.setOpaque(false);
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
 
+        resultLabel = new JLabel(" ");
+        resultLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        resultLabel.setForeground(Color.YELLOW);
+        resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        gamePanel.add(resultLabel);
+        gamePanel.add(Box.createVerticalStrut(20));
 
         dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -300, 0));
         dealerCardsPanel.setOpaque(false);
@@ -106,7 +113,6 @@ public class GUI extends JFrame{
         dealerTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         dealerTotalLabel.setForeground(Color.WHITE);
         dealerTotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 
         playerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -300, 0));
         playerCardsPanel.setOpaque(false);
@@ -333,17 +339,23 @@ public class GUI extends JFrame{
 
     public void processServerResponse(String message) {
         if (message.equals("WIN") || message.equals("LOSE")) {
-            // Wait 3 seconds, then automatically start a new game
-            javax.swing.Timer timer = new javax.swing.Timer(3000, e -> {
+            resultLabel.setText(message.equals("WIN") ? "You won!" : "You lost!");
+
+            javax.swing.Timer timer = new javax.swing.Timer(2000, e -> {
                 dealerCardsPanel.removeAll();
                 playerCardsPanel.removeAll();
                 dealerTotalLabel.setText("Total: 0");
                 playerTotalLabel.setText("Total: 0");
+                resultLabel.setText(" ");
+
+                dealerCardsPanel.revalidate();
                 dealerCardsPanel.repaint();
+                playerCardsPanel.revalidate();
                 playerCardsPanel.repaint();
+
                 client.sendMessage("START");
             });
-            timer.setRepeats(false); // Only run once
+            timer.setRepeats(false);
             timer.start();
 
         } else if (message.startsWith("UPDATE:")) {
