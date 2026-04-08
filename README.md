@@ -4,11 +4,10 @@ Remaining tasks:
 - Login Page and create account page
 - Hide dealer's second card.
 - add chip buttons
-- Update win / loss message to be in the center of the table
-
+- Add multiplayer functionality
+------------------------------------------------------------------------------------------------------------------------
 - Slow down dealing animations
 - Re-factor code
-
 - Add music (Gabe)
 - Add graphical effects (cards moving from deck to players' hand) (Gabe)
 

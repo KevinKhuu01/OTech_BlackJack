@@ -14,19 +14,22 @@ public class GamePage {
     private JLabel playerTotalLabel;
     private JLabel dealerTotalLabel;
     private JLabel balanceLabel;
+    private JLabel resultLabel;
 
-
-    public void setResultLabelText(String text)
+    public void setResultLabelText(String text, Color color)
     {
         this.resultLabel.setText(text);
+        this.resultLabel.setForeground(color);
+        resultLabel.setFont(new Font ("Lucida Handwriting", Font.BOLD, 70));
+        resultLabel.setOpaque(true);
+        resultLabel.setBackground(new Color(0, 0, 0, 180));
+        resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
     }
 
     public void setBalanceLabel(String text)
     {
         this.balanceLabel.setText(text);
     }
-
-    private JLabel resultLabel;
 
     public GamePage(Client client) {
         this.client = client;
@@ -39,11 +42,12 @@ public class GamePage {
         dealerTotalLabel.setText("Total: 0");
         playerTotalLabel.setText("Total: 0");
         resultLabel.setText(" ");
-
         dealerCardsPanel.revalidate();
         dealerCardsPanel.repaint();
         playerCardsPanel.revalidate();
         playerCardsPanel.repaint();
+        resultLabel.setOpaque(false);
+        resultLabel.setBorder(null);
     }
 
     public JPanel createGamePanel() {
@@ -56,11 +60,7 @@ public class GamePage {
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
 
         resultLabel = new JLabel(" ");
-        resultLabel.setFont(CustomFont.newFont(28));
-        resultLabel.setForeground(Color.YELLOW);
         resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        gamePanel.add(resultLabel);
-        gamePanel.add(Box.createVerticalStrut(20));
 
         dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -120, 0));
         dealerCardsPanel.setOpaque(false);
@@ -98,16 +98,21 @@ public class GamePage {
         balanceWrapper.setPreferredSize(new Dimension(250,0));
         balanceWrapper.add(balanceLabel, BorderLayout.SOUTH);
 
-        // acts as counterweight to balance label, centering the cards
+        // acts as counterweight to balancelabel, centering the cards
         JPanel ghostPanel = new JPanel();
         ghostPanel.setOpaque(false);
         ghostPanel.setPreferredSize(new Dimension(250,0));
 
-        gamePanel.add(Box.createVerticalStrut(-20)); // Vertical Spacing
+        gamePanel.add(Box.createVerticalGlue());
+        gamePanel.add(Box.createVerticalStrut(20));
         gamePanel.add(dealerCardsPanel);
         gamePanel.add(Box.createVerticalStrut(4));
         gamePanel.add(dealerTotalLabel);
-        gamePanel.add(Box.createVerticalStrut(180));
+
+        gamePanel.add(Box.createVerticalStrut(40));
+        gamePanel.add(resultLabel);
+        gamePanel.add(Box.createVerticalStrut(40));
+
         gamePanel.add(playerCardsPanel);
         gamePanel.add(Box.createVerticalStrut(0));
         gamePanel.add(playerTotalLabel);

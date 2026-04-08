@@ -17,7 +17,7 @@ public class GUI extends JFrame{
 
         setTitle("OTech Blackjack");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 800);
+        setSize(1400, 900);
         setLocationRelativeTo(null);
         setResizable(false);
 
@@ -38,17 +38,25 @@ public class GUI extends JFrame{
     public void processServerResponse(String message) {
         if(message.equals("DRAW"))
         {
-            gamePage.setResultLabelText("Draw!");
+            gamePage.setResultLabelText("Draw!", Color.LIGHT_GRAY);
             resetTimer();
         }
-        else if (message.equals("WIN") || message.equals("LOSE")) {
-            gamePage.setResultLabelText(message.equals("WIN") ? "You won!" : "You lost!");
+        else if(message.equals("WIN"))
+        {
+            gamePage.setResultLabelText("You Won!", Color.GREEN);
             resetTimer();
         }
-        else if (message.startsWith("UPDATE:")) {
+        else if(message.equals("LOSE"))
+        {
+            gamePage.setResultLabelText("You Lost!", Color.RED);
+            resetTimer();
+        }
+        else if (message.startsWith("UPDATE:"))
+        {
             gamePage.updateGameDisplay(message.substring(7));
         }
-        else if (message.startsWith("BALANCE:")) {
+        else if (message.startsWith("BALANCE:"))
+        {
             gamePage.setBalanceLabel(message.substring(8).trim());
         }
     }

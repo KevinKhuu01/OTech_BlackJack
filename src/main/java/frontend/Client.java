@@ -14,18 +14,8 @@ public class Client {
     private PrintWriter output;
     private GUI gui;
 
-    public Client(String host, int port) {
-
-        // 1 second delay added for compound run application
-        try
-        {
-            sleep(2000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
+    public Client(String host, int port)
+    {
         try
         {
             socket = new Socket(host, port);
