@@ -12,8 +12,6 @@ public class Server {
     private ServerSocket serverSocket;
     private final int port;
 
-    public static ArrayList<ClientConnectionHandler> clientHandlers = new ArrayList<ClientConnectionHandler>();
-
     public Server(int port) {
         this.port = port;
     }
@@ -21,17 +19,14 @@ public class Server {
     public void startServer() {
         try {
             serverSocket = new ServerSocket(port);
-            new GameLogic();
             System.out.println("Server started on port " + port);
 
             while (true) {
                 System.out.println("Waiting for client...");
-
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("A client connected.");
 
                 ClientConnectionHandler handler = new ClientConnectionHandler(clientSocket);
-                clientHandlers.add(handler);
                 Thread thread = new Thread(handler);
                 thread.start();
             }
@@ -39,16 +34,6 @@ public class Server {
             System.out.println("Error starting server.");
             e.printStackTrace();
         }
-    }
-
-    public static void broadcastMessage(String message) {
-        for (ClientConnectionHandler handler : clientHandlers) {
-            handler.sendMessage(message);
-        }
-    }
-
-    public static void removeHandler(ClientConnectionHandler handler) {
-        clientHandlers.remove(handler);
     }
 
     public void closeServer() {

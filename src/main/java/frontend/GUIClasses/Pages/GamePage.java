@@ -15,6 +15,7 @@ public class GamePage {
     private JLabel dealerTotalLabel;
     private JLabel balanceLabel;
     private JLabel resultLabel;
+    private JPanel ghostPanel;
 
     public void setResultLabelText(String text, Color color)
     {
@@ -28,7 +29,17 @@ public class GamePage {
 
     public void setBalanceLabel(String text)
     {
-        this.balanceLabel.setText(text);
+        // Written by Claude
+        this.balanceLabel.setText("Balance: $" + text);
+        balanceLabel.revalidate();
+        SwingUtilities.invokeLater(() -> {
+            Component ghost = ((BorderLayout)balanceLabel.getParent().getParent().getLayout())
+                    .getLayoutComponent(BorderLayout.WEST);
+            if (ghost != null) {
+                ghost.setPreferredSize(new Dimension(balanceLabel.getParent().getPreferredSize().width, 0));
+                ghost.getParent().revalidate();
+            }
+        });
     }
 
     public GamePage(Client client) {
@@ -95,13 +106,17 @@ public class GamePage {
         JPanel balanceWrapper = new JPanel(new BorderLayout());
         balanceWrapper.setOpaque(false);
         balanceWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 25));
-        balanceWrapper.setPreferredSize(new Dimension(250,0));
+        balanceWrapper.setPreferredSize(null);
         balanceWrapper.add(balanceLabel, BorderLayout.SOUTH);
 
         // acts as counterweight to balancelabel, centering the cards
-        JPanel ghostPanel = new JPanel();
+        ghostPanel = new JPanel();
         ghostPanel.setOpaque(false);
-        ghostPanel.setPreferredSize(new Dimension(250,0));
+        SwingUtilities.invokeLater(() -> { // adjust counterweight panel based on balancelabel size
+            int w = balanceWrapper.getPreferredSize().width;
+            ghostPanel.setPreferredSize(new Dimension(w, 0));
+            ghostPanel.revalidate();
+        });
 
         gamePanel.add(Box.createVerticalGlue());
         gamePanel.add(Box.createVerticalStrut(20));

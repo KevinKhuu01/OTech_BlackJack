@@ -17,22 +17,38 @@ import static java.util.Collections.shuffle;
         // Constructor
         public GameLogic()
         {
-            playerList = new HashMap<String, Player>();
-            betList = new HashMap<Player, Integer>();
-            playerHands = new HashMap<Player, List<Card>>();
-            playerHandTotals = new HashMap<Player, Integer>();
+            playerList = new HashMap<>();
+            betList = new HashMap<>();
+            playerHands = new HashMap<>();
+            playerHandTotals = new HashMap<>();
             dealer = new Player("dealer");
             playerList.put("dealer", dealer);
         }
 
         /** Methods **/
-        // Retrieve cards in hand
-        public static List<Card> getHand(Player p) {
+
+        // Player Management ------------------------------------
+        public int getPlayerCount()
+        {
+            return playerList.size() -1;
+        }
+
+        public void addPlayer(Player p) {
+            playerList.put(p.getUsername(), p);
+        }
+
+        public Player getPlayer(String name) {
+            return playerList.get(name);
+        }
+
+
+        // Hand Helper Methods ------------------------------------
+
+        public List<Card> getHand(Player p) {
             return playerHands.get(p);
         }
 
-        // Retrieve total sum of cards in hand
-        public static int getHandTotal(Player p)
+        public int getHandTotal(Player p)
         {
             int handTotal = 0;
             int numOfAces = 0;
@@ -57,15 +73,24 @@ import static java.util.Collections.shuffle;
             return handTotal;
         }
 
-        // Adds a new player
-        public static void addPlayer(String name)
+
+        // Game Logical Component Methods
+
+        public void dealNewPlayer(Player p)
         {
-            Player p = new Player(name);
-            playerList.put(name, p);
+            p.setStatus(Player.STATUS.PLAYING);
+
+            if(!playerHands.containsKey(p))
+            {
+                playerHands.put(p, new ArrayList<Card>());
+            }
+            playerBet(p, 100);
+            hit(p);
+            hit(p);
         }
 
         // Starts game: Ensures there are players in the game, create a new deck, deals 2 cards to each player
-        public static void startGame()
+        public void startGame()
         {
             try
             {
@@ -88,13 +113,13 @@ import static java.util.Collections.shuffle;
                     {
                         playerBet(p, 100); // change bet amount to bet method
                     }
-
-                    for(int i = 0; i < 2; i++)
-                    {
-                        hit(p);
-                    }
                 }
-                getGameState();
+
+                for(Player p : playerList.values())
+                {
+                    hit(p);
+                    hit(p);
+                }
             }
             catch(IOException e)
             {
@@ -117,7 +142,7 @@ import static java.util.Collections.shuffle;
         }
 
         // takes card off top of deck and gives to player
-        public static void hit(Player p)
+        public void hit(Player p)
         {
             if(p.getStatus() == Player.STATUS.LOST || p.getStatus() == Player.STATUS.WIN)
             {
@@ -128,7 +153,7 @@ import static java.util.Collections.shuffle;
             checkWin(p);
         }
 
-        public static void stay(Player p)
+        public void stay(Player p)
         {
             p.setStatus(Player.STATUS.STAY);
             boolean checkAllStay = true;
@@ -136,7 +161,10 @@ import static java.util.Collections.shuffle;
             // check if everyone has stayed
             for(Player pl : playerList.values())
             {
-                if(!pl.getUsername().equalsIgnoreCase("dealer") && pl.getStatus() != Player.STATUS.STAY)
+                if(!pl.getUsername().equalsIgnoreCase("dealer")
+                        && pl.getStatus() != Player.STATUS.STAY
+                        && pl.getStatus() != Player.STATUS.LOST
+                        && pl.getStatus() != Player.STATUS.WIN)
                 {
                     checkAllStay = false;
                     break;
@@ -150,7 +178,6 @@ import static java.util.Collections.shuffle;
                 {
                     hit(dealer);
                 }
-
                 if (getHandTotal(dealer) >= 17 && getHandTotal(dealer) <= 21)
                 {
                     dealer.setStatus(Player.STATUS.STAY);
@@ -166,7 +193,7 @@ import static java.util.Collections.shuffle;
         }
 
         // check if a.java player has won
-        public static String checkWin(Player p)
+        public String checkWin(Player p)
         {
             int playerTotal = getHandTotal(p);
             int dealerTotal = getHandTotal(dealer);
@@ -231,40 +258,20 @@ import static java.util.Collections.shuffle;
         }
 
         // places a bet for player p
-        private static void playerBet(Player p, int bet)
+        private void playerBet(Player p, int bet)
         {
             betList.put(p, bet);
             p.withdrawBalance(bet);
         }
 
+        // Connection handling ------------------------------------------------------------------
 
-
-
-        // **************************************************************************************
-        // **************************************************************************************
-        // **************************************************************************************
-        // **************************************************************************************
-        // **************************************************************************************
-        // **************************************************************************************
-
-
-
-
-
-        // prints out current game state with player's name, hand, hand total, and win/loss status
-        public static String getGameState() {
+        public String getGameState(String name) {
             Player realDealer = playerList.get("dealer");
-            Player player = null;
-
-            for (Player p : playerList.values()) {
-                if (!p.getUsername().equalsIgnoreCase("dealer")) {
-                    player = p;
-                    break;
-                }
-            }
+            Player player = playerList.get(name);
 
             if (realDealer == null || player == null) {
-                return "UPDATE:0:|0:";
+                return "UPDATE:0:|0:|0";
             }
 
             return "UPDATE:"
@@ -275,7 +282,26 @@ import static java.util.Collections.shuffle;
                     + player.getBalance();
         }
 
-        private static String handToCodes(Player p) {
+        public String getRoundResult(String playerName) {
+            Player p = playerList.get(playerName);
+
+            if (p == null) {
+                return "PLAYING";
+            }
+            if (p.getStatus() == Player.STATUS.WIN) {
+                return "WIN";
+            }
+            if (p.getStatus() == Player.STATUS.LOST) {
+                return "LOSE";
+            }
+            if(p.getStatus() == Player.STATUS.DRAW)
+            {
+                return "DRAW";
+            }
+            return "PLAYING";
+        }
+
+        private String handToCodes(Player p) {
             List<Card> hand = getHand(p);
             if (hand == null || hand.isEmpty()) {
                 return "";
@@ -291,7 +317,7 @@ import static java.util.Collections.shuffle;
             return sb.toString();
         }
 
-        private static String cardToCode(Card card) {
+        private String cardToCode(Card card) {
             String face = "";
             String suit = "";
 
@@ -321,26 +347,5 @@ import static java.util.Collections.shuffle;
             return face + suit;
         }
 
-        public static Player getPlayer(String name) {
-            return playerList.get(name);
-        }
 
-        public static String getRoundResult(String playerName) {
-            Player p = playerList.get(playerName);
-
-            if (p == null) {
-                return "PLAYING";
-            }
-            if (p.getStatus() == Player.STATUS.WIN) {
-                return "WIN";
-            }
-            if (p.getStatus() == Player.STATUS.LOST) {
-                return "LOSE";
-            }
-            if(p.getStatus() == Player.STATUS.DRAW)
-            {
-                return "DRAW";
-            }
-            return "PLAYING";
-        }
     }

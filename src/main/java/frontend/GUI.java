@@ -1,5 +1,7 @@
 package frontend;
 
+import frontend.GUIClasses.Pages.CreateAccountPage;
+import frontend.GUIClasses.Pages.LoginPage;
 import frontend.GUIClasses.Pages.StartPage;
 import frontend.GUIClasses.Pages.GamePage;
 
@@ -17,25 +19,51 @@ public class GUI extends JFrame{
 
         setTitle("OTech Blackjack");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1400, 900);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
         setResizable(false);
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+
+        LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel);
+        CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel);
         StartPage startPage = new StartPage(client, cardLayout, mainPanel);
         gamePage = new GamePage(client);
+
+        mainPanel.add(loginPage.createLoginMenu(), "login");
+        mainPanel.add(createAccountPage.createAccountMenu(), "create");
         mainPanel.add(startPage.createStartMenu(), "start");
         mainPanel.add(gamePage.createGamePanel(), "game");
 
         setContentPane(mainPanel);
-        cardLayout.show(mainPanel, "start");
+        cardLayout.show(mainPanel, "login");
 
         setVisible(true);
     }
 
     // Processes and routes server responses
     public void processServerResponse(String message) {
+        // Login responses
+        if(message.equals("LOGIN_OK"))
+        {
+            cardLayout.show(mainPanel, "start");
+        }
+        if(message.equals("LOGIN_FAIL"))
+        {
+            JOptionPane.showMessageDialog(mainPanel, "Invalid username or password");
+        }
+        if(message.equals("REGISTER_OK"))
+        {
+            JOptionPane.showMessageDialog(mainPanel, "Registration complete. Welcome!");
+            cardLayout.show(mainPanel, "login");
+        }
+        if(message.equals("REGISTER_FAIL"))
+        {
+            JOptionPane.showMessageDialog(mainPanel, "Username already exists.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        // Game responses
         if(message.equals("DRAW"))
         {
             gamePage.setResultLabelText("Draw!", Color.LIGHT_GRAY);

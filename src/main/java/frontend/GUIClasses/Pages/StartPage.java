@@ -47,7 +47,6 @@ public class StartPage {
         joinGameButton.addActionListener(e ->
         {
             cardLayout.show(mainPanel, "game");
-            client.sendMessage("JOIN admin");
             client.sendMessage("START");
         });
 

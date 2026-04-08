@@ -27,7 +27,7 @@ public class DatabaseManager {
             preparedStatement.setInt(1,id);
             preparedStatement.setString(2, username);
             preparedStatement.setString(3, hashedPassword);
-            preparedStatement.setInt(4, 1000); // default balance = $1000
+            preparedStatement.setInt(4, 10000); // default balance = $1000
 
             int rows = preparedStatement.executeUpdate(); // Execute code and return number of rows modified
             return rows > 0; // true if successful
