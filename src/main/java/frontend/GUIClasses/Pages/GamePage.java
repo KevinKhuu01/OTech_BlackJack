@@ -6,6 +6,8 @@ import frontend.GUIClasses.Styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class GamePage {
     private final Client client;
@@ -17,6 +19,13 @@ public class GamePage {
     private JLabel resultLabel;
     private JPanel ghostPanel;
 
+
+    private final Map<String, JPanel> otherCardPanels  = new LinkedHashMap<>();
+    private final Map<String, JLabel> otherTotalLabels = new LinkedHashMap<>();
+    private final Map<String, JLabel> otherNameLabels  = new LinkedHashMap<>();
+    private JPanel otherPlayersRow;
+
+    // Win, Loss, or Draw notification
     public void setResultLabelText(String text, Color color)
     {
         this.resultLabel.setText(text);
@@ -27,9 +36,9 @@ public class GamePage {
         resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
     }
 
+    // Displays the player's account balance
     public void setBalanceLabel(String text)
     {
-        // Written by Claude
         this.balanceLabel.setText("Balance: $" + text);
         balanceLabel.revalidate();
         SwingUtilities.invokeLater(() -> {
@@ -46,6 +55,7 @@ public class GamePage {
         this.client = client;
     }
 
+    // Resets cards and card totals on the table for next round
     public void resetTable()
     {
         dealerCardsPanel.removeAll();
@@ -173,7 +183,7 @@ public class GamePage {
         return backgroundPanel;
     }
 
-
+    // handles server response for game status
     public void updateGameDisplay(String data) {
 
         try {
@@ -211,6 +221,7 @@ public class GamePage {
         }
     }
 
+    // Creates card visual through getting appropriate card file.
     private JLabel createCardLabel(String card) {
         card = card.trim();
         String fileName = "CardImages/" + card + ".png";

@@ -1,15 +1,16 @@
 **** To be removed for actual README ****
 
 Remaining tasks:
-- Login Page and create account page
+- Add front end multiplayer functionality 
+
+- Change start menu to select table page with button for create new table
 - Hide dealer's second card.
-- add chip buttons
-- Add multiplayer functionality
-------------------------------------------------------------------------------------------------------------------------
+- add chip betting buttons.
+- create Add funds button
 - Slow down dealing animations
 - Re-factor code
+- Method headers 
 - Add music (Gabe)
-- Add graphical effects (cards moving from deck to players' hand) (Gabe)
 
 Deadline : Friday April 10 2026
 
