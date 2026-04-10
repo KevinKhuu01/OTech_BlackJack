@@ -3,6 +3,7 @@ package database;
 import backend.Player;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.swing.*;
 import java.sql.*;
 
 public class DatabaseManager {

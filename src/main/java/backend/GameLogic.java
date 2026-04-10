@@ -89,12 +89,56 @@ import static java.util.Collections.shuffle;
             hit(p);
         }
 
+
+        private String dealerHandToCodes(boolean hideFirstCard){
+            List<Card> hand =  getHand(dealer);
+
+            if (hand == null || hand.isEmpty()){
+                return "";
+            }
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < hand.size(); i++){
+                if(i == 0 && hideFirstCard){
+                    sb.append("XX");
+                }
+                else {
+                    sb.append(cardToCode(hand.get(i)));
+                }
+                if (i < hand.size() - 1){
+                    sb.append(",");
+                }
+            }
+            return sb.toString();
+        }
+
+
+       private int getVisibleDealerTotal(boolean hideFirstCard){
+            List<Card> hand =  getHand(dealer);
+
+            if(!hideFirstCard){
+                return getHandTotal(dealer);
+            }
+
+            int total = 0;
+
+            for(int i = 1; i < hand.size(); i++){
+                Card c = hand.get(i);
+                if(c.getFace() == Card.Face.ACE){
+                    total += 11;
+                }
+                else {
+                    total += c.getValue();
+                }
+            }
+            return total;
+       }
         // Starts game: Ensures there are players in the game, create a new deck, deals 2 cards to each player
         public void startGame()
         {
             try
             {
-                if(playerList.size() <= 0)
+                if(playerList.isEmpty())
                 {
                     throw new IOException("No players in game!");
                 }
@@ -274,8 +318,11 @@ import static java.util.Collections.shuffle;
                 return "UPDATE:0:|0:|0";
             }
 
+            boolean hideDealerCard = realDealer.getStatus() != Player.STATUS.STAY &&
+                    realDealer.getStatus() != Player.STATUS.LOST;
+
             return "UPDATE:"
-                    + getHandTotal(realDealer) + ":" + handToCodes(realDealer)
+                    + getVisibleDealerTotal(hideDealerCard) + ":" + dealerHandToCodes(hideDealerCard)
                     + "|"
                     + getHandTotal(player) + ":" + handToCodes(player)
                     + "|"
