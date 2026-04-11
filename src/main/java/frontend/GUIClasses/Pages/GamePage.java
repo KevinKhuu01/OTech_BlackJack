@@ -135,14 +135,14 @@ public class GamePage {
         gamePanel.add(Box.createVerticalGlue());
 
         // Left panel - player 2
-        player2Panel = new JPanel(new BorderLayout());
+        player2Panel = new JPanel();
         player2Panel.setOpaque(false);
         player2Panel.setPreferredSize(new Dimension(280, 100));
+        player2Panel.setLayout(new BoxLayout(player2Panel, BoxLayout.Y_AXIS));
 
         player2Cards = new JPanel(new FlowLayout(FlowLayout.CENTER, -70, 0));
         player2Cards.setOpaque(false);
         player2Cards.setAlignmentX(Component.CENTER_ALIGNMENT);
-        player2Cards.setMaximumSize(player2Cards.getPreferredSize());
 
         player2TotalLabel = createStyledLabel("");
         player2NameLabel = createStyledLabel("");
@@ -154,22 +154,22 @@ public class GamePage {
         player2Panel.add(Box.createVerticalGlue());
         player2Panel.add(Box.createVerticalStrut(60));
         player2Panel.add(player2Cards);
-        player2Panel.add(Box.createVerticalStrut(5));
+        player2Panel.add(Box.createVerticalStrut(-160));
         player2Panel.add(player2NameLabel);
-        player2Panel.add(Box.createVerticalStrut(40));
+        player2Panel.add(Box.createVerticalStrut(5));
         player2Panel.add(player2TotalLabel);
         player2Panel.add(Box.createVerticalStrut(60));
         player2Panel.add(Box.createVerticalGlue());
 
         // Right panel - Player 3
-        player3Panel = new JPanel(new BorderLayout());
+        player3Panel = new JPanel();
         player3Panel.setOpaque(false);
         player3Panel.setPreferredSize(new Dimension(280, 300));
+        player3Panel.setLayout(new BoxLayout(player3Panel, BoxLayout.Y_AXIS));
 
         player3Cards = new JPanel(new FlowLayout(FlowLayout.CENTER, -70, 0));
         player3Cards.setOpaque(false);
         player3Cards.setAlignmentX(Component.CENTER_ALIGNMENT);
-        player3Cards.setMaximumSize(player3Cards.getPreferredSize());
 
         player3TotalLabel = createStyledLabel("");
         player3NameLabel = createStyledLabel("");
@@ -181,9 +181,9 @@ public class GamePage {
         player3Panel.add(Box.createVerticalGlue());
         player3Panel.add(Box.createVerticalStrut(60));
         player3Panel.add(player3Cards);
-        player3Panel.add(Box.createVerticalStrut(5));
+        player3Panel.add(Box.createVerticalStrut(-160));
         player3Panel.add(player3NameLabel);
-        player3Panel.add(Box.createVerticalStrut(40));
+        player3Panel.add(Box.createVerticalStrut(5));
         player3Panel.add(player3TotalLabel);
         player3Panel.add(Box.createVerticalStrut(60));
         player3Panel.add(Box.createVerticalGlue());
@@ -367,7 +367,7 @@ public class GamePage {
             dealerCardsPanel.removeAll();
             if (dealerData.length > 1 && !dealerData[1].isEmpty()) {
                 for (String cardStr : dealerData[1].split(",")) {
-                    dealerCardsPanel.add(createCardLabel(cardStr, 180, 160));
+                    dealerCardsPanel.add(createCardLabel(cardStr, 160, 140));
                 }
             }
 
@@ -379,7 +379,7 @@ public class GamePage {
             playerCardsPanel.removeAll();
             if (playerData.length > 1 && !playerData[1].isEmpty()) {
                 for (String cardStr : playerData[1].split(",")) {
-                    playerCardsPanel.add(createCardLabel(cardStr, 180, 160));
+                    playerCardsPanel.add(createCardLabel(cardStr, 160, 140));
                 }
             }
 
@@ -387,6 +387,7 @@ public class GamePage {
             player2Cards.removeAll();
             if (serverData.length >= 6)
             {
+                player2Panel.setVisible(true);
                 player2NameLabel.setText(serverData[3]);
                 String[] player2Data = serverData[4].split(":");
                 player2TotalLabel.setText("Total: " + player2Data[0]);
@@ -394,7 +395,7 @@ public class GamePage {
                 {
                     for (String cardStr : player2Data[1].split(","))
                     {
-                        player2Cards.add(createCardLabel(cardStr, 90, 80));
+                        player2Cards.add(createCardLabel(cardStr, 160, 140));
                     }
                 }
             }
@@ -407,12 +408,13 @@ public class GamePage {
             // Player 3 - Right side
             player3Cards.removeAll();
             if (serverData.length >= 9) {
+                player3Panel.setVisible(true);
                 player3NameLabel.setText((serverData[6]));
                 String[] player3Data = serverData[7].split(":");
                 player3TotalLabel.setText("Total: " + player3Data[0]);
                 if (player3Data.length > 1 && !player3Data[1].isEmpty()) {
                     for (String cardStr : player3Data[1].split(",")) {
-                        player3Cards.add(createCardLabel(cardStr, 90, 80));
+                        player3Cards.add(createCardLabel(cardStr, 160, 140));
                     }
                 }
             } else {
