@@ -37,10 +37,14 @@ public class GamePage {
     private JLabel player3NameLabel;
 
     // Client display
+    private BackgroundPanel backgroundPanel;
     private JLabel balanceLabel;
     private JLabel resultLabel;
     private JButton hitButton;
     private JButton standButton;
+    private JButton leaveGameButton;
+    private JTextField betAmountTextField;
+    private String betInput = Integer.toString(100);
 
     /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
     public GamePage(Client client)
@@ -54,9 +58,8 @@ public class GamePage {
     {
         this.resultLabel.setText(text);
         this.resultLabel.setForeground(color);
-        resultLabel.setFont(new Font ("Lucida Handwriting", Font.BOLD, 70));
         resultLabel.setOpaque(true);
-        resultLabel.setBackground(new Color(0, 0, 0, 180));
+        resultLabel.setBackground(new Color(0, 0, 0, 155));
         resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
         try
         {
@@ -66,6 +69,16 @@ public class GamePage {
         {
             System.out.println(e);
         }
+    }
+
+    // Status / instruction label for client
+    public void setTurnStatusText(String text, Color color) {
+        this.resultLabel.setText(text);
+        this.resultLabel.setForeground(color);
+        this.resultLabel.setFont(customFont.bold(25));
+        this.resultLabel.setOpaque(true);
+        this.resultLabel.setBackground(new Color(0, 0, 0, 155));
+        this.resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
     // Displays the player's account balance
@@ -79,20 +92,15 @@ public class GamePage {
     {
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
+        setTurnStatusText("Waiting for others...", Color.LIGHT_GRAY);
     }
 
     // Resets cards and card totals on the table for next round
     public void resetTable()
     {
-        resultLabel.setText(" ");
+        checkSufficientFunds();
         resultLabel.setOpaque(false);
         resultLabel.setBorder(null);
-
-        player2TotalLabel.setText("");
-        player2NameLabel.setText("");
-
-        player3TotalLabel.setText("");
-        player3NameLabel.setText("");
 
         dealerCardsPanel.revalidate();
         dealerCardsPanel.repaint();
@@ -102,6 +110,10 @@ public class GamePage {
 
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
+
+        setTurnStatusText("Your Turn!", Color.WHITE);
+        resultLabel.revalidate();
+        resultLabel.repaint();
     }
 
     // Creates card visual through getting appropriate card file.
@@ -125,7 +137,7 @@ public class GamePage {
 
     /** BUILD PAGE METHODS ----------------------------------------------------------------------------------------- **/
     public JPanel createGamePanel() {
-        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.png");
+        backgroundPanel = new BackgroundPanel("Table.png");
         backgroundPanel.setLayout(new BorderLayout());
 
         // MAIN PANEL (CLIENT AND DEALER) -----------------------------------------------------------------------------
@@ -133,8 +145,9 @@ public class GamePage {
         gamePanel.setOpaque(false);
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
 
-        resultLabel = new JLabel(" ");
+        resultLabel = new JLabel("");
         resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        setTurnStatusText("Your Turn!", Color.WHITE);
 
         dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -120, 0));
         dealerCardsPanel.setOpaque(false);
@@ -147,18 +160,17 @@ public class GamePage {
         playerTotalLabel = createStyledLabel("Total: ");
 
         // Vertical adjustments
-        gamePanel.add(Box.createVerticalGlue());
-        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(Box.createVerticalStrut(0));
         gamePanel.add(dealerCardsPanel);
-        gamePanel.add(Box.createVerticalStrut(0));
+        gamePanel.add(Box.createVerticalStrut(20));
         gamePanel.add(dealerTotalLabel);
-        gamePanel.add(Box.createVerticalStrut(40));
-        gamePanel.add(resultLabel);
-        gamePanel.add(Box.createVerticalStrut(100));
+        gamePanel.add(Box.createVerticalStrut(120));
         gamePanel.add(playerCardsPanel);
-        gamePanel.add(Box.createVerticalStrut(0));
+        gamePanel.add(Box.createVerticalStrut(20));
         gamePanel.add(playerTotalLabel);
-        gamePanel.add(Box.createVerticalStrut(40));
+        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(resultLabel);
+        gamePanel.add(Box.createVerticalStrut(20));
         gamePanel.add(Box.createVerticalGlue());
 
         // WEST PANEL (PLAYER 2 IF CONNECTED) ------------------------------------------------------------------------
@@ -181,7 +193,7 @@ public class GamePage {
         player2Panel.add(Box.createVerticalGlue());
         player2Panel.add(Box.createVerticalStrut(60));
         player2Panel.add(player2Cards);
-        player2Panel.add(Box.createVerticalStrut(-160));
+        player2Panel.add(Box.createVerticalStrut(-100));
         player2Panel.add(player2NameLabel);
         player2Panel.add(Box.createVerticalStrut(5));
         player2Panel.add(player2TotalLabel);
@@ -208,7 +220,7 @@ public class GamePage {
         player3Panel.add(Box.createVerticalGlue());
         player3Panel.add(Box.createVerticalStrut(60));
         player3Panel.add(player3Cards);
-        player3Panel.add(Box.createVerticalStrut(-160));
+        player3Panel.add(Box.createVerticalStrut(-100));
         player3Panel.add(player3NameLabel);
         player3Panel.add(Box.createVerticalStrut(5));
         player3Panel.add(player3TotalLabel);
@@ -221,24 +233,22 @@ public class GamePage {
         player3NameLabel.setVisible(false);
         player3TotalLabel.setVisible(false);
 
-
-
         // SOUTH PANEL (BUTTONS & UTILITIES) ----------------------------------------------------------------------------------------------
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(true);
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 20));
+        buttonPanel.setBackground(new Color(0, 0, 0, 240));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 14, 8, 14));
+
         balanceLabel = new JLabel("Balance: $0");
         balanceLabel.setFont(customFont.regular(24));
         balanceLabel.setForeground(Color.WHITE);
-        balanceLabel.setOpaque(true);
+        balanceLabel.setOpaque(false);
         balanceLabel.setBackground(new Color(0, 0, 0, 140));
-        balanceLabel.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
 
         JPanel balanceWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         balanceWrapper.setOpaque(false);
         balanceWrapper.add(balanceLabel);
-
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 20));
 
         hitButton = new JButton("Hit");
         hitButton.setFont(customFont.bold(25f));
@@ -253,15 +263,66 @@ public class GamePage {
             disableButtons();
         });
 
+        JPanel betWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        betWrapper.setOpaque(false);
+
+        JLabel betAmountLabel = new JLabel("Bet Amount:");
+        betAmountLabel.setFont(customFont.regular(24));
+        betAmountLabel.setForeground(Color.WHITE);
+        betAmountLabel.setOpaque(false);
+        betAmountLabel.setBackground(new Color(0, 0, 0, 140));
+
+        betAmountTextField = new JTextField(10);
+        betAmountTextField.setPreferredSize(new Dimension(200, 40));
+        betAmountTextField.setMaximumSize(new Dimension(200, 40));
+        betAmountTextField.setMinimumSize(new Dimension(200, 40));
+
+        JButton sendBet = new JButton("Send");
+        sendBet.setFont(customFont.regular(25f));
+        sendBet.setPreferredSize(new Dimension(100, 40));
+        sendBet.addActionListener(e -> {
+            betInput = betAmountTextField.getText().trim();
+            if(!betInput.matches("[0-9]+"))
+            {
+                JOptionPane.showMessageDialog(backgroundPanel, "Invalid bet. Please place an integer bet with only numbers","Invalid bet", JOptionPane.ERROR_MESSAGE);
+            }
+            else
+            {
+                client.sendMessage("BET " + betInput);
+                JOptionPane.showMessageDialog(backgroundPanel, "Your betting amount will be $" + betInput + " next round");
+            }
+
+        });
+
+        betWrapper.add(betAmountLabel);
+        betWrapper.add(betAmountTextField);
+        betWrapper.add(sendBet);
+
+        buttonPanel.add(balanceWrapper);
+        buttonPanel.add(betWrapper);
         buttonPanel.add(hitButton);
         buttonPanel.add(standButton);
-        buttonPanel.add(balanceWrapper);
+
+        // NORTH PANEL (LEAVE GAME BUTTON) ----------------------------------------------------------------------------------------------
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+
+        leaveGameButton = new JButton("Leave Table");
+        leaveGameButton.setFont(customFont.regular(20));
+        leaveGameButton.setPreferredSize(new Dimension(150, 40));
+        leaveGameButton.addActionListener(e -> {
+            client.sendMessage("LEAVETABLE");
+        });
+        topPanel.add(leaveGameButton);
 
         // Putting components together --------------------------------------------------------------------------------
+        backgroundPanel.add(topPanel, BorderLayout.NORTH);
         backgroundPanel.add(player2Panel, BorderLayout.WEST);
         backgroundPanel.add(gamePanel, BorderLayout.CENTER);
         backgroundPanel.add(player3Panel, BorderLayout.EAST);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
+
         return backgroundPanel;
     }
 
@@ -290,7 +351,7 @@ public class GamePage {
             dealerCardsPanel.removeAll();
             if (dealerData.length > 1 && !dealerData[1].isEmpty()) {
                 for (String cardStr : dealerData[1].split(",")) {
-                    dealerCardsPanel.add(createCardLabel(cardStr, 160, 140));
+                    dealerCardsPanel.add(createCardLabel(cardStr, 150, 180));
                 }
             }
 
@@ -301,7 +362,7 @@ public class GamePage {
             playerCardsPanel.removeAll();
             if (playerData.length > 1 && !playerData[1].isEmpty()) {
                 for (String cardStr : playerData[1].split(",")) {
-                    playerCardsPanel.add(createCardLabel(cardStr, 160, 140));
+                    playerCardsPanel.add(createCardLabel(cardStr, 150, 180));
                 }
             }
 
@@ -319,7 +380,7 @@ public class GamePage {
                 {
                     for (String cardStr : player2Data[1].split(","))
                     {
-                        player2Cards.add(createCardLabel(cardStr, 160, 140));
+                        player2Cards.add(createCardLabel(cardStr, 150, 180));
                     }
                 }
             }
@@ -340,7 +401,7 @@ public class GamePage {
                 player3TotalLabel.setText("Total: " + player3Data[0]);
                 if (player3Data.length > 1 && !player3Data[1].isEmpty()) {
                     for (String cardStr : player3Data[1].split(",")) {
-                        player3Cards.add(createCardLabel(cardStr, 160, 140));
+                        player3Cards.add(createCardLabel(cardStr, 150, 180));
                     }
                 }
             } else {
@@ -359,6 +420,18 @@ public class GamePage {
 
         } catch (Exception e) {
             System.err.println("Error parsing update string from server: " + data);
+        }
+    }
+
+    public void checkSufficientFunds()
+    {
+        int balance = Integer.parseInt(balanceLabel.getText().split("\\$")[1]);
+        int bet = Integer.parseInt(betInput);
+        if(balance < bet)
+        {
+            disableButtons();
+            JOptionPane.showMessageDialog(backgroundPanel, "Insufficient funds! Add funds in the main menu.", "Error placing bet", JOptionPane.ERROR_MESSAGE);
+            client.sendMessage("LEAVETABLE");
         }
     }
 }

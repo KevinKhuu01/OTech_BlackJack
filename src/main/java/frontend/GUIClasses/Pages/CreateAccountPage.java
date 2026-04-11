@@ -22,58 +22,90 @@ public class CreateAccountPage {
     }
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
     public JPanel createAccountMenu() {
-        BackgroundPanel backgroundPanel = new BackgroundPanel("Table Start.png");
-        backgroundPanel.setLayout(new GridBagLayout());
+        JPanel backgroundPanel = new JPanel(new BorderLayout());
+        JPanel wallpaper = new BackgroundPanel("wallpaper.png");
+        wallpaper.setPreferredSize(new Dimension(900,800));
 
-        JPanel menuPanel = new JPanel();
-        menuPanel.setPreferredSize(new Dimension(400, 350));
+        JPanel menuPanel = new BackgroundPanel("menuWallpaper.png");
+        menuPanel.setPreferredSize(new Dimension(300, 800));
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(new Color(0, 0, 0, 170));
+        menuPanel.setBackground(new Color(245, 245, 245, 1));
 
-        JLabel titleLabel = new JLabel("Register");
-        titleLabel.setFont(customFont.bold(30));
-        titleLabel.setForeground(new Color(212, 175, 55));
+        JLabel titleLabel = new JLabel("Registration");
+        titleLabel.setFont(customFont.bold(42));
+        titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Username Field
+        Dimension fieldSize = new Dimension(250, 40);
+
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         userPanel.setOpaque(false);
-        JLabel userLabel = new JLabel("New User: ");
-        userLabel.setForeground(Color.WHITE);
-        userLabel.setFont(customFont.regular(20));
-        JTextField userField = new JTextField(15);
+
+        JLabel userLabel = new JLabel("Username: ");
+        userLabel.setFont(customFont.regular(25));
+        userLabel.setForeground(new Color(0, 60, 113));
+
+        JTextField userField = new JTextField(16);
+        userField.setPreferredSize(fieldSize);
+        userField.setMaximumSize(fieldSize);
+        userField.setMinimumSize(fieldSize);
+        userField.setFont(customFont.regular(18));
         userPanel.add(userLabel);
         userPanel.add(userField);
 
         // Password Field
         JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         passPanel.setOpaque(false);
-        JLabel passLabel = new JLabel("New Pass: ");
-        passLabel.setForeground(Color.WHITE);
-        passLabel.setFont(customFont.regular(20));
-        JPasswordField passField = new JPasswordField(15);
+
+        JLabel passLabel = new JLabel("Password: ");
+        passLabel.setFont(customFont.regular(25));
+        passLabel.setForeground(new Color(0, 60, 113));
+
+        JPasswordField passField = new JPasswordField(16);
+        passField.setPreferredSize(fieldSize);
+        passField.setMaximumSize(fieldSize);
+        passField.setMinimumSize(fieldSize);
+        passField.setFont(new Font("SansSerif", Font.PLAIN, 16));
         passPanel.add(passLabel);
         passPanel.add(passField);
 
         // Buttons
+        Dimension buttonSize = new Dimension(250, 40);
+
         JButton registerButton = new JButton("Submit");
-        registerButton.setFont(customFont.bold(20));
+        registerButton.setFont(customFont.bold(25));
         registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        registerButton.setMaximumSize(new Dimension(200, 40));
+        registerButton.setPreferredSize(buttonSize);
+        registerButton.setMaximumSize(buttonSize);
+        registerButton.setMinimumSize(buttonSize);
 
         JButton backButton = new JButton("Back to Login");
-        backButton.setFont(customFont.bold(16));
+        backButton.setFont(customFont.regular(20));
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.setMaximumSize(new Dimension(200, 40));
+        backButton.setPreferredSize(buttonSize);
+        backButton.setMaximumSize(buttonSize);
+        backButton.setMinimumSize(buttonSize);
 
         // Actions
         registerButton.addActionListener(e -> {
             String username = userField.getText().trim();
             String password = new String(passField.getPassword()).trim();
             if (!username.isEmpty() && !password.isEmpty()) {
-                // Send register request to server
-                client.sendMessage("REGISTER " + username + " " + password);
-            } else {
+                if(username.length() <= 4 || !username.matches(".*[A-Za-z].*"))
+                {
+                    JOptionPane.showMessageDialog(backgroundPanel, "Invalid username! Username must be greater than 3 characters and contain letters", "Registration Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if(password.length() < 5 || !password.matches(".*[A-Za-z].*"))
+                {
+                    JOptionPane.showMessageDialog(backgroundPanel, "Invalid password! Password must be greater than 5 characters and contain letters", "Registration Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    client.sendMessage("REGISTER " + username + " " + password);
+                }
+            }
+            else {
                 JOptionPane.showMessageDialog(mainPanel, "Please fill in both fields.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -83,16 +115,18 @@ public class CreateAccountPage {
         // Assembly
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
-        menuPanel.add(Box.createVerticalStrut(20));
+        menuPanel.add(Box.createVerticalStrut(40));
         menuPanel.add(userPanel);
+        menuPanel.add(Box.createVerticalStrut(0));
         menuPanel.add(passPanel);
-        menuPanel.add(Box.createVerticalStrut(20));
+        menuPanel.add(Box.createVerticalStrut(300));
         menuPanel.add(registerButton);
         menuPanel.add(Box.createVerticalStrut(10));
         menuPanel.add(backButton);
         menuPanel.add(Box.createVerticalGlue());
 
-        backgroundPanel.add(menuPanel);
+        backgroundPanel.add(wallpaper, BorderLayout.WEST);
+        backgroundPanel.add(menuPanel, BorderLayout.EAST);
         return backgroundPanel;
     }
 }

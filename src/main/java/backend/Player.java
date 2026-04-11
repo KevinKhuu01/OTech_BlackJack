@@ -21,9 +21,9 @@ public class Player {
         return this.username;
     }
 
-    public double getBalance()
+    public int getBalance()
     {
-        return DatabaseManager.getBalance(this);
+        return DatabaseManager.getBalance(this.username);
     }
 
     public void setBalance(double balance)

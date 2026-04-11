@@ -33,7 +33,7 @@ public class LoginPage {
         menuPanel.setBackground(new Color(245, 245, 245, 1));
 
         JLabel titleLabel = new JLabel("Login");
-        titleLabel.setFont(customFont.bold(50));
+        titleLabel.setFont(customFont.bold(42));
         titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -44,7 +44,7 @@ public class LoginPage {
         userPanel.setOpaque(false);
 
         JLabel userLabel = new JLabel("Username: ");
-        userLabel.setFont(customFont.regular(20));
+        userLabel.setFont(customFont.regular(25));
         userLabel.setForeground(new Color(0, 60, 113));
 
         JTextField userField = new JTextField(16);
@@ -60,7 +60,7 @@ public class LoginPage {
         passPanel.setOpaque(false);
 
         JLabel passLabel = new JLabel("Password: ");
-        passLabel.setFont(customFont.regular(20));
+        passLabel.setFont(customFont.regular(25));
         passLabel.setForeground(new Color(0, 60, 113));
 
         JPasswordField passField = new JPasswordField(16);
@@ -75,7 +75,7 @@ public class LoginPage {
         Dimension buttonSize = new Dimension(250, 40);
 
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(customFont.regular(25));
+        loginButton.setFont(customFont.bold(25));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.setPreferredSize(buttonSize);
         loginButton.setMaximumSize(buttonSize);
@@ -105,13 +105,13 @@ public class LoginPage {
         // Assembly
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
-        menuPanel.add(Box.createVerticalStrut(60));
-        menuPanel.add(userPanel);
-        menuPanel.add(Box.createVerticalStrut(-100));
-        menuPanel.add(passPanel);
-        menuPanel.add(Box.createVerticalStrut(20));
-        menuPanel.add(loginButton);
         menuPanel.add(Box.createVerticalStrut(40));
+        menuPanel.add(userPanel);
+        menuPanel.add(Box.createVerticalStrut(0));
+        menuPanel.add(passPanel);
+        menuPanel.add(Box.createVerticalStrut(300));
+        menuPanel.add(loginButton);
+        menuPanel.add(Box.createVerticalStrut(10));
         menuPanel.add(createAccButton);
         menuPanel.add(Box.createVerticalGlue());
 

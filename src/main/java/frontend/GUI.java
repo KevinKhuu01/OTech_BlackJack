@@ -48,9 +48,11 @@ public class GUI extends JFrame{
     /** METHODS --------------------------------------------------------------------------------------------------- **/
     // Processes and routes server responses
     public void processServerResponse(String message) {
-        // Login responses
+        // Login responses (LoginPage)
         if(message.equals("LOGIN_OK"))
         {
+            startPage.getTableList();
+            startPage.requestBalance();
             cardLayout.show(mainPanel, "start");
         }
         else if(message.equals("LOGIN_FAIL"))
@@ -67,7 +69,7 @@ public class GUI extends JFrame{
             JOptionPane.showMessageDialog(mainPanel, "Username already exists.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
         }
 
-        // Table responses
+        // Table & Account Balance responses (StartPage)
         else if(message.startsWith("TABLELIST |"))
         {
             startPage.tableList(message);
@@ -76,12 +78,27 @@ public class GUI extends JFrame{
         {
             cardLayout.show(mainPanel, "game");
         }
+        else if (message.equals("LEFT_TABLE"))
+        {
+            startPage.getTableList();
+            startPage.requestBalance();
+            cardLayout.show(mainPanel, "start");
+        }
         else if (message.startsWith("JOIN_FAIL"))
         {
             JOptionPane.showMessageDialog(mainPanel, message.substring(10));
         }
+        else if(message.startsWith("BALANCE "))
+        {
+            String[] amount = message.split(" ");
+            startPage.updateBalanceLabel(amount[1]);
+        }
+        else if(message.equals("INSUFFICIENT_FUNDS"))
+        {
+            gamePage.checkSufficientFunds();
+        }
 
-        // Game responses
+        // Game responses (GamePage)
         else if(message.equals("DRAW"))
         {
             gamePage.setResultLabelText("Draw!", Color.LIGHT_GRAY);
@@ -119,7 +136,7 @@ public class GUI extends JFrame{
 
     // Helper method to keep processServerResponse clean
     private void resetTimer() {
-        Timer timer = new Timer(1000, e -> {
+        Timer timer = new Timer(2000, e -> {
             gamePage.resetTable();
         });
         timer.setRepeats(false);

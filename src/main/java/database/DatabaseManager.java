@@ -68,23 +68,26 @@ public class DatabaseManager {
     }
 
     // Get balance
-    public static double getBalance(Player p)
+    public static int getBalance(String p)
     {
         String sql = "SELECT balance FROM users WHERE username = ?";
         double balance = 0;
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement sqlScript = conn.prepareStatement(sql)) {
 
-            sqlScript.setString(1, p.getUsername());
+            sqlScript.setString(1, p);
             ResultSet sqlReturn = sqlScript.executeQuery();
-            balance = sqlReturn.getInt("balance");
 
-            return balance;
+            if (sqlReturn.next()) {
+                balance = sqlReturn.getDouble("balance");
+            }
+
+            return (int)balance;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return balance;
+        return (int)balance;
     }
 
     // Update a.java user's balance
