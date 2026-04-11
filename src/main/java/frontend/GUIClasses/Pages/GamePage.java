@@ -11,6 +11,7 @@ import static java.lang.Thread.sleep;
 
 public class GamePage {
     private final Client client;
+    private final CustomFont customFont = new CustomFont();
 
     // Main player (this client) and dealer
     private JPanel playerCardsPanel;
@@ -29,7 +30,7 @@ public class GamePage {
     private JLabel player3TotalLabel;
     private JLabel player3NameLabel;
 
-    // client display
+    // Client display
     private JLabel balanceLabel;
     private JLabel resultLabel;
     private JButton hitButton;
@@ -146,7 +147,7 @@ public class GamePage {
 
         player2TotalLabel = createStyledLabel("");
         player2NameLabel = createStyledLabel("");
-        player2NameLabel.setFont(CustomFont.newFont(22));
+        player2NameLabel.setFont(customFont.regular(22));
         player2NameLabel.setForeground(Color.WHITE);
         player2NameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         player2TotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -173,7 +174,7 @@ public class GamePage {
 
         player3TotalLabel = createStyledLabel("");
         player3NameLabel = createStyledLabel("");
-        player3NameLabel.setFont(CustomFont.newFont(22));
+        player3NameLabel.setFont(customFont.regular(22));
         player3NameLabel.setForeground(Color.WHITE);
         player3NameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         player3TotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -190,7 +191,7 @@ public class GamePage {
 
         // Add balance to bottom of Right Panel
         balanceLabel = new JLabel("Balance: $0");
-        balanceLabel.setFont(CustomFont.newFont(24));
+        balanceLabel.setFont(customFont.regular(24));
         balanceLabel.setForeground(Color.WHITE);
         balanceLabel.setOpaque(true);
         balanceLabel.setBackground(new Color(0, 0, 0, 140));
@@ -206,12 +207,12 @@ public class GamePage {
         buttonPanel.setOpaque(false);
 
         hitButton = new JButton("Hit");
-        hitButton.setFont(CustomFont.newFont(25f));
+        hitButton.setFont(customFont.regular(25f));
         hitButton.setPreferredSize(new Dimension(150, 45));
         hitButton.addActionListener(e -> client.sendMessage("hit"));
 
         standButton = new JButton("Stand");
-        standButton.setFont(CustomFont.newFont(25f));
+        standButton.setFont(customFont.regular(25f));
         standButton.setPreferredSize(new Dimension(150, 45));
         standButton.addActionListener(e -> {
             client.sendMessage("stay");
@@ -345,7 +346,7 @@ public class GamePage {
     // styling
     private JLabel createStyledLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(CustomFont.newFont(24));
+        label.setFont(customFont.regular(24));
         label.setForeground(Color.WHITE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setOpaque(true);

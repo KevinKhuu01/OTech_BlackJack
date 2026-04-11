@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import static java.util.Collections.shuffle;
 
-    public class GameLogic {
+    public class Game {
 
         // Fields
         private Map<String, Player> playerList;
@@ -15,7 +15,7 @@ import static java.util.Collections.shuffle;
         private Player dealer;
 
         // Constructor
-        public GameLogic()
+        public Game()
         {
             playerList = new HashMap<>();
             betList = new HashMap<>();

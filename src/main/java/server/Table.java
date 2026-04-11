@@ -1,6 +1,6 @@
 package server;
 
-import backend.GameLogic;
+import backend.Game;
 import backend.Player;
 
 import java.util.ArrayList;
@@ -12,23 +12,23 @@ import java.util.List;
  */
 public class Table {
 
-    public static final int MAX_PLAYERS = 4;
+    public static final int MAX_PLAYERS = 3;
 
     private final int tableId;
-    private final GameLogic gameLogic;
+    private final Game game;
     private final List<ClientConnectionHandler> clients = new ArrayList<>();
 
     public Table(int tableId) {
         this.tableId = tableId;
-        this.gameLogic = new GameLogic(); // isolated game state per table
+        this.game = new Game(); // isolated game state per table
     }
 
     public int getTableId() {
         return tableId;
     }
 
-    public GameLogic getGameLogic() {
-        return gameLogic;
+    public Game getGameLogic() {
+        return game;
     }
 
     /** Returns true if this table can accept another player. */
@@ -43,7 +43,7 @@ public class Table {
     /** Add a client/player to this table and register the Player in GameLogic. */
     public void addClient(ClientConnectionHandler handler, Player player) {
         clients.add(handler);
-        gameLogic.addPlayer(player);
+        game.addPlayer(player);
     }
 
     /** Remove a client from the table (on disconnect). */
@@ -74,7 +74,7 @@ public class Table {
     public void updateAllClients() {
         for (ClientConnectionHandler c : clients) {
             if (c.getPlayerName() == null) continue;
-            c.sendMessage(gameLogic.getGameState(c.getPlayerName()));
+            c.sendMessage(game.getGameState(c.getPlayerName()));
         }
     }
 

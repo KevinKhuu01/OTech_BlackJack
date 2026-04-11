@@ -1,6 +1,6 @@
 package server;
 
-import backend.GameLogic;
+import backend.Game;
 import backend.LoginHandler;
 import backend.Player;
 
@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientConnectionHandler implements Runnable {
     private Socket clientSocket;
@@ -118,7 +115,7 @@ public class ClientConnectionHandler implements Runnable {
             playerName = username;
 
             table = TableManager.assignToTable(this);
-            GameLogic g = table.getGameLogic();
+            Game g = table.getGameLogic();
 
             Player p = new Player(playerName);
             if(p == null)
@@ -172,7 +169,7 @@ public class ClientConnectionHandler implements Runnable {
             return;
         }
 
-        GameLogic g = table.getGameLogic();
+        Game g = table.getGameLogic();
         boolean roundOver = g.isRoundOver();
 
         if (roundOver) {
@@ -192,7 +189,7 @@ public class ClientConnectionHandler implements Runnable {
             return;
         }
 
-        GameLogic g = table.getGameLogic();
+        Game g = table.getGameLogic();
         Player player = g.getPlayer(playerName);
         g.hit(player);
 
@@ -223,7 +220,7 @@ public class ClientConnectionHandler implements Runnable {
             return;
         }
 
-        GameLogic g = table.getGameLogic();
+        Game g = table.getGameLogic();
         Player player = g.getPlayer(playerName);
         g.stay(player);
 
@@ -254,7 +251,7 @@ public class ClientConnectionHandler implements Runnable {
                 return;
             }
 
-            GameLogic g = table.getGameLogic();
+            Game g = table.getGameLogic();
             if (g.isRoundOver()) {
                 g.startGame();
                 table.broadcast("A new round has started at Table #" + table.getTableId() + "!");

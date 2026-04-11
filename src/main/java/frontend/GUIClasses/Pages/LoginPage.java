@@ -11,6 +11,7 @@ public class LoginPage {
     private final Client client;
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private final CustomFont customFont = new CustomFont();
 
     public LoginPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
         this.client = client;
@@ -19,49 +20,70 @@ public class LoginPage {
     }
 
     public JPanel createLoginMenu() {
-        BackgroundPanel backgroundPanel = new BackgroundPanel("Table Start.png"); // Reusing your start background
-        backgroundPanel.setLayout(new GridBagLayout());
+        JPanel backgroundPanel = new JPanel(new BorderLayout());
+        JPanel wallpaper = new BackgroundPanel("wallpaper.png");
+        wallpaper.setPreferredSize(new Dimension(900,800));
 
         JPanel menuPanel = new JPanel();
-        menuPanel.setPreferredSize(new Dimension(400, 350));
+        menuPanel.setPreferredSize(new Dimension(300, 800));
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(new Color(0, 0, 0, 170));
+//        menuPanel.setBackground(new Color(245, 245, 245, 1));
 
         JLabel titleLabel = new JLabel("Login");
-        titleLabel.setFont(CustomFont.newFont(30));
-        titleLabel.setForeground(new Color(212, 175, 55));
+        titleLabel.setFont(customFont.bold(50));
+        titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Username Field
+        Dimension fieldSize = new Dimension(250, 40);
+
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         userPanel.setOpaque(false);
+
         JLabel userLabel = new JLabel("Username: ");
-        userLabel.setForeground(Color.WHITE);
-        userLabel.setFont(CustomFont.newFont(20));
-        JTextField userField = new JTextField(15);
+        userLabel.setFont(customFont.regular(20));
+        userLabel.setForeground(new Color(0, 60, 113));
+
+        JTextField userField = new JTextField(16);
+        userField.setPreferredSize(fieldSize);
+        userField.setMaximumSize(fieldSize);
+        userField.setMinimumSize(fieldSize);
+        userField.setFont(customFont.regular(18));
         userPanel.add(userLabel);
         userPanel.add(userField);
 
         // Password Field
         JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         passPanel.setOpaque(false);
+
         JLabel passLabel = new JLabel("Password: ");
-        passLabel.setForeground(Color.WHITE);
-        passLabel.setFont(CustomFont.newFont(20));
-        JPasswordField passField = new JPasswordField(15);
+        passLabel.setFont(customFont.regular(20));
+        passLabel.setForeground(new Color(0, 60, 113));
+
+        JPasswordField passField = new JPasswordField(16);
+        passField.setPreferredSize(fieldSize);
+        passField.setMaximumSize(fieldSize);
+        passField.setMinimumSize(fieldSize);
+        passField.setFont(new Font("SansSerif", Font.PLAIN, 16));
         passPanel.add(passLabel);
         passPanel.add(passField);
 
         // Buttons
+        Dimension buttonSize = new Dimension(250, 40);
+
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(CustomFont.newFont(20));
+        loginButton.setFont(customFont.regular(25));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginButton.setMaximumSize(new Dimension(200, 40));
+        loginButton.setPreferredSize(buttonSize);
+        loginButton.setMaximumSize(buttonSize);
+        loginButton.setMinimumSize(buttonSize);
 
         JButton createAccButton = new JButton("Create Account");
-        createAccButton.setFont(CustomFont.newFont(16));
+        createAccButton.setFont(customFont.regular(20));
         createAccButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        createAccButton.setMaximumSize(new Dimension(200, 40));
+        createAccButton.setPreferredSize(buttonSize);
+        createAccButton.setMaximumSize(buttonSize);
+        createAccButton.setMinimumSize(buttonSize);
 
         // Actions
         loginButton.addActionListener(e -> {
@@ -80,16 +102,18 @@ public class LoginPage {
         // Assembly
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
-        menuPanel.add(Box.createVerticalStrut(20));
+        menuPanel.add(Box.createVerticalStrut(60));
         menuPanel.add(userPanel);
+        menuPanel.add(Box.createVerticalStrut(-100));
         menuPanel.add(passPanel);
         menuPanel.add(Box.createVerticalStrut(20));
         menuPanel.add(loginButton);
-        menuPanel.add(Box.createVerticalStrut(10));
+        menuPanel.add(Box.createVerticalStrut(40));
         menuPanel.add(createAccButton);
         menuPanel.add(Box.createVerticalGlue());
 
-        backgroundPanel.add(menuPanel);
+        backgroundPanel.add(wallpaper, BorderLayout.WEST);
+        backgroundPanel.add(menuPanel, BorderLayout.EAST);
         return backgroundPanel;
     }
 }

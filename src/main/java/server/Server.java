@@ -1,12 +1,10 @@
 package server;
 
-import backend.GameLogic;
 import database.InitializeDB;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Server {
     private ServerSocket serverSocket;

@@ -11,6 +11,7 @@ public class CreateAccountPage {
     private final Client client;
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private final CustomFont customFont = new CustomFont();
 
     public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
         this.client = client;
@@ -28,7 +29,7 @@ public class CreateAccountPage {
         menuPanel.setBackground(new Color(0, 0, 0, 170));
 
         JLabel titleLabel = new JLabel("Register");
-        titleLabel.setFont(CustomFont.newFont(30));
+        titleLabel.setFont(customFont.bold(30));
         titleLabel.setForeground(new Color(212, 175, 55));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -37,7 +38,7 @@ public class CreateAccountPage {
         userPanel.setOpaque(false);
         JLabel userLabel = new JLabel("New User: ");
         userLabel.setForeground(Color.WHITE);
-        userLabel.setFont(CustomFont.newFont(20));
+        userLabel.setFont(customFont.regular(20));
         JTextField userField = new JTextField(15);
         userPanel.add(userLabel);
         userPanel.add(userField);
@@ -47,19 +48,19 @@ public class CreateAccountPage {
         passPanel.setOpaque(false);
         JLabel passLabel = new JLabel("New Pass: ");
         passLabel.setForeground(Color.WHITE);
-        passLabel.setFont(CustomFont.newFont(20));
+        passLabel.setFont(customFont.regular(20));
         JPasswordField passField = new JPasswordField(15);
         passPanel.add(passLabel);
         passPanel.add(passField);
 
         // Buttons
         JButton registerButton = new JButton("Submit");
-        registerButton.setFont(CustomFont.newFont(20));
+        registerButton.setFont(customFont.bold(20));
         registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         registerButton.setMaximumSize(new Dimension(200, 40));
 
         JButton backButton = new JButton("Back to Login");
-        backButton.setFont(CustomFont.newFont(16));
+        backButton.setFont(customFont.bold(16));
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setMaximumSize(new Dimension(200, 40));
 
