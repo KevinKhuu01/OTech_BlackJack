@@ -8,17 +8,19 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CreateAccountPage {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private final Client client;
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
     private final CustomFont customFont = new CustomFont();
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
         this.client = client;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
     }
-
+    /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
     public JPanel createAccountMenu() {
         BackgroundPanel backgroundPanel = new BackgroundPanel("Table Start.png");
         backgroundPanel.setLayout(new GridBagLayout());

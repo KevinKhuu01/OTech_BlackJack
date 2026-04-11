@@ -8,26 +8,29 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoginPage {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private final Client client;
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
     private final CustomFont customFont = new CustomFont();
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public LoginPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
         this.client = client;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
     }
 
+    /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
     public JPanel createLoginMenu() {
         JPanel backgroundPanel = new JPanel(new BorderLayout());
         JPanel wallpaper = new BackgroundPanel("wallpaper.png");
         wallpaper.setPreferredSize(new Dimension(900,800));
 
-        JPanel menuPanel = new JPanel();
+        JPanel menuPanel = new BackgroundPanel("menuWallpaper.png");
         menuPanel.setPreferredSize(new Dimension(300, 800));
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-//        menuPanel.setBackground(new Color(245, 245, 245, 1));
+        menuPanel.setBackground(new Color(245, 245, 245, 1));
 
         JLabel titleLabel = new JLabel("Login");
         titleLabel.setFont(customFont.bold(50));

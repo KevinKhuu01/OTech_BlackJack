@@ -2,6 +2,7 @@ package backend;
 
 import database.DatabaseManager;
 
+/** HANDLES LOGIN THROUGH DATABASE CONNECTION --------------------------------------------------------------------------------------------------- **/
 public class LoginHandler {
     // Create a.java new player / user
     public LoginHandler(){}

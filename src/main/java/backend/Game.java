@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.*;
 import static java.util.Collections.shuffle;
 
-    public class Game {
+/**
+ * Game logic object for each table. Handles all blackjack rules and logical components
+ */
 
-        // Fields
+    public class Game {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
         private Map<String, Player> playerList;
         private HashMap<Player, Integer> betList;
         private HashMap<Player, List<Card>> playerHands;
@@ -14,7 +17,7 @@ import static java.util.Collections.shuffle;
         private Stack<Card> deck = new Stack<Card>();
         private Player dealer;
 
-        // Constructor
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
         public Game()
         {
             playerList = new HashMap<>();
@@ -25,9 +28,8 @@ import static java.util.Collections.shuffle;
             playerList.put("dealer", dealer);
         }
 
-        /** Methods **/
+    /** GETTERS AND UTILITY (HELPER) METHODS --------------------------------------------------------------------------------------------------- **/
 
-        // Player Management ------------------------------------
         public int getPlayerCount()
         {
             return playerList.size() -1;
@@ -41,8 +43,10 @@ import static java.util.Collections.shuffle;
             return playerList.get(name);
         }
 
-
-        // Hand Helper Methods ------------------------------------
+        public void removePlayer(String playerName)
+        {
+            playerList.remove(playerName);
+        }
 
         public List<Card> getHand(Player p) {
             return playerHands.get(p);
@@ -74,7 +78,7 @@ import static java.util.Collections.shuffle;
         }
 
 
-        // Game Logical Component Methods
+    /** HELPER METHOD FOR PLAYER JOINING OCCUPIED TABLE ------------------------------------------------------------------ **/
 
         public void dealNewPlayer(Player p)
         {
@@ -89,7 +93,7 @@ import static java.util.Collections.shuffle;
             hit(p);
         }
 
-
+    /** HIDE DEALER CARD FEATURE --------------------------------------------------------------------------------------------------- **/
         private String dealerHandToCodes(boolean hideFirstCard){
             List<Card> hand = getHand(dealer);
 
@@ -133,7 +137,8 @@ import static java.util.Collections.shuffle;
             }
             return total;
        }
-        // Starts game: Ensures there are players in the game, create a new deck, deals 2 cards to each player
+
+    /** GAME INITIALIZATION --------------------------------------------------------------------------------------------------- **/
         public void startGame()
         {
             try
@@ -163,7 +168,11 @@ import static java.util.Collections.shuffle;
                 {
                     hit(p);
                     hit(p);
-                    checkWin(p);
+                }
+                for (Player p : playerList.values()) {
+                    if (getHandTotal(p) == 21) {
+                        p.setStatus(Player.STATUS.STAY); // Or whatever status you use for a finished turn
+                    }
                 }
             }
             catch(IOException e)
@@ -186,6 +195,7 @@ import static java.util.Collections.shuffle;
             shuffle(deck);
         }
 
+    /** GAME LOGIC --------------------------------------------------------------------------------------------------- **/
         // takes card off top of deck and gives to player
         public void hit(Player p)
         {
@@ -309,7 +319,7 @@ import static java.util.Collections.shuffle;
             p.withdrawBalance(bet);
         }
 
-        // Connection handling ------------------------------------------------------------------
+    /** GAME STATUS AND GAME UPDATE METHODS--------------------------------------------------------------------------- **/
 
         public String getGameState(String name) {
             Player realDealer = playerList.get("dealer");
@@ -349,12 +359,6 @@ import static java.util.Collections.shuffle;
 
             }
             return s.toString();
-//            return "UPDATE:"
-//                    + getVisibleDealerTotal(hideDealerCard) + ":" + dealerHandToCodes(hideDealerCard)
-//                    + "|"
-//                    + getHandTotal(player) + ":" + handToCodes(player)
-//                    + "|"
-//                    + player.getBalance();
         }
 
         public boolean isRoundOver() {
@@ -387,6 +391,7 @@ import static java.util.Collections.shuffle;
             return "PLAYING";
         }
 
+    /** CARD ENCODING AND DECODING MESSAGES --------------------------------------------------------------------------------------------------- **/
         private String handToCodes(Player p) {
             List<Card> hand = getHand(p);
             if (hand == null || hand.isEmpty()) {

@@ -9,7 +9,13 @@ import java.awt.*;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Creates, maintains, and updates the game page during the start of the game and interactions during
+ */
+
 public class GamePage {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
+    // Utilities
     private final Client client;
     private final CustomFont customFont = new CustomFont();
 
@@ -19,7 +25,7 @@ public class GamePage {
     private JPanel dealerCardsPanel;
     private JLabel dealerTotalLabel;
 
-    // Multiplayer additions
+    // Multiplayer functionality
     private JPanel player2Panel;
     private JPanel player2Cards;
     private JLabel player2TotalLabel;
@@ -36,6 +42,13 @@ public class GamePage {
     private JButton hitButton;
     private JButton standButton;
 
+    /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
+    public GamePage(Client client)
+    {
+        this.client = client;
+    }
+
+    /** HELPER METHODS --------------------------------------------------------------------------------------------- **/
     // Win, Loss, or Draw notification
     public void setResultLabelText(String text, Color color)
     {
@@ -60,19 +73,12 @@ public class GamePage {
     {
         this.balanceLabel.setText("Balance: $" + text);
         balanceLabel.revalidate();
-
-//        SwingUtilities.invokeLater(() -> {
-//            Component ghost = ((BorderLayout)balanceLabel.getParent().getParent().getLayout())
-//                    .getLayoutComponent(BorderLayout.WEST);
-//            if (ghost != null) {
-//                ghost.setPreferredSize(new Dimension(balanceLabel.getParent().getPreferredSize().width, 0));
-//                ghost.getParent().revalidate();
-//            }
-//        });
     }
 
-    public GamePage(Client client) {
-        this.client = client;
+    public void disableButtons()
+    {
+        hitButton.setEnabled(false);
+        standButton.setEnabled(false);
     }
 
     // Resets cards and card totals on the table for next round
@@ -98,11 +104,31 @@ public class GamePage {
         standButton.setEnabled(true);
     }
 
+    // Creates card visual through getting appropriate card file.
+    private JLabel createCardLabel(String card, int width, int height)
+    {
+        card = card.trim();
+        String fileName = "CardImages/" + card + ".png";
+        java.net.URL imageUrl = getClass().getClassLoader().getResource(fileName);
+
+        if (imageUrl == null)
+        {
+            JLabel fallback = new JLabel(fileName);
+            fallback.setForeground(Color.WHITE);
+            return fallback;
+        }
+
+        ImageIcon icon = new ImageIcon(imageUrl);
+        Image scaled = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new JLabel(new ImageIcon(scaled));
+    }
+
+    /** BUILD PAGE METHODS ----------------------------------------------------------------------------------------- **/
     public JPanel createGamePanel() {
         BackgroundPanel backgroundPanel = new BackgroundPanel("Table.png");
         backgroundPanel.setLayout(new BorderLayout());
 
-        // ------------------------- Dealer and Main Player -------------------------
+        // MAIN PANEL (CLIENT AND DEALER) -----------------------------------------------------------------------------
         JPanel gamePanel = new JPanel();
         gamePanel.setOpaque(false);
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
@@ -128,14 +154,14 @@ public class GamePage {
         gamePanel.add(dealerTotalLabel);
         gamePanel.add(Box.createVerticalStrut(40));
         gamePanel.add(resultLabel);
-        gamePanel.add(Box.createVerticalStrut(40));
+        gamePanel.add(Box.createVerticalStrut(100));
         gamePanel.add(playerCardsPanel);
         gamePanel.add(Box.createVerticalStrut(0));
         gamePanel.add(playerTotalLabel);
         gamePanel.add(Box.createVerticalStrut(40));
         gamePanel.add(Box.createVerticalGlue());
 
-        // Left panel - player 2
+        // WEST PANEL (PLAYER 2 IF CONNECTED) ------------------------------------------------------------------------
         player2Panel = new JPanel();
         player2Panel.setOpaque(false);
         player2Panel.setPreferredSize(new Dimension(280, 100));
@@ -162,7 +188,7 @@ public class GamePage {
         player2Panel.add(Box.createVerticalStrut(60));
         player2Panel.add(Box.createVerticalGlue());
 
-        // Right panel - Player 3
+        // EAST PANEL (PLAYER 3 IF CONNECTED) -------------------------------------------------------------------------
         player3Panel = new JPanel();
         player3Panel.setOpaque(false);
         player3Panel.setPreferredSize(new Dimension(280, 300));
@@ -189,31 +215,39 @@ public class GamePage {
         player3Panel.add(Box.createVerticalStrut(60));
         player3Panel.add(Box.createVerticalGlue());
 
-        // Add balance to bottom of Right Panel
+        // Hide player 2 and 3 components until they have connected
+        player2NameLabel.setVisible(false);
+        player2TotalLabel.setVisible(false);
+        player3NameLabel.setVisible(false);
+        player3TotalLabel.setVisible(false);
+
+
+
+        // SOUTH PANEL (BUTTONS & UTILITIES) ----------------------------------------------------------------------------------------------
         balanceLabel = new JLabel("Balance: $0");
         balanceLabel.setFont(customFont.regular(24));
         balanceLabel.setForeground(Color.WHITE);
         balanceLabel.setOpaque(true);
         balanceLabel.setBackground(new Color(0, 0, 0, 140));
         balanceLabel.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
+
         JPanel balanceWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         balanceWrapper.setOpaque(false);
-        balanceWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 25));
         balanceWrapper.add(balanceLabel);
-        player3Panel.add(balanceWrapper, BorderLayout.SOUTH);
 
-        // --- SOUTH PANEL (Buttons) ---
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 20));
 
         hitButton = new JButton("Hit");
-        hitButton.setFont(customFont.regular(25f));
-        hitButton.setPreferredSize(new Dimension(150, 45));
+        hitButton.setFont(customFont.bold(25f));
+        hitButton.setPreferredSize(new Dimension(150, 40));
         hitButton.addActionListener(e -> client.sendMessage("hit"));
 
         standButton = new JButton("Stand");
-        standButton.setFont(customFont.regular(25f));
-        standButton.setPreferredSize(new Dimension(150, 45));
+        standButton.setFont(customFont.bold(25f));
+        standButton.setPreferredSize(new Dimension(150, 40));
         standButton.addActionListener(e -> {
             client.sendMessage("stay");
             disableButtons();
@@ -221,127 +255,16 @@ public class GamePage {
 
         buttonPanel.add(hitButton);
         buttonPanel.add(standButton);
+        buttonPanel.add(balanceWrapper);
 
+        // Putting components together --------------------------------------------------------------------------------
         backgroundPanel.add(player2Panel, BorderLayout.WEST);
         backgroundPanel.add(gamePanel, BorderLayout.CENTER);
         backgroundPanel.add(player3Panel, BorderLayout.EAST);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
-
         return backgroundPanel;
     }
 
-//    public JPanel createGamePanel() {
-//        // Table.png image generated by Gemini
-//        BackgroundPanel backgroundPanel = new BackgroundPanel("Table.png");
-//        backgroundPanel.setLayout(new BorderLayout());
-//
-//        JPanel gamePanel = new JPanel();
-//        gamePanel.setOpaque(false);
-//        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
-//
-//        resultLabel = new JLabel(" ");
-//        resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//
-//        dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -120, 0));
-//        dealerCardsPanel.setOpaque(false);
-//
-//        dealerTotalLabel = new JLabel();
-//        dealerTotalLabel.setFont(CustomFont.newFont(28));
-//        dealerTotalLabel.setForeground(Color.WHITE);
-//        dealerTotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        dealerTotalLabel.setOpaque(true);
-//        dealerTotalLabel.setBackground(new Color(0, 0, 0, 140));
-//        dealerTotalLabel.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
-//
-//        playerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -120, 0));
-//        playerCardsPanel.setOpaque(false);
-//        playerCardsPanel.add(new JLabel("Player"));
-//
-//        playerTotalLabel = new JLabel();
-//        playerTotalLabel.setFont(CustomFont.newFont(28));
-//        playerTotalLabel.setForeground(Color.WHITE);
-//        playerTotalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        playerTotalLabel.setOpaque(true);
-//        playerTotalLabel.setBackground(new Color(0, 0, 0, 140));
-//        playerTotalLabel.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
-//
-//        balanceLabel = new JLabel("Balance: $0");
-//        balanceLabel.setFont(CustomFont.newFont(28));
-//        balanceLabel.setForeground(Color.WHITE);
-//        balanceLabel.setOpaque(true);
-//        balanceLabel.setBackground(new Color(0, 0, 0, 140));
-//        balanceLabel.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
-//
-//        JPanel balanceWrapper = new JPanel(new BorderLayout());
-//        balanceWrapper.setOpaque(false);
-//        balanceWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 25));
-//        balanceWrapper.setPreferredSize(null);
-//        balanceWrapper.add(balanceLabel, BorderLayout.SOUTH);
-//
-//        // acts as counterweight to balancelabel, centering the cards
-//        ghostPanel = new JPanel();
-//        ghostPanel.setOpaque(false);
-//        SwingUtilities.invokeLater(() -> { // adjust counterweight panel based on balancelabel size
-//            int w = balanceWrapper.getPreferredSize().width;
-//            ghostPanel.setPreferredSize(new Dimension(w, 0));
-//            ghostPanel.revalidate();
-//        });
-//
-//        gamePanel.add(Box.createVerticalGlue());
-//        gamePanel.add(Box.createVerticalStrut(20));
-//        gamePanel.add(dealerCardsPanel);
-//        gamePanel.add(Box.createVerticalStrut(4));
-//        gamePanel.add(dealerTotalLabel);
-//
-//        gamePanel.add(Box.createVerticalStrut(40));
-//        gamePanel.add(resultLabel);
-//        gamePanel.add(Box.createVerticalStrut(40));
-//
-//        gamePanel.add(playerCardsPanel);
-//        gamePanel.add(Box.createVerticalStrut(0));
-//        gamePanel.add(playerTotalLabel);
-//        gamePanel.add(Box.createVerticalStrut(60));
-//        gamePanel.add(Box.createVerticalGlue());
-//
-//        backgroundPanel.add(balanceWrapper, BorderLayout.EAST);
-//        JPanel buttonPanel = new JPanel();
-//        buttonPanel.setOpaque(false);
-//
-//        hitButton = new JButton("Hit");
-//        standButton = new JButton("Stand");
-//
-//        hitButton.setFont(CustomFont.newFont(25f));
-//        standButton.setFont(CustomFont.newFont(25f));
-//
-//        hitButton.setMaximumSize(new Dimension(220, 45));
-//        standButton.setMaximumSize(new Dimension(220, 45));
-//
-//        hitButton.addActionListener(e -> {
-//            client.sendMessage("hit");
-//        });
-//
-//        standButton.addActionListener(e -> {
-//            client.sendMessage("stay");
-//            disableButtons();
-//        });
-//
-//        buttonPanel.add(hitButton);
-//        buttonPanel.add(standButton);
-//
-//        JScrollPane scrollPane = new JScrollPane(gamePanel);
-//        scrollPane.setBorder(null);
-//        scrollPane.setOpaque(false);
-//        scrollPane.getViewport().setOpaque(false);
-//        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-//
-//        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
-//        backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
-//        backgroundPanel.add(balanceWrapper, BorderLayout.EAST);
-//        backgroundPanel.add(ghostPanel, BorderLayout.WEST);
-//
-//        return backgroundPanel;
-//    }
 
     // styling
     private JLabel createStyledLabel(String text) {
@@ -362,7 +285,6 @@ public class GamePage {
             // Expected format: "DealerTotal:DCard1,DCard2|PlayerTotal:PCard1,PCard2"
             String[] serverData = data.split("\\|");
 
-
             String[] dealerData = serverData[0].split(":");
             dealerTotalLabel.setText("Total: " + dealerData[0]);
             dealerCardsPanel.removeAll();
@@ -371,7 +293,6 @@ public class GamePage {
                     dealerCardsPanel.add(createCardLabel(cardStr, 160, 140));
                 }
             }
-
 
             String[] playerData = serverData[1].split(":");
             playerTotalLabel.setText("Total: " + playerData[0]);
@@ -388,6 +309,8 @@ public class GamePage {
             player2Cards.removeAll();
             if (serverData.length >= 6)
             {
+                player2NameLabel.setVisible(true);
+                player2TotalLabel.setVisible(true);
                 player2Panel.setVisible(true);
                 player2NameLabel.setText(serverData[3]);
                 String[] player2Data = serverData[4].split(":");
@@ -402,13 +325,15 @@ public class GamePage {
             }
             else
             {
-                player2NameLabel.setText(" ");
-                player2TotalLabel.setText(" ");
+                player2NameLabel.setVisible(false);
+                player2TotalLabel.setVisible(false);
             }
 
             // Player 3 - Right side
             player3Cards.removeAll();
             if (serverData.length >= 9) {
+                player3NameLabel.setVisible(true);
+                player3TotalLabel.setVisible(true);
                 player3Panel.setVisible(true);
                 player3NameLabel.setText((serverData[6]));
                 String[] player3Data = serverData[7].split(":");
@@ -419,8 +344,8 @@ public class GamePage {
                     }
                 }
             } else {
-                player3NameLabel.setText(" ");
-                player3TotalLabel.setText(" ");
+                player3NameLabel.setVisible(false);
+                player3TotalLabel.setVisible(false);
             }
 
             dealerCardsPanel.revalidate();
@@ -435,30 +360,5 @@ public class GamePage {
         } catch (Exception e) {
             System.err.println("Error parsing update string from server: " + data);
         }
-    }
-
-    // Creates card visual through getting appropriate card file.
-    private JLabel createCardLabel(String card, int width, int height)
-    {
-        card = card.trim();
-        String fileName = "CardImages/" + card + ".png";
-        java.net.URL imageUrl = getClass().getClassLoader().getResource(fileName);
-
-        if (imageUrl == null)
-        {
-            JLabel fallback = new JLabel(fileName);
-            fallback.setForeground(Color.WHITE);
-            return fallback;
-        }
-
-        ImageIcon icon = new ImageIcon(imageUrl);
-        Image scaled = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        return new JLabel(new ImageIcon(scaled));
-    }
-
-    public void disableButtons()
-    {
-        hitButton.setEnabled(false);
-        standButton.setEnabled(false);
     }
 }

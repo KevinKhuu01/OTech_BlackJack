@@ -6,14 +6,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import static java.lang.Thread.sleep;
 
 public class Client {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
     private GUI gui;
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public Client(String host, int port)
     {
         try
@@ -34,6 +35,7 @@ public class Client {
         }
     }
 
+    /** CONNECTION HANDLER (RECEIVE MESSAGE FROM SERVER) --------------------------------------------------------------------------------------------------- **/
     public void receiveMessage() {
         if (socket == null || input == null || output == null) {
             System.out.println("Client is not connected to the server.");
@@ -60,6 +62,7 @@ public class Client {
         readThread.start();
     }
 
+    /** METHODS --------------------------------------------------------------------------------------------------- **/
     public void sendMessage(String message)
     {
         output.println(message);

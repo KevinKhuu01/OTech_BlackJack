@@ -3,19 +3,20 @@ package backend;
 import database.DatabaseManager;
 
 public class Player {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private final String username;
     public enum STATUS { WIN, DRAW, LOST, STAY, PLAYING };
     private STATUS status;
     private double balance;
 
-    // Constructor
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public Player(String name)
     {
         this.username = name;
         this.status = STATUS.PLAYING;
     }
 
-    // Getters and setters
+    /** GETTER AND SETTER METHODS --------------------------------------------------------------------------------------------------- **/
     public String getUsername() {
         return this.username;
     }

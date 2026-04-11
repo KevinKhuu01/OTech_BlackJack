@@ -1,23 +1,30 @@
 package backend;
 
+/**
+ * Card object - helper class
+ */
+
 public class Card {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     public enum Suit { CLUBS, DIAMONDS, HEARTS, SPADES }
     public enum Face { TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE }
 
     private final Face face;
     private final Suit suit;
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public Card(Face face, Suit suit) {
         this.face = face;
         this.suit = suit;
     }
 
+    /** METHODS (GETTERS) --------------------------------------------------------------------------------------------------- **/
     @Override
     public String toString() {
         return this.face + " of " + this.suit;
     }
 
-    // Getters can be added here if needed
+    // Getters
     public Face getFace() {
         return this.face;
     }
@@ -51,7 +58,7 @@ public class Card {
             case KING:
                 return 10;
             case ACE:
-                return 1; // placeholder since you're ignoring it
+                return 1;
             default:
                 throw new IllegalStateException("Unexpected value: " + face);
         }

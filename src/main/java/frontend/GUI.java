@@ -9,11 +9,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GUI extends JFrame{
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private final Client client;
     private GamePage gamePage;
+    private StartPage startPage;
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public GUI(Client client){
         this.client = client; // connect gui to client
 
@@ -28,7 +31,7 @@ public class GUI extends JFrame{
 
         LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel);
         CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel);
-        StartPage startPage = new StartPage(client, cardLayout, mainPanel);
+        startPage = new StartPage(client, cardLayout, mainPanel);
         gamePage = new GamePage(client);
 
         mainPanel.add(loginPage.createLoginMenu(), "login");
@@ -42,6 +45,7 @@ public class GUI extends JFrame{
         setVisible(true);
     }
 
+    /** METHODS --------------------------------------------------------------------------------------------------- **/
     // Processes and routes server responses
     public void processServerResponse(String message) {
         // Login responses
@@ -49,22 +53,36 @@ public class GUI extends JFrame{
         {
             cardLayout.show(mainPanel, "start");
         }
-        if(message.equals("LOGIN_FAIL"))
+        else if(message.equals("LOGIN_FAIL"))
         {
             JOptionPane.showMessageDialog(mainPanel, "Invalid username or password");
         }
-        if(message.equals("REGISTER_OK"))
+        else if(message.equals("REGISTER_OK"))
         {
             JOptionPane.showMessageDialog(mainPanel, "Registration complete. Welcome!");
             cardLayout.show(mainPanel, "login");
         }
-        if(message.equals("REGISTER_FAIL"))
+        else if(message.equals("REGISTER_FAIL"))
         {
             JOptionPane.showMessageDialog(mainPanel, "Username already exists.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
         }
-        
+
+        // Table responses
+        else if(message.startsWith("TABLELIST |"))
+        {
+            startPage.tableList(message);
+        }
+        else if (message.equals("JOINED_TABLE"))
+        {
+            cardLayout.show(mainPanel, "game");
+        }
+        else if (message.startsWith("JOIN_FAIL"))
+        {
+            JOptionPane.showMessageDialog(mainPanel, message.substring(10));
+        }
+
         // Game responses
-        if(message.equals("DRAW"))
+        else if(message.equals("DRAW"))
         {
             gamePage.setResultLabelText("Draw!", Color.LIGHT_GRAY);
             resetTimer();
