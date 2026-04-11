@@ -74,12 +74,15 @@ public class Table {
     public void updateAllClients() {
         for (ClientConnectionHandler c : clients) {
             if (c.getPlayerName() == null) continue;
-
             c.sendMessage(gameLogic.getGameState(c.getPlayerName()));
+        }
+    }
 
-            String result = gameLogic.getRoundResult(c.getPlayerName());
+    public void sendResultsToAll() {
+        for (ClientConnectionHandler client : clients) { // Assuming you have a list of clients
+            String result = getGameLogic().getRoundResult(client.getPlayerName());
             if (!result.equals("PLAYING")) {
-                c.sendMessage(result);
+                client.sendMessage(result);
             }
         }
     }

@@ -113,34 +113,37 @@ public class ClientConnectionHandler implements Runnable {
         {
             output.println("LOGIN_FAIL");
         }
-
-        playerName = username;
-
-        table = TableManager.assignToTable(this);
-        GameLogic g = table.getGameLogic();
-
-        Player p = new Player(playerName);
-        if(p == null)
-        {
-            p = new Player(playerName);
-        }
-
-        table.addClient(this, p);
-
-        output.println("LOGIN_OK");
-
-        table.broadcast("Table #" + table.getTableId() + ": " + playerName + " joined. (" + table.getPlayerCount() + "/" + Table.MAX_PLAYERS + " players)");
-
-        if(table.getPlayerCount() == 1)
-        {
-            g.startGame();
-        }
         else
         {
-            g.dealNewPlayer(g.getPlayer(playerName));
+            playerName = username;
+
+            table = TableManager.assignToTable(this);
+            GameLogic g = table.getGameLogic();
+
+            Player p = new Player(playerName);
+            if(p == null)
+            {
+                p = new Player(playerName);
+            }
+
+            table.addClient(this, p);
+
+            output.println("LOGIN_OK");
+
+            table.broadcast("Table #" + table.getTableId() + ": " + playerName + " joined. (" + table.getPlayerCount() + "/" + Table.MAX_PLAYERS + " players)");
+
+            if(table.getPlayerCount() == 1)
+            {
+                g.startGame();
+            }
+            else
+            {
+                g.dealNewPlayer(g.getPlayer(playerName));
+            }
+
+            table.updateAllClients();
         }
 
-        table.updateAllClients();
     }
 
     private void handleRegister(String message)
@@ -170,9 +173,9 @@ public class ClientConnectionHandler implements Runnable {
         }
 
         GameLogic g = table.getGameLogic();
-        String status = g.getRoundResult(playerName);
+        boolean roundOver = g.isRoundOver();
 
-        if (!status.equals("PLAYING")) {
+        if (roundOver) {
             g.startGame();
             table.broadcast("A new round has started at Table #" + table.getTableId() + "!");
             table.updateAllClients();
@@ -196,10 +199,19 @@ public class ClientConnectionHandler implements Runnable {
         table.broadcast(playerName + " chose HIT.");
         table.updateAllClients();
 
-        String result = g.getRoundResult(playerName);
-        if (!result.equals("PLAYING"))
+        if (player.getStatus() == Player.STATUS.LOST)
         {
-            output.println(result);
+            output.println("BUST");
+        }
+        else if (player.getStatus() == Player.STATUS.WIN)
+        {
+            output.println("BLACKJACK");
+        }
+
+        if(g.isRoundOver())
+        {
+            table.sendResultsToAll();
+            restartRound();
         }
     }
 
@@ -218,13 +230,38 @@ public class ClientConnectionHandler implements Runnable {
         table.broadcast(playerName + " chose STAY.");
         table.updateAllClients();
 
-        String result = g.getRoundResult(playerName);
-        if (!result.equals("PLAYING"))
+        if(g.isRoundOver())
         {
-            output.println(result);
+            table.sendResultsToAll();
+            restartRound();
         }
     }
 
+    private void restartRound() {
+        new Thread(() ->
+        {
+            try
+            {
+                Thread.sleep(1500);
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+                return;
+            }
+
+            if (table == null) {
+                return;
+            }
+
+            GameLogic g = table.getGameLogic();
+            if (g.isRoundOver()) {
+                g.startGame();
+                table.broadcast("A new round has started at Table #" + table.getTableId() + "!");
+                table.updateAllClients();
+            }
+        }).start();
+    }
 
     public void sendMessage(String message) {
         if(output != null)

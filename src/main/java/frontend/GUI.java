@@ -87,13 +87,22 @@ public class GUI extends JFrame{
         {
             gamePage.setBalanceLabel(message.substring(8).trim());
         }
+        else if(message.startsWith("BUST"))
+        {
+            gamePage.setResultLabelText("You Lose!", Color.RED);
+            gamePage.disableButtons();
+        }
+        else if(message.startsWith("BLACKJACK"))
+        {
+            gamePage.setResultLabelText("You Win!", Color.GREEN);
+            gamePage.disableButtons();
+        }
     }
 
     // Helper method to keep processServerResponse clean
     private void resetTimer() {
-        Timer timer = new Timer(2000, e -> {
+        Timer timer = new Timer(1000, e -> {
             gamePage.resetTable();
-            client.sendMessage("START");
         });
         timer.setRepeats(false);
         timer.start();

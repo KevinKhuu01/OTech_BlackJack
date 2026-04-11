@@ -7,12 +7,12 @@ import static java.util.Collections.shuffle;
     public class GameLogic {
 
         // Fields
-        private static Map<String, Player> playerList;
-        private static HashMap<Player, Integer> betList;
-        private static HashMap<Player, List<Card>> playerHands;
-        private static HashMap<Player, Integer> playerHandTotals;
-        private static Stack<Card> deck = new Stack<Card>();
-        private static Player dealer;
+        private Map<String, Player> playerList;
+        private HashMap<Player, Integer> betList;
+        private HashMap<Player, List<Card>> playerHands;
+        private HashMap<Player, Integer> playerHandTotals;
+        private Stack<Card> deck = new Stack<Card>();
+        private Player dealer;
 
         // Constructor
         public GameLogic()
@@ -91,7 +91,7 @@ import static java.util.Collections.shuffle;
 
 
         private String dealerHandToCodes(boolean hideFirstCard){
-            List<Card> hand =  getHand(dealer);
+            List<Card> hand = getHand(dealer);
 
             if (hand == null || hand.isEmpty()){
                 return "";
@@ -100,7 +100,7 @@ import static java.util.Collections.shuffle;
 
             for(int i = 0; i < hand.size(); i++){
                 if(i == 0 && hideFirstCard){
-                    sb.append("XX");
+                    sb.append("backside");
                 }
                 else {
                     sb.append(cardToCode(hand.get(i)));
@@ -114,7 +114,7 @@ import static java.util.Collections.shuffle;
 
 
        private int getVisibleDealerTotal(boolean hideFirstCard){
-            List<Card> hand =  getHand(dealer);
+            List<Card> hand = getHand(dealer);
 
             if(!hideFirstCard){
                 return getHandTotal(dealer);
@@ -163,6 +163,7 @@ import static java.util.Collections.shuffle;
                 {
                     hit(p);
                     hit(p);
+                    checkWin(p);
                 }
             }
             catch(IOException e)
@@ -172,7 +173,7 @@ import static java.util.Collections.shuffle;
         }
 
         // Generates new deck
-        private static void newDeck()
+        private void newDeck()
         {
             deck.clear();
             for(Card.Face face : Card.Face.values())
@@ -321,12 +322,50 @@ import static java.util.Collections.shuffle;
             boolean hideDealerCard = realDealer.getStatus() != Player.STATUS.STAY &&
                     realDealer.getStatus() != Player.STATUS.LOST;
 
-            return "UPDATE:"
-                    + getVisibleDealerTotal(hideDealerCard) + ":" + dealerHandToCodes(hideDealerCard)
-                    + "|"
-                    + getHandTotal(player) + ":" + handToCodes(player)
-                    + "|"
-                    + player.getBalance();
+            StringBuilder s = new StringBuilder();
+            s.append("UPDATE:")
+                    .append(getVisibleDealerTotal(hideDealerCard))
+                    .append(":").append(dealerHandToCodes(hideDealerCard))
+                    .append("|")
+                    .append(getHandTotal(player))
+                    .append(":")
+                    .append(handToCodes(player))
+                    .append("|")
+                    .append(player.getBalance());
+
+            for(Player p : playerList.values())
+            {
+                if(p != player && !p.getUsername().equalsIgnoreCase("dealer"))
+                {
+                    s.append("|")
+                            .append(p.getUsername())
+                            .append("|")
+                            .append(getHandTotal(p))
+                            .append(":")
+                            .append(handToCodes(p))
+                            .append("|")
+                            .append(p.getBalance());
+                }
+
+            }
+            return s.toString();
+//            return "UPDATE:"
+//                    + getVisibleDealerTotal(hideDealerCard) + ":" + dealerHandToCodes(hideDealerCard)
+//                    + "|"
+//                    + getHandTotal(player) + ":" + handToCodes(player)
+//                    + "|"
+//                    + player.getBalance();
+        }
+
+        public boolean isRoundOver() {
+            for (Player p : playerList.values()) {
+                if (!p.getUsername().equalsIgnoreCase("dealer")) {
+                    if (p.getStatus() == Player.STATUS.PLAYING) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public String getRoundResult(String playerName) {
