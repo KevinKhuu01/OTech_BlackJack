@@ -52,6 +52,11 @@ public class GamePage {
     private Timer balanceTimer;
 
     /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
+
+    /** Constructs a GamePage instance.
+     * @param client: The client used to communicate with the server
+     * @param backGroundMusic: The background music controller
+     */
     public GamePage(Client client, BackgroundMusic backGroundMusic)
     {
         this.client = client;
@@ -59,7 +64,13 @@ public class GamePage {
     }
 
     /** HELPER METHODS --------------------------------------------------------------------------------------------- **/
-    // Win, Loss, or Draw notification
+
+    /**
+     * Updates the result label to display a message such as win, loss, or draw.
+     *
+     * @param text  the message to display
+     * @param color the color of the message text
+     */
     public void setResultLabelText(String text, Color color)
     {
         this.resultLabel.setText(text);
@@ -118,6 +129,7 @@ public class GamePage {
         balanceTimer.start();
     }
 
+    /**Disables player action buttons and updates the result label based on game outcome. **/
     public void disableButtons()
     {
         hitButton.setEnabled(false);
@@ -155,7 +167,12 @@ public class GamePage {
         resultLabel.repaint();
     }
 
-    // Creates card visual through getting appropriate card file.
+    /** Creates a visual card label using an image file corresponding to the card name.
+     * @param card   the card identifier (e.g., "AS", "10H")
+     * @param width  the desired width of the card image
+     * @param height the desired height of the card image
+     * @return a JLabel containing the card image or fallback text if not found
+     */
     private JLabel createCardLabel(String card, int width, int height)
     {
         card = card.trim();

@@ -18,6 +18,12 @@ public class CreateAccountPage {
     private JButton muteMusicButton;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+
+    /** Constructs a CreateAccountPage instance.
+     * @param client      the client used to send messages to the server
+     * @param cardLayout  the layout manager used for switching views
+     * @param mainPanel   the main panel containing all UI pages
+     **/
     public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel, BackgroundMusic backgroundMusic) {
         this.client = client;
         this.cardLayout = cardLayout;
@@ -25,6 +31,13 @@ public class CreateAccountPage {
         this.backgroundMusic = backgroundMusic;
     }
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Builds and returns the registration UI panel.
+     * This method creates a form that allows users to input a username
+     * and password, validates the input, and sends a registration request
+     * to the server if the input is valid.
+     @return a Jpanel containing the registration interface**/
     public JPanel createAccountMenu() {
         JPanel backgroundPanel = new JPanel(new BorderLayout());
         JPanel wallpaper = new BackgroundPanel("wallpaper.png");
