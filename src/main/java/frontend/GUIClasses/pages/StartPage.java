@@ -113,15 +113,14 @@ public class StartPage {
         startMenuPanel.add(Box.createVerticalStrut(20));
         startMenuPanel.add(refreshTablesButton);
 
-        startMenuPanel.add(Box.createVerticalStrut(220));
-        startMenuPanel.add(clickRefreshLabel);
-
-        startMenuPanel.add(Box.createVerticalStrut(220));
+        startMenuPanel.add(Box.createVerticalStrut(20));
         startMenuPanel.add(activeTablesPanel);
 
-        startMenuPanel.add(Box.createVerticalGlue());
-        startMenuPanel.add(userBalanceLabel);
+        startMenuPanel.add(Box.createVerticalStrut(200));
+        startMenuPanel.add(clickRefreshLabel);
+        startMenuPanel.add(Box.createVerticalStrut(200));
 
+        startMenuPanel.add(userBalanceLabel);
         startMenuPanel.add(Box.createVerticalStrut(10));
         startMenuPanel.add(addFundsButton);
         startMenuPanel.add(Box.createVerticalGlue());

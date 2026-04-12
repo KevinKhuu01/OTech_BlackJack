@@ -49,6 +49,8 @@ public class GamePage {
     private JButton muteMusicButton;
     private JTextField betAmountTextField;
     private String betInput = Integer.toString(100);
+    private int actualBalance = -1;
+    private Timer balanceTimer;
 
     /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
     public GamePage(Client client, BackGroundMusic backGroundMusic)
@@ -72,8 +74,49 @@ public class GamePage {
     // Displays the player's account balance
     public void setBalanceLabel(String text)
     {
-        this.balanceLabel.setText("Balance: $" + text);
-        balanceLabel.revalidate();
+        int newBalance = Integer.parseInt(text.trim());
+        String currentText = balanceLabel.getText().replaceAll("[^0-9]", "");
+        int currentBalance = currentText.isEmpty() ? 0 : Integer.parseInt(currentText);
+
+        // If this is the very first time the balance is loading, just set it and skip the animation
+        if (actualBalance == -1) {
+            actualBalance = newBalance;
+            balanceLabel.setText("Balance: $" + actualBalance);
+            return;
+        }
+        if (balanceTimer != null && balanceTimer.isRunning()) {
+            balanceTimer.stop();
+        }
+
+        // Draw
+        if(newBalance - currentBalance == Integer.parseInt(betAmountTextField.getText()))
+        {
+            this.balanceLabel.setText("Balance: $ " + "+" + (newBalance-currentBalance));
+            this.balanceLabel.setForeground(Color.GRAY);
+        }
+        // Bet
+        else if(currentBalance > newBalance)
+        {
+            this.balanceLabel.setText("Bet: -$" + (currentBalance-newBalance));
+            this.balanceLabel.setForeground(Color.RED);
+        }
+        // Win
+        else if(currentBalance < newBalance)
+        {
+            this.balanceLabel.setText("Balance: $ " + "+" + (newBalance-currentBalance));
+            this.balanceLabel.setForeground(Color.GREEN);
+        }
+
+        actualBalance = newBalance;
+
+        // Start a 2 second timer to reset the visual text
+        balanceTimer = new Timer(1000, e -> {
+            balanceLabel.setForeground(Color.WHITE);
+            balanceLabel.setText("Balance: $" + actualBalance);
+            balanceLabel.revalidate();
+        });
+        balanceTimer.setRepeats(false);
+        balanceTimer.start();
     }
 
     public void disableButtons()
@@ -238,7 +281,7 @@ public class GamePage {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 14, 8, 14));
 
         balanceLabel = new JLabel("Balance: $0");
-        balanceLabel.setFont(customFont.regular(24));
+        balanceLabel.setFont(customFont.bold(24));
         balanceLabel.setForeground(Color.WHITE);
         balanceLabel.setOpaque(false);
         balanceLabel.setBackground(new Color(0, 0, 0, 140));
@@ -260,41 +303,25 @@ public class GamePage {
             disableButtons();
         });
 
-        muteMusicButton = new JButton("Music Off");
-        muteMusicButton.setFont(customFont.bold(20f));
-        muteMusicButton.setPreferredSize(new Dimension(150, 40));
-        AtomicInteger clickToMute = new AtomicInteger();
-        muteMusicButton.addActionListener(e -> {
-           clickToMute.getAndIncrement();
-           if (clickToMute.get()%2 != 0) {
-               client.sendMessage("mute");
-               muteMusicButton.setText("Music On");
-               backGroundMusic.stopMusic();
-           }
-           else {
-               client.sendMessage("unmute");
-               muteMusicButton.setText("Music Off");
-               backGroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
-           }
-        });
-
         JPanel betWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         betWrapper.setOpaque(false);
 
         JLabel betAmountLabel = new JLabel("Bet Amount:");
-        betAmountLabel.setFont(customFont.regular(24));
+        betAmountLabel.setFont(customFont.bold(24));
         betAmountLabel.setForeground(Color.WHITE);
         betAmountLabel.setOpaque(false);
         betAmountLabel.setBackground(new Color(0, 0, 0, 140));
 
         betAmountTextField = new JTextField(10);
+        betAmountTextField.setText("100");
         betAmountTextField.setPreferredSize(new Dimension(200, 40));
         betAmountTextField.setMaximumSize(new Dimension(200, 40));
         betAmountTextField.setMinimumSize(new Dimension(200, 40));
 
         JButton sendBet = new JButton("Send");
-        sendBet.setFont(customFont.regular(25f));
+        sendBet.setFont(customFont.bold(20f));
         sendBet.setPreferredSize(new Dimension(100, 40));
+        betAmountTextField.addActionListener(e -> sendBet.doClick());
         sendBet.addActionListener(e -> {
             betInput = betAmountTextField.getText().trim();
             if(!betInput.matches("[0-9]+"))
@@ -317,7 +344,6 @@ public class GamePage {
         buttonPanel.add(betWrapper);
         buttonPanel.add(hitButton);
         buttonPanel.add(standButton);
-        buttonPanel.add(muteMusicButton);
 
         // NORTH PANEL (LEAVE GAME BUTTON) ----------------------------------------------------------------------------------------------
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -325,12 +351,32 @@ public class GamePage {
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
 
         leaveGameButton = new JButton("Leave Table");
-        leaveGameButton.setFont(customFont.regular(20));
+        leaveGameButton.setFont(customFont.bold(20));
         leaveGameButton.setPreferredSize(new Dimension(150, 40));
         leaveGameButton.addActionListener(e -> {
             client.sendMessage("LEAVETABLE");
         });
+
+        muteMusicButton = new JButton("Music Off");
+        muteMusicButton.setFont(customFont.bold(20f));
+        muteMusicButton.setPreferredSize(new Dimension(150, 40));
+        AtomicInteger clickToMute = new AtomicInteger();
+        muteMusicButton.addActionListener(e -> {
+            clickToMute.getAndIncrement();
+            if (clickToMute.get()%2 != 0) {
+                client.sendMessage("mute");
+                muteMusicButton.setText("Music On");
+                backGroundMusic.stopMusic();
+            }
+            else {
+                client.sendMessage("unmute");
+                muteMusicButton.setText("Music Off");
+                backGroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
+            }
+        });
+
         topPanel.add(leaveGameButton);
+        topPanel.add(muteMusicButton);
 
         // Putting components together --------------------------------------------------------------------------------
         backgroundPanel.add(topPanel, BorderLayout.NORTH);
@@ -380,7 +426,7 @@ public class GamePage {
                 disableButtons();
             }
             String balanceData = serverData[2];
-            balanceLabel.setText("Balance: $" + balanceData);
+            setBalanceLabel(balanceData);
             playerCardsPanel.removeAll();
             if (playerData.length > 1 && !playerData[1].isEmpty()) {
                 for (String cardStr : playerData[1].split(",")) {
@@ -468,13 +514,17 @@ public class GamePage {
 
     public void checkSufficientFunds()
     {
-        int balance = Integer.parseInt(balanceLabel.getText().split("\\$")[1]);
-        int bet = Integer.parseInt(betInput);
-        if(balance < bet)
-        {
-            disableButtons();
-            JOptionPane.showMessageDialog(backgroundPanel, "Insufficient funds! Add funds in the main menu.", "Error placing bet", JOptionPane.ERROR_MESSAGE);
-            client.sendMessage("LEAVETABLE");
-        }
+        Timer timer = new Timer(1200, e -> {
+            int balance = Integer.parseInt(balanceLabel.getText().split("\\$")[1]);
+            int bet = Integer.parseInt(betInput);
+            if(balance < bet)
+            {
+                disableButtons();
+                JOptionPane.showMessageDialog(backgroundPanel, "Insufficient funds! Add funds in the main menu.", "Error placing bet", JOptionPane.ERROR_MESSAGE);
+                client.sendMessage("LEAVETABLE");
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 }
