@@ -33,7 +33,8 @@ public class GUI extends JFrame{
         LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel);
         CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel);
         startPage = new StartPage(client, cardLayout, mainPanel);
-        gamePage = new GamePage(client);
+        bgm = new BackGroundMusic();
+        gamePage = new GamePage(client, bgm);
 
         mainPanel.add(loginPage.createLoginMenu(), "login");
         mainPanel.add(createAccountPage.createAccountMenu(), "create");
@@ -77,7 +78,6 @@ public class GUI extends JFrame{
         else if (message.equals("JOINED_TABLE"))
         {
             cardLayout.show(mainPanel, "game");
-            bgm = new BackGroundMusic();
             bgm.playMusic("src/main/resources/music/BlackJackBGM.wav");
         }
         else if (message.equals("LEFT_TABLE"))

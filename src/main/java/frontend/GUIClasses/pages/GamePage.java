@@ -1,11 +1,13 @@
 package frontend.GUIClasses.pages;
 
 import frontend.Client;
+import frontend.GUIClasses.styling.BackGroundMusic;
 import frontend.GUIClasses.styling.BackgroundPanel;
 import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -43,13 +45,16 @@ public class GamePage {
     private JButton hitButton;
     private JButton standButton;
     private JButton leaveGameButton;
+    private BackGroundMusic backGroundMusic;
+    private JButton muteMusicButton;
     private JTextField betAmountTextField;
     private String betInput = Integer.toString(100);
 
     /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
-    public GamePage(Client client)
+    public GamePage(Client client, BackGroundMusic backGroundMusic)
     {
         this.client = client;
+        this.backGroundMusic = backGroundMusic;
     }
 
     /** HELPER METHODS --------------------------------------------------------------------------------------------- **/
@@ -255,6 +260,24 @@ public class GamePage {
             disableButtons();
         });
 
+        muteMusicButton = new JButton("Music Off");
+        muteMusicButton.setFont(customFont.bold(20f));
+        muteMusicButton.setPreferredSize(new Dimension(150, 40));
+        AtomicInteger clickToMute = new AtomicInteger();
+        muteMusicButton.addActionListener(e -> {
+           clickToMute.getAndIncrement();
+           if (clickToMute.get()%2 != 0) {
+               client.sendMessage("mute");
+               muteMusicButton.setText("Music On");
+               backGroundMusic.stopMusic();
+           }
+           else {
+               client.sendMessage("unmute");
+               muteMusicButton.setText("Music Off");
+               backGroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
+           }
+        });
+
         JPanel betWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         betWrapper.setOpaque(false);
 
@@ -294,6 +317,7 @@ public class GamePage {
         buttonPanel.add(betWrapper);
         buttonPanel.add(hitButton);
         buttonPanel.add(standButton);
+        buttonPanel.add(muteMusicButton);
 
         // NORTH PANEL (LEAVE GAME BUTTON) ----------------------------------------------------------------------------------------------
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -317,7 +341,6 @@ public class GamePage {
 
         return backgroundPanel;
     }
-
 
     // styling
     private JLabel createStyledLabel(String text) {
