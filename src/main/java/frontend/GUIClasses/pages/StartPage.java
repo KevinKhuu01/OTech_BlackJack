@@ -1,11 +1,13 @@
 package frontend.GUIClasses.pages;
 
 import frontend.Client;
+import frontend.GUIClasses.styling.BackgroundMusic;
 import frontend.GUIClasses.styling.BackgroundPanel;
 import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StartPage {
     /** FIELDS --------------------------------------------------------------------------------------------------- **/
@@ -17,13 +19,17 @@ public class StartPage {
     private JButton addFundsButton;
     private JLabel userBalanceLabel;
     private JLabel clickRefreshLabel;
+    private BackgroundMusic backgroundMusic;
+    private JButton muteMusicButton;
+    private JButton logOffButton;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
-    public StartPage(Client client, CardLayout cardLayout, JPanel mainPanel)
+    public StartPage(Client client, CardLayout cardLayout, JPanel mainPanel, BackgroundMusic backgroundMusic)
     {
         this.client = client;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.backgroundMusic = backgroundMusic;
     }
 
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
@@ -44,7 +50,7 @@ public class StartPage {
         titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        Dimension buttonSize = new Dimension(220, 40);
+        Dimension buttonSize = new Dimension(250, 40);
         JButton createTableButton = new JButton("Create New Table");
         createTableButton.setFont(customFont.regular(20));
         createTableButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -53,7 +59,7 @@ public class StartPage {
         createTableButton.setMinimumSize(buttonSize);
         createTableButton.addActionListener(e ->
         {
-            client.sendMessage("NEWTABLE");
+            client.sendMessage("NEW_TABLE");
         });
 
         // Live tables list components
@@ -67,9 +73,9 @@ public class StartPage {
 
         activeTablesPanel = new JPanel();
         activeTablesPanel.setLayout(new BoxLayout(activeTablesPanel, BoxLayout.Y_AXIS));
-        activeTablesPanel.setBackground(Color.WHITE);
+        activeTablesPanel.setOpaque(false);
 
-        client.sendMessage("TABLELIST");
+        client.sendMessage("TABLE_LIST");
 
         clickRefreshLabel = new JLabel("<html><center>No live tables.<br>Please click refresh tables.</center></html>");
         clickRefreshLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -94,7 +100,7 @@ public class StartPage {
                 try {
                     int amount = Integer.parseInt(input.trim());
                     if (amount > 0) {
-                        client.sendMessage("ADDFUNDS " + amount);
+                        client.sendMessage("ADD_FUNDS " + amount);
                     } else {
                         JOptionPane.showMessageDialog(mainPanel, "Please enter a valid positive amount.");
                     }
@@ -104,6 +110,34 @@ public class StartPage {
             }
         });
 
+        muteMusicButton = new JButton("Music Off");
+        backgroundMusic.registerButton(muteMusicButton);
+        muteMusicButton.setFont(customFont.regular(20f));
+        muteMusicButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        muteMusicButton.setPreferredSize(buttonSize);
+        muteMusicButton.setMaximumSize(buttonSize);
+        muteMusicButton.setMinimumSize(buttonSize);
+
+        muteMusicButton.addActionListener(e -> {
+            boolean isMuted = backgroundMusic.toggleMute();
+            if (isMuted)
+            {
+                backgroundMusic.stopMusic();
+            } else
+            {
+                backgroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
+            }
+        });
+
+        logOffButton = new JButton("Log off");
+        logOffButton.setFont(customFont.regular(20));
+        logOffButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        logOffButton.setPreferredSize(buttonSize);
+        logOffButton.setMaximumSize(buttonSize);
+        logOffButton.setMinimumSize(buttonSize);
+        logOffButton.addActionListener(e -> { client.sendMessage("LOGOUT");});
+
+        // Assemble start menu
         startMenuPanel.add(Box.createVerticalStrut(30));
         startMenuPanel.add(titleLabel);
 
@@ -113,24 +147,26 @@ public class StartPage {
         startMenuPanel.add(Box.createVerticalStrut(20));
         startMenuPanel.add(refreshTablesButton);
 
-        startMenuPanel.add(Box.createVerticalStrut(220));
-        startMenuPanel.add(clickRefreshLabel);
-
-        startMenuPanel.add(Box.createVerticalStrut(220));
+        startMenuPanel.add(Box.createVerticalStrut(20));
         startMenuPanel.add(activeTablesPanel);
 
-        startMenuPanel.add(Box.createVerticalGlue());
-        startMenuPanel.add(userBalanceLabel);
+        startMenuPanel.add(Box.createVerticalStrut(150));
+        startMenuPanel.add(clickRefreshLabel);
+        startMenuPanel.add(Box.createVerticalStrut(150));
 
-        startMenuPanel.add(Box.createVerticalStrut(10));
+        startMenuPanel.add(userBalanceLabel);
+        startMenuPanel.add(Box.createVerticalStrut(20));
         startMenuPanel.add(addFundsButton);
+        startMenuPanel.add(Box.createVerticalStrut(10));
+        startMenuPanel.add(muteMusicButton);
+        startMenuPanel.add(Box.createVerticalStrut(10));
+        startMenuPanel.add(logOffButton);
         startMenuPanel.add(Box.createVerticalGlue());
 
         startPageWrapper.add(wallpaper, BorderLayout.WEST);
         startPageWrapper.add(startMenuPanel, BorderLayout.EAST);
         return startPageWrapper;
     }
-
 
     /** HELPER METHODS --------------------------------------------------------------------------------------------------- **/
     public void tableList(String data)
@@ -147,7 +183,7 @@ public class StartPage {
         String numClients = parts[2];
         String hasRoom = parts[3];
 
-        Dimension buttonSize = new Dimension(220, 40);
+        Dimension buttonSize = new Dimension(250, 40);
         joinButton = new JButton("Join Table " + tableId + " (" + numClients + "/3)");
         joinButton.setFont(customFont.regular(20));
         joinButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -176,7 +212,7 @@ public class StartPage {
     // assign client to a table
     public void joinTable(String tableId)
     {
-        client.sendMessage("JOINTABLE " + tableId);
+        client.sendMessage("JOIN_TABLE " + tableId);
     }
 
     public void getTableList() {
@@ -184,7 +220,7 @@ public class StartPage {
         activeTablesPanel.revalidate();
         activeTablesPanel.repaint();
         clickRefreshLabel.setVisible(true);
-        client.sendMessage("TABLELIST");
+        client.sendMessage("TABLE_LIST");
     }
 
     public void requestBalance() {

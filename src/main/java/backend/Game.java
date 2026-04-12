@@ -82,9 +82,6 @@ public class Game {
 
 /** HELPER METHOD FOR PLAYER JOINING OCCUPIED TABLE ------------------------------------------------------------------ **/
 
-    /** Method to deal a new player their hand, consisting of 2 cards to start
-     * @param p: The player who has just entered the game
-     **/
     public void dealNewPlayer(Player p)
     {
         p.setStatus(Player.STATUS.PLAYING);
@@ -99,9 +96,6 @@ public class Game {
     }
 
 /** HIDE DEALER CARD FEATURE --------------------------------------------------------------------------------------------------- **/
-    /** Hides the top card of the dealers hand until it is time to show the dealers hand to the player
-     * @param hideFirstCard:
-     **/
     private String dealerHandToCodes(boolean hideFirstCard){
         List<Card> hand = getHand(dealer);
 
@@ -124,9 +118,7 @@ public class Game {
         return sb.toString();
     }
 
-   /** Getter to show the player the value of only the visible card of the dealers 2 intitial cards
-    * @param hideFirstCard:
-    **/
+
    private int getVisibleDealerTotal(boolean hideFirstCard){
         List<Card> hand = getHand(dealer);
 
@@ -180,9 +172,20 @@ public class Game {
                 hit(p);
                 hit(p);
             }
-            for (Player p : playerList.values()) {
-                if (getHandTotal(p) == 21) {
-                    stay(p);
+
+            // if dealer gets 21, everyone stays and loses unless they also have 21
+            if (getHandTotal(dealer) == 21) {
+                for (Player p : playerList.values()) {
+                    if (p.getStatus() == Player.STATUS.PLAYING) {
+                        stay(p);
+                    }
+                }
+            } else {
+                // if any players get 21, make them stay
+                for (Player p : playerList.values()) {
+                    if (getHandTotal(p) == 21) {
+                        stay(p);
+                    }
                 }
             }
         }
@@ -267,7 +270,7 @@ public class Game {
         }
     }
 
-    // check if a.java player has won
+    // check if a player has won
     public void checkWin(Player p)
     {
         if (p.getStatus() == Player.STATUS.WIN || p.getStatus() == Player.STATUS.LOST || p.getStatus() == Player.STATUS.DRAW) {
@@ -303,6 +306,11 @@ public class Game {
 
         // if dealer is still playing (not won, lost, or stay)
         if (dealer.getStatus() != Player.STATUS.STAY && dealer.getStatus() != Player.STATUS.LOST) {
+            return;
+        }
+
+        // Do now do end of round comparisons if the player is still deciding to hit/stay.
+        if (p.getStatus() == Player.STATUS.PLAYING) {
             return;
         }
 
@@ -342,10 +350,86 @@ public class Game {
         }
     }
 
-    /** Setter for placing a bet for the next round
-     * @param bet: The amount of money the player wants to bet.
-     * @param p: The Player who is betting
-     **/
+//    // check if a.java player has won
+//    public void checkWin(Player p)
+//    {
+//        if (p.getStatus() == Player.STATUS.WIN || p.getStatus() == Player.STATUS.LOST || p.getStatus() == Player.STATUS.DRAW) {
+//            return;
+//        }
+//
+//        int playerTotal = getHandTotal(p);
+//        int dealerTotal = getHandTotal(dealer);
+//
+//        // Check if dealer is over 21
+//        if (p.getUsername().equalsIgnoreCase("dealer")) {
+//            if (playerTotal > 21) {
+//                p.setStatus(Player.STATUS.LOST);
+//            }
+//            return;
+//        }
+//
+//        // if p is player and busts
+//        if(playerTotal > 21)
+//        {
+//            p.setStatus(Player.STATUS.LOST);
+//            currentBets.remove(p);
+//            stay(p);
+//            return;
+//        }
+//
+//        // if p is player and has 21
+//        if (playerTotal == 21 && p.getStatus() != Player.STATUS.STAY)
+//        {
+//            stay(p);
+//            return;
+//        }
+//
+//        // if dealer is still playing (not won, lost, or stay)
+//        if (dealer.getStatus() != Player.STATUS.STAY && dealer.getStatus() != Player.STATUS.LOST) {
+//            return;
+//        }
+//
+//        if (p.getStatus() == Player.STATUS.PLAYING) {
+//            return;
+//        }
+//
+//        // if p is the player and dealer has busted (previous check was if p was dealer)
+//        if (dealerTotal > 21) {
+//            p.setStatus(Player.STATUS.WIN);
+//            if(currentBets.containsKey(p))
+//            {
+//                p.depositBalance(currentBets.get(p) * 2);
+//                currentBets.remove(p);
+//            }
+//            return;
+//        }
+//
+//        // end of round comparisons
+//        if (playerTotal > dealerTotal) {
+//            p.setStatus(Player.STATUS.WIN);
+//            if(currentBets.containsKey(p))
+//            {
+//                p.depositBalance(currentBets.get(p) * 2);
+//                currentBets.remove(p);
+//            }
+//            return;
+//        }
+//        else if (playerTotal < dealerTotal) {
+//            p.setStatus(Player.STATUS.LOST);
+//            currentBets.remove(p);
+//            return;
+//        }
+//
+//        // if both players have won or have equal hands (remaining conditions), declare draw
+//        p.setStatus(Player.STATUS.DRAW);
+//        if(currentBets.containsKey(p))
+//        {
+//            p.depositBalance(currentBets.get(p));
+//            currentBets.remove(p);
+//        }
+//    }
+
+
     public void setNextBet(Player p, int bet) {
 
         if(p.getBalance() >= bet)
@@ -358,9 +442,6 @@ public class Game {
         }
     }
 
-    /** Places the bet for the round
-     * @param p: The Player who is making the bet
-     **/
     public void placeRoundBet(Player p) {
         int bet = nextBets.getOrDefault(p, 100);
         if(p.getBalance() >= bet)
@@ -376,9 +457,6 @@ public class Game {
 
 /** GAME STATUS AND GAME UPDATE METHODS--------------------------------------------------------------------------- **/
 
-    /** Getter for the current game state. Can be one of the following states: WIN, DRAW, LOST, STAY, or PLAYING.
-     * @param name: Username of the Player in game
-     **/
     public String getGameState(String name) {
         Player realDealer = playerList.get("dealer");
         Player player = playerList.get(name);
@@ -419,7 +497,6 @@ public class Game {
         return s.toString();
     }
 
-    /** Boolean method to determine if the round is over **/
     public boolean isRoundOver() {
         for (Player p : playerList.values()) {
             if (!p.getUsername().equalsIgnoreCase("dealer")) {
@@ -431,7 +508,6 @@ public class Game {
         return true;
     }
 
-    /** Getter for the result of the round. Can be either WIN, LOSE or DRAW **/
     public String getRoundResult(String playerName) {
         Player p = playerList.get(playerName);
 
@@ -452,8 +528,6 @@ public class Game {
     }
 
 /** CARD ENCODING AND DECODING MESSAGES --------------------------------------------------------------------------------------------------- **/
-
-    /** COME BACK TO THIS ONE**/
     private String handToCodes(Player p) {
         List<Card> hand = getHand(p);
         if (hand == null || hand.isEmpty()) {
@@ -470,9 +544,6 @@ public class Game {
         return sb.toString();
     }
 
-    /** Determine the code of each card
-     * @param card: The Card being determined
-     **/
     private String cardToCode(Card card) {
         String face = "";
         String suit = "";

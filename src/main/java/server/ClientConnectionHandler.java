@@ -108,19 +108,19 @@ public class ClientConnectionHandler implements Runnable {
         {
             handleStay(message);
         }
-        else if (message.equalsIgnoreCase("TABLELIST"))
+        else if (message.equalsIgnoreCase("TABLE_LIST"))
         {
             List<Table> tables = getTables();
             for(Table t : tables)
             {
-                output.println("TABLELIST |" + t.getTableId() + "|" + t.numClients() + "|" + (t.hasRoom() ? "Y" : "N"));
+                output.println("TABLE_LIST |" + t.getTableId() + "|" + t.numClients() + "|" + (t.hasRoom() ? "Y" : "N"));
             }
         }
-        else if(message.equalsIgnoreCase("NEWTABLE"))
+        else if(message.equalsIgnoreCase("NEW_TABLE"))
         {
             handleNewTable();
         }
-        else if(message.startsWith("JOINTABLE "))
+        else if(message.startsWith("JOIN_TABLE "))
         {
             handleJoinTable(message);
         }
@@ -135,7 +135,7 @@ public class ClientConnectionHandler implements Runnable {
         {
             output.println("BALANCE " + getBalance(playerName));
         }
-        else if (message.startsWith("ADDFUNDS "))
+        else if (message.startsWith("ADD_FUNDS "))
         {
             try {
                 int amount = Integer.parseInt(message.substring(9).trim());
@@ -148,7 +148,7 @@ public class ClientConnectionHandler implements Runnable {
                 System.out.println("Invalid fund amount received.");
             }
         }
-        else if(message.equalsIgnoreCase("LEAVETABLE"))
+        else if(message.equalsIgnoreCase("LEAVE_TABLE"))
         {
             if (table != null) {
                 TableManager.removeFromTable(table, this);
@@ -164,6 +164,11 @@ public class ClientConnectionHandler implements Runnable {
             }
 
             output.println("LEFT_TABLE");
+        }
+        else if (message.equalsIgnoreCase("LOGOUT"))
+        {
+            this.playerName = null; // Clear player identification data with client
+            output.println("LOGOUT_OK");
         }
         else if (message.equalsIgnoreCase("BYE"))
         {

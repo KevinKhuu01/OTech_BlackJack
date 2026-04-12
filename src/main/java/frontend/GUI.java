@@ -4,7 +4,7 @@ import frontend.GUIClasses.pages.CreateAccountPage;
 import frontend.GUIClasses.pages.LoginPage;
 import frontend.GUIClasses.pages.StartPage;
 import frontend.GUIClasses.pages.GamePage;
-import frontend.GUIClasses.styling.BackGroundMusic;
+import frontend.GUIClasses.styling.BackgroundMusic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,8 @@ public class GUI extends JFrame{
     private final Client client;
     private GamePage gamePage;
     private StartPage startPage;
-    private BackGroundMusic bgm;
+    private BackgroundMusic backgroundMusic;
+
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
 
     /** Constructs the GUI for the client
@@ -33,18 +34,19 @@ public class GUI extends JFrame{
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+        backgroundMusic = new BackgroundMusic();
 
-        LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel);
-        CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel);
-        startPage = new StartPage(client, cardLayout, mainPanel);
-        bgm = new BackGroundMusic();
-        gamePage = new GamePage(client, bgm);
+        LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel, backgroundMusic);
+        CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel, backgroundMusic);
+        startPage = new StartPage(client, cardLayout, mainPanel, backgroundMusic);
+        gamePage = new GamePage(client, backgroundMusic);
 
         mainPanel.add(loginPage.createLoginMenu(), "login");
         mainPanel.add(createAccountPage.createAccountMenu(), "create");
         mainPanel.add(startPage.createStartMenu(), "start");
         mainPanel.add(gamePage.createGamePanel(), "game");
 
+        backgroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
         setContentPane(mainPanel);
         cardLayout.show(mainPanel, "login");
         setVisible(true);
@@ -75,23 +77,25 @@ public class GUI extends JFrame{
         {
             JOptionPane.showMessageDialog(mainPanel, "Username already exists.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
         }
+        else if(message.equals("LOGOUT_OK"))
+        {
+            cardLayout.show(mainPanel, "login");
+        }
 
         // Table & Account Balance responses (StartPage)
-        else if(message.startsWith("TABLELIST |"))
+        else if(message.startsWith("TABLE_LIST |"))
         {
             startPage.tableList(message);
         }
         else if (message.equals("JOINED_TABLE"))
         {
             cardLayout.show(mainPanel, "game");
-            bgm.playMusic("src/main/resources/music/BlackJackBGM.wav");
         }
         else if (message.equals("LEFT_TABLE"))
         {
             startPage.getTableList();
             startPage.requestBalance();
             cardLayout.show(mainPanel, "start");
-            bgm.stopMusic();
         }
         else if (message.startsWith("JOIN_FAIL"))
         {
