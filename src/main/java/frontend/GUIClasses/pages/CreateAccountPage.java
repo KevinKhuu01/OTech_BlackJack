@@ -7,7 +7,6 @@ import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CreateAccountPage {
     /** FIELDS --------------------------------------------------------------------------------------------------- **/

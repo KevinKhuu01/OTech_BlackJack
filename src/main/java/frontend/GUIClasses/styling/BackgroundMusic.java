@@ -1,13 +1,16 @@
 package frontend.GUIClasses.styling;
 
 import javax.sound.sampled.*;
+import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BackGroundMusic {
+public class BackgroundMusic {
     private Clip clip;
-    /** Method to handle background music during gameplay, using a WAV file
-     * @param filePath: The pathway directory of the .WAV file containing the music for the game.
-     **/
+    private boolean isMuted;
+    private List<JButton> registeredButtons = new ArrayList<>();
+
     public void playMusic(String filePath){
         try {
             File file = new File(filePath);
@@ -21,6 +24,21 @@ public class BackGroundMusic {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Adds a button to the list and sets its initial text
+    public void registerButton(JButton button) {
+        registeredButtons.add(button);
+        button.setText(isMuted ? "Music On" : "Music Off");
+    }
+
+    // Flips the mute state and updates every single button at the same time
+    public boolean toggleMute() {
+        isMuted = !isMuted;
+        for (JButton btn : registeredButtons) {
+            btn.setText(isMuted ? "Music On" : "Music Off");
+        }
+        return isMuted;
     }
 
     public void stopMusic(){
