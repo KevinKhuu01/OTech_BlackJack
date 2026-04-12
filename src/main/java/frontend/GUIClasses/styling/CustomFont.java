@@ -8,7 +8,7 @@ public class CustomFont {
     private Font boldFont;
 
     public CustomFont() {
-        regularFont = newFont("fonts/Ubuntu-Regular.ttf", Font.PLAIN, 18f);
+        regularFont = newFont("fonts/Ubuntu-Regular.ttf", Font.PLAIN, 25f);
         boldFont = newFont("fonts/Ubuntu-Bold.ttf", Font.BOLD, 168f);
     }
 

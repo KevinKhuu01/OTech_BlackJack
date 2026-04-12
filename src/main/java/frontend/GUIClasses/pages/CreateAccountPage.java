@@ -32,7 +32,7 @@ public class CreateAccountPage {
         menuPanel.setBackground(new Color(245, 245, 245, 1));
 
         JLabel titleLabel = new JLabel("Registration");
-        titleLabel.setFont(customFont.bold(42));
+        titleLabel.setFont(customFont.bold(50));
         titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 

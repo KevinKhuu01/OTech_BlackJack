@@ -16,6 +16,7 @@ public class StartPage {
     private JPanel activeTablesPanel;
     private JButton addFundsButton;
     private JLabel userBalanceLabel;
+    private JLabel clickRefreshLabel;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public StartPage(Client client, CardLayout cardLayout, JPanel mainPanel)
@@ -55,6 +56,7 @@ public class StartPage {
             client.sendMessage("NEWTABLE");
         });
 
+        // Live tables list components
         JButton refreshTablesButton = new JButton("Refresh Tables");
         refreshTablesButton.setFont(customFont.regular(20));
         refreshTablesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -67,24 +69,16 @@ public class StartPage {
         activeTablesPanel.setLayout(new BoxLayout(activeTablesPanel, BoxLayout.Y_AXIS));
         activeTablesPanel.setBackground(Color.WHITE);
 
-        startMenuPanel.add(Box.createVerticalStrut(30));
-        startMenuPanel.add(titleLabel);
-
-        startMenuPanel.add(Box.createVerticalStrut(20));
-        startMenuPanel.add(createTableButton);
-
-        startMenuPanel.add(Box.createVerticalStrut(20));
-        startMenuPanel.add(refreshTablesButton);
-
-        startMenuPanel.add(Box.createVerticalStrut(50));
-        startMenuPanel.add(activeTablesPanel);
-        startMenuPanel.add(Box.createVerticalGlue());
-
         client.sendMessage("TABLELIST");
+
+        clickRefreshLabel = new JLabel("<html><center>No live tables.<br>Please click refresh tables.</center></html>");
+        clickRefreshLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        clickRefreshLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        clickRefreshLabel.setFont(customFont.regular(20));
 
         // Account balance management
         userBalanceLabel = new JLabel("Account Balance: ");
-        userBalanceLabel.setFont(customFont.regular(20));
+        userBalanceLabel.setFont(customFont.bold(20));
         userBalanceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         addFundsButton = new JButton("Add funds");
@@ -110,10 +104,27 @@ public class StartPage {
             }
         });
 
+        startMenuPanel.add(Box.createVerticalStrut(30));
+        startMenuPanel.add(titleLabel);
+
+        startMenuPanel.add(Box.createVerticalStrut(20));
+        startMenuPanel.add(createTableButton);
+
+        startMenuPanel.add(Box.createVerticalStrut(20));
+        startMenuPanel.add(refreshTablesButton);
+
+        startMenuPanel.add(Box.createVerticalStrut(220));
+        startMenuPanel.add(clickRefreshLabel);
+
+        startMenuPanel.add(Box.createVerticalStrut(220));
+        startMenuPanel.add(activeTablesPanel);
+
+        startMenuPanel.add(Box.createVerticalGlue());
         startMenuPanel.add(userBalanceLabel);
+
         startMenuPanel.add(Box.createVerticalStrut(10));
         startMenuPanel.add(addFundsButton);
-        startMenuPanel.add(Box.createVerticalStrut(30));
+        startMenuPanel.add(Box.createVerticalGlue());
 
         startPageWrapper.add(wallpaper, BorderLayout.WEST);
         startPageWrapper.add(startMenuPanel, BorderLayout.EAST);
@@ -131,6 +142,7 @@ public class StartPage {
             return;
         }
 
+        clickRefreshLabel.setVisible(false);
         String tableId = parts[1];
         String numClients = parts[2];
         String hasRoom = parts[3];
@@ -171,7 +183,7 @@ public class StartPage {
         activeTablesPanel.removeAll();
         activeTablesPanel.revalidate();
         activeTablesPanel.repaint();
-
+        clickRefreshLabel.setVisible(true);
         client.sendMessage("TABLELIST");
     }
 

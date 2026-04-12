@@ -33,7 +33,7 @@ public class LoginPage {
         menuPanel.setBackground(new Color(245, 245, 245, 1));
 
         JLabel titleLabel = new JLabel("Login");
-        titleLabel.setFont(customFont.bold(42));
+        titleLabel.setFont(customFont.bold(50));
         titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
