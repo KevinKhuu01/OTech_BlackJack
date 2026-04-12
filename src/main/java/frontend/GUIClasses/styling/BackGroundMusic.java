@@ -5,7 +5,9 @@ import java.io.File;
 
 public class BackGroundMusic {
     private Clip clip;
-
+    /** Method to handle background music during gameplay, using a WAV file
+     * @param filePath: The pathway directory of the .WAV file containing the music for the game.
+     **/
     public void playMusic(String filePath){
         try {
             File file = new File(filePath);

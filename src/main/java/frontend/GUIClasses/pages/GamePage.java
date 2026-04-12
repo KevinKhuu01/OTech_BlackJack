@@ -51,6 +51,11 @@ public class GamePage {
     private String betInput = Integer.toString(100);
 
     /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
+
+    /** Constructs a GamePage instance
+     * @param client            the client used to communicate with the server
+     * @param backGroundMusic   the background music controller
+     **/
     public GamePage(Client client, BackGroundMusic backGroundMusic)
     {
         this.client = client;
@@ -466,6 +471,9 @@ public class GamePage {
         }
     }
 
+    /** Checks if the player has sufficient funds to continue playing.
+     * If not, disables controls, shows an error message, and removes the player from the table.
+     **/
     public void checkSufficientFunds()
     {
         int balance = Integer.parseInt(balanceLabel.getText().split("\\$")[1]);

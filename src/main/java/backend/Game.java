@@ -82,6 +82,9 @@ public class Game {
 
 /** HELPER METHOD FOR PLAYER JOINING OCCUPIED TABLE ------------------------------------------------------------------ **/
 
+    /** Method to deal a new player their hand, consisting of 2 cards to start
+     * @param p: The player who has just entered the game
+     **/
     public void dealNewPlayer(Player p)
     {
         p.setStatus(Player.STATUS.PLAYING);
@@ -96,6 +99,9 @@ public class Game {
     }
 
 /** HIDE DEALER CARD FEATURE --------------------------------------------------------------------------------------------------- **/
+    /** Hides the top card of the dealers hand until it is time to show the dealers hand to the player
+     * @param hideFirstCard:
+     **/
     private String dealerHandToCodes(boolean hideFirstCard){
         List<Card> hand = getHand(dealer);
 
@@ -118,7 +124,9 @@ public class Game {
         return sb.toString();
     }
 
-
+   /** Getter to show the player the value of only the visible card of the dealers 2 intitial cards
+    * @param hideFirstCard:
+    **/
    private int getVisibleDealerTotal(boolean hideFirstCard){
         List<Card> hand = getHand(dealer);
 
@@ -334,6 +342,10 @@ public class Game {
         }
     }
 
+    /** Setter for placing a bet for the next round
+     * @param bet: The amount of money the player wants to bet.
+     * @param p: The Player who is betting
+     **/
     public void setNextBet(Player p, int bet) {
 
         if(p.getBalance() >= bet)
@@ -346,6 +358,9 @@ public class Game {
         }
     }
 
+    /** Places the bet for the round
+     * @param p: The Player who is making the bet
+     **/
     public void placeRoundBet(Player p) {
         int bet = nextBets.getOrDefault(p, 100);
         if(p.getBalance() >= bet)
@@ -361,6 +376,9 @@ public class Game {
 
 /** GAME STATUS AND GAME UPDATE METHODS--------------------------------------------------------------------------- **/
 
+    /** Getter for the current game state. Can be one of the following states: WIN, DRAW, LOST, STAY, or PLAYING.
+     * @param name: Username of the Player in game
+     **/
     public String getGameState(String name) {
         Player realDealer = playerList.get("dealer");
         Player player = playerList.get(name);
@@ -401,6 +419,7 @@ public class Game {
         return s.toString();
     }
 
+    /** Boolean method to determine if the round is over **/
     public boolean isRoundOver() {
         for (Player p : playerList.values()) {
             if (!p.getUsername().equalsIgnoreCase("dealer")) {
@@ -412,6 +431,7 @@ public class Game {
         return true;
     }
 
+    /** Getter for the result of the round. Can be either WIN, LOSE or DRAW **/
     public String getRoundResult(String playerName) {
         Player p = playerList.get(playerName);
 
@@ -432,6 +452,8 @@ public class Game {
     }
 
 /** CARD ENCODING AND DECODING MESSAGES --------------------------------------------------------------------------------------------------- **/
+
+    /** COME BACK TO THIS ONE**/
     private String handToCodes(Player p) {
         List<Card> hand = getHand(p);
         if (hand == null || hand.isEmpty()) {
@@ -448,6 +470,9 @@ public class Game {
         return sb.toString();
     }
 
+    /** Determine the code of each card
+     * @param card: The Card being determined
+     **/
     private String cardToCode(Card card) {
         String face = "";
         String suit = "";

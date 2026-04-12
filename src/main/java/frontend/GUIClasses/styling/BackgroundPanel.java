@@ -7,6 +7,9 @@ public class BackgroundPanel extends JPanel {
 
     private Image backgroundImage;
 
+    /** Handles the background of the pages as user navigates throught the application
+     * @param imagePath: The directory pathway of the needed image file
+     **/
     public BackgroundPanel(String imagePath) {
         java.net.URL imageURL = getClass().getClassLoader().getResource(imagePath);
 
@@ -19,7 +22,7 @@ public class BackgroundPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        super.paintComponent(g); // Clears page
 
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);

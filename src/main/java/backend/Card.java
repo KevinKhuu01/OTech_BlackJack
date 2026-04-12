@@ -24,7 +24,7 @@ public class Card {
         return this.face + " of " + this.suit;
     }
 
-    // Getters
+    // Getters for face, suit and value of cards
     public Face getFace() {
         return this.face;
     }

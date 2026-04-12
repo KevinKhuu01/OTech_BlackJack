@@ -7,11 +7,13 @@ public class CustomFont {
     private Font regularFont;
     private Font boldFont;
 
+    /** Handles custom fonts for the project, along with boldness and size of text **/
     public CustomFont() {
         regularFont = newFont("fonts/Ubuntu-Regular.ttf", Font.PLAIN, 25f);
         boldFont = newFont("fonts/Ubuntu-Bold.ttf", Font.BOLD, 168f);
     }
 
+    /** **/
     private Font newFont(String path, int fallbackStyle, float size) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
             if (is == null) {

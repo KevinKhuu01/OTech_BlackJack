@@ -15,6 +15,12 @@ public class CreateAccountPage {
     private final CustomFont customFont = new CustomFont();
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+
+    /** Constructs a CreateAccountPage instance.
+     * @param client      the client used to send messages to the server
+     * @param cardLayout  the layout manager used for switching views
+     * @param mainPanel   the main panel containing all UI pages
+     */
     public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
         this.client = client;
         this.cardLayout = cardLayout;

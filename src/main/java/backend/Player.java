@@ -42,7 +42,10 @@ public class Player {
         }
     }
 
-    public void depositBalance(int amount)  /** To Do **/
+    /** Deposits the desired amount into a players balance
+     * @param amount: The integer amount the user wants to deposit
+     **/
+    public void depositBalance(int amount)
     {
         if(!DatabaseManager.deposit(this, amount))
         {
@@ -59,5 +62,4 @@ public class Player {
     {
         this.status = status;
     }
-
 }

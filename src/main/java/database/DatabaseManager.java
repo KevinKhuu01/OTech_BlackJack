@@ -15,7 +15,11 @@ public class DatabaseManager {
         return DriverManager.getConnection(URL);
     }
 
-    // Add new user in db
+    /** Add new user in db
+     * @param id: The integer ID of the new user
+     * @param username: The username the new user enters at registration
+     * @param plainPassword: The passsword the new user enters at registration
+     **/
     public static boolean newUser(int id, String username, String plainPassword) {
         String sql = "INSERT INTO users (id, username, password_hash, balance) VALUES (?, ?, ?, ?)"; // Insert query
 
@@ -39,7 +43,10 @@ public class DatabaseManager {
         }
     }
 
-    // Login existing user and return Player object if password matches
+    /** Login existing user and return Player object if password matches
+     * @param username
+     * @param plainPassword: Unhidden password of the user logging in
+     **/
     public static boolean loginUser(String username, String plainPassword) {
         String sql = "SELECT id, username, password_hash, balance FROM users WHERE username = ?"; // search query
 
