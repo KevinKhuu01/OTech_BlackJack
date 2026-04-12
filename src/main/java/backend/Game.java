@@ -216,16 +216,17 @@ public class Game {
 
     public void stay(Player p)
     {
-        p.setStatus(Player.STATUS.STAY);
+        if (p.getStatus() == Player.STATUS.PLAYING)
+        {
+            p.setStatus(Player.STATUS.STAY);
+        }
         boolean checkAllStay = true;
 
         // check if everyone has stayed
         for(Player pl : playerList.values())
         {
             if(!pl.getUsername().equalsIgnoreCase("dealer")
-                    && pl.getStatus() != Player.STATUS.STAY
-                    && pl.getStatus() != Player.STATUS.LOST
-                    && pl.getStatus() != Player.STATUS.WIN)
+                    && pl.getStatus() == Player.STATUS.PLAYING)
             {
                 checkAllStay = false;
                 break;
@@ -235,13 +236,17 @@ public class Game {
         // If everyone has stayed then finish the round by checking who has won
         if(checkAllStay)
         {
-            while (getHandTotal(dealer) < 17)
+            while(getHandTotal(dealer) < 17)
             {
                 hit(dealer);
             }
             if (getHandTotal(dealer) >= 17 && getHandTotal(dealer) <= 21)
             {
                 dealer.setStatus(Player.STATUS.STAY);
+            }
+            else if(getHandTotal(dealer) > 21)
+            {
+                dealer.setStatus(Player.STATUS.LOST);
             }
             for (Player pl : playerList.values())
             {
@@ -250,6 +255,7 @@ public class Game {
                     checkWin(pl);
                 }
             }
+
         }
     }
 
@@ -276,11 +282,13 @@ public class Game {
         {
             p.setStatus(Player.STATUS.LOST);
             currentBets.remove(p);
+            stay(p);
             return;
         }
 
         // if p is player and has 21
-        if (playerTotal == 21) {
+        if (playerTotal == 21 && p.getStatus() != Player.STATUS.STAY)
+        {
             stay(p);
             return;
         }

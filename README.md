@@ -2,8 +2,7 @@
 
 Remaining tasks:
 Deadline: Sunday April 12
-- Add music
 - Re-factor code
 - Method headers 
-
+- Add music
 - Readme / documentation

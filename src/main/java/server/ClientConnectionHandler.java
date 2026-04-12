@@ -306,6 +306,10 @@ public class ClientConnectionHandler implements Runnable {
                 g.startGame();
                 table.broadcast("A new round has started at Table #" + table.getTableId() + "!");
                 table.updateAllClients();
+                if (g.isRoundOver()) {
+                    table.sendResultsToAll();
+                    restartRound();
+                }
             }
         }).start();
     }

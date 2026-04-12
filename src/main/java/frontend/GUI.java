@@ -102,21 +102,23 @@ public class GUI extends JFrame{
         else if(message.equals("DRAW"))
         {
             gamePage.setResultLabelText("Draw!", Color.LIGHT_GRAY);
-            resetTimer();
         }
         else if(message.equals("WIN"))
         {
             gamePage.setResultLabelText("You Won!", Color.GREEN);
-            resetTimer();
         }
         else if(message.equals("LOSE"))
         {
             gamePage.setResultLabelText("You Lost!", Color.RED);
-            resetTimer();
+        }
+        else if(message.startsWith("A new round"))
+        {
+            gamePage.resetTable();
         }
         else if (message.startsWith("UPDATE:"))
         {
-            gamePage.updateGameDisplay(message.substring(7));
+            String data = message.substring(7);
+            gamePage.updateGameDisplay(data);
         }
         else if (message.startsWith("BALANCE:"))
         {
@@ -132,14 +134,5 @@ public class GUI extends JFrame{
             gamePage.setResultLabelText("You Win!", Color.GREEN);
             gamePage.disableButtons();
         }
-    }
-
-    // Helper method to keep processServerResponse clean
-    private void resetTimer() {
-        Timer timer = new Timer(2000, e -> {
-            gamePage.resetTable();
-        });
-        timer.setRepeats(false);
-        timer.start();
     }
 }

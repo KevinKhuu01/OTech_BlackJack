@@ -58,27 +58,10 @@ public class GamePage {
     {
         this.resultLabel.setText(text);
         this.resultLabel.setForeground(color);
+        resultLabel.setFont(customFont.bold(20));
         resultLabel.setOpaque(true);
-        resultLabel.setBackground(new Color(0, 0, 0, 155));
+        resultLabel.setBackground(new Color(0, 0, 0, 200));
         resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
-        try
-        {
-            sleep(10);
-        }
-        catch(InterruptedException e)
-        {
-            System.out.println(e);
-        }
-    }
-
-    // Status / instruction label for client
-    public void setTurnStatusText(String text, Color color) {
-        this.resultLabel.setText(text);
-        this.resultLabel.setForeground(color);
-        this.resultLabel.setFont(customFont.bold(25));
-        this.resultLabel.setOpaque(true);
-        this.resultLabel.setBackground(new Color(0, 0, 0, 155));
-        this.resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
     // Displays the player's account balance
@@ -92,7 +75,17 @@ public class GamePage {
     {
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
-        setTurnStatusText("Waiting for others...", Color.LIGHT_GRAY);
+        setResultLabelText("Waiting for others...", Color.LIGHT_GRAY);
+
+        if(playerTotalLabel.getText().split(" ")[1].equals("21"))
+        {
+            setResultLabelText("BlackJack!", Color.GREEN);
+            System.out.println("BLACKJACK");
+        }
+        else if(Integer.parseInt(playerTotalLabel.getText().split(" ")[1]) > 21)
+        {
+            setResultLabelText("You Lose!", Color.RED);
+        }
     }
 
     // Resets cards and card totals on the table for next round
@@ -111,7 +104,7 @@ public class GamePage {
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
 
-        setTurnStatusText("Your Turn!", Color.WHITE);
+        setResultLabelText("Your Turn!", Color.WHITE);
         resultLabel.revalidate();
         resultLabel.repaint();
     }
@@ -147,7 +140,7 @@ public class GamePage {
 
         resultLabel = new JLabel("");
         resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        setTurnStatusText("Your Turn!", Color.WHITE);
+        setResultLabelText("Your Turn!", Color.WHITE);
 
         dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, -120, 0));
         dealerCardsPanel.setOpaque(false);
@@ -160,17 +153,17 @@ public class GamePage {
         playerTotalLabel = createStyledLabel("Total: ");
 
         // Vertical adjustments
-        gamePanel.add(Box.createVerticalStrut(0));
+        gamePanel.add(Box.createVerticalGlue());
         gamePanel.add(dealerCardsPanel);
-        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(Box.createVerticalStrut(10));
         gamePanel.add(dealerTotalLabel);
-        gamePanel.add(Box.createVerticalStrut(120));
+        gamePanel.add(Box.createVerticalStrut(80));
         gamePanel.add(playerCardsPanel);
         gamePanel.add(Box.createVerticalStrut(20));
         gamePanel.add(playerTotalLabel);
-        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(Box.createVerticalStrut(10));
         gamePanel.add(resultLabel);
-        gamePanel.add(Box.createVerticalStrut(20));
+        gamePanel.add(Box.createVerticalStrut(0));
         gamePanel.add(Box.createVerticalGlue());
 
         // WEST PANEL (PLAYER 2 IF CONNECTED) ------------------------------------------------------------------------
@@ -179,7 +172,7 @@ public class GamePage {
         player2Panel.setPreferredSize(new Dimension(280, 100));
         player2Panel.setLayout(new BoxLayout(player2Panel, BoxLayout.Y_AXIS));
 
-        player2Cards = new JPanel(new FlowLayout(FlowLayout.CENTER, -70, 0));
+        player2Cards = new JPanel(new FlowLayout(FlowLayout.CENTER, -100, 0));
         player2Cards.setOpaque(false);
         player2Cards.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -206,7 +199,7 @@ public class GamePage {
         player3Panel.setPreferredSize(new Dimension(280, 300));
         player3Panel.setLayout(new BoxLayout(player3Panel, BoxLayout.Y_AXIS));
 
-        player3Cards = new JPanel(new FlowLayout(FlowLayout.CENTER, -70, 0));
+        player3Cards = new JPanel(new FlowLayout(FlowLayout.CENTER, -100, 0));
         player3Cards.setOpaque(false);
         player3Cards.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -341,7 +334,6 @@ public class GamePage {
 
     // handles server response for game status
     public void updateGameDisplay(String data) {
-
         try {
             // Expected format: "DealerTotal:DCard1,DCard2|PlayerTotal:PCard1,PCard2"
             String[] serverData = data.split("\\|");
@@ -357,6 +349,14 @@ public class GamePage {
 
             String[] playerData = serverData[1].split(":");
             playerTotalLabel.setText("Total: " + playerData[0]);
+            if(playerData[0].equals("21"))
+            {
+                disableButtons();
+            }
+            else if(Integer.parseInt(playerData[0]) > 21)
+            {
+                disableButtons();
+            }
             String balanceData = serverData[2];
             balanceLabel.setText("Balance: $" + balanceData);
             playerCardsPanel.removeAll();
@@ -376,11 +376,20 @@ public class GamePage {
                 player2NameLabel.setText(serverData[3]);
                 String[] player2Data = serverData[4].split(":");
                 player2TotalLabel.setText("Total: " + player2Data[0]);
+                if(player2Data[0].equals("21"))
+                {
+                    player2TotalLabel.setText("BlackJack!");
+                    System.out.println("BLACKJACK");
+                }
+                else if(Integer.parseInt(player2Data[0]) > 21)
+                {
+                    player2TotalLabel.setText("Lost!");
+                }
                 if (player2Data.length > 1 && !player2Data[1].isEmpty())
                 {
                     for (String cardStr : player2Data[1].split(","))
                     {
-                        player2Cards.add(createCardLabel(cardStr, 150, 180));
+                        player2Cards.add(createCardLabel(cardStr, 120, 150));
                     }
                 }
             }
@@ -399,9 +408,18 @@ public class GamePage {
                 player3NameLabel.setText((serverData[6]));
                 String[] player3Data = serverData[7].split(":");
                 player3TotalLabel.setText("Total: " + player3Data[0]);
+                if(player3Data[0].equals("21"))
+                {
+                    player3TotalLabel.setText("BlackJack!");
+                    System.out.println("BLACKJACK");
+                }
+                else if(Integer.parseInt(player3Data[0]) > 21)
+                {
+                    player3TotalLabel.setText("Lost!");
+                }
                 if (player3Data.length > 1 && !player3Data[1].isEmpty()) {
                     for (String cardStr : player3Data[1].split(",")) {
-                        player3Cards.add(createCardLabel(cardStr, 150, 180));
+                        player3Cards.add(createCardLabel(cardStr, 120, 150));
                     }
                 }
             } else {
@@ -417,8 +435,11 @@ public class GamePage {
             player2Cards.repaint();
             player3Cards.revalidate();
             player3Cards.repaint();
-
-        } catch (Exception e) {
+            resultLabel.revalidate();
+            resultLabel.repaint();
+        }
+        catch (Exception e)
+        {
             System.err.println("Error parsing update string from server: " + data);
         }
     }
