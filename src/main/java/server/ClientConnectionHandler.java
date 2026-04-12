@@ -1,32 +1,38 @@
 package server;
 
-import backend.Game;
-import backend.LoginHandler;
-import backend.Player;
+import backend.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
+
+import static backend.TableManager.getTables;
+import static database.DatabaseManager.getBalance;
 
 public class ClientConnectionHandler implements Runnable {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private Socket clientSocket;
     private BufferedReader input;
     private PrintWriter output;
     private String playerName;
     private Table table;
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public ClientConnectionHandler(Socket clientSocket)
     {
         this.clientSocket = clientSocket;
     }
 
+    /** METHODS --------------------------------------------------------------------------------------------------- **/
     public String getPlayerName()
     {
         return playerName;
     }
 
+    /** RUNNABLE OVERRIDE (BUILD CONNECTION TO CLIENT) --------------------------------------------------------------------------------------------------- **/
     @Override
     public void run() {
         try
@@ -52,6 +58,7 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /** MESSAGE HANDLING --------------------------------------------------------------------------------------------------- **/
     private void handleMessage(String message)
     {
         if(message.startsWith("LOGIN"))
@@ -61,6 +68,10 @@ public class ClientConnectionHandler implements Runnable {
         else if(message.startsWith("REGISTER "))
         {
             handleRegister(message);
+        }
+        else if(message.startsWith("BET "))
+        {
+            handleBet(message);
         }
         else if (message.equalsIgnoreCase("START"))
         {
@@ -74,12 +85,62 @@ public class ClientConnectionHandler implements Runnable {
         {
             handleStay(message);
         }
+        else if (message.equalsIgnoreCase("TABLELIST"))
+        {
+            List<Table> tables = getTables();
+            for(Table t : tables)
+            {
+                output.println("TABLELIST |" + t.getTableId() + "|" + t.numClients() + "|" + (t.hasRoom() ? "Y" : "N"));
+            }
+        }
+        else if(message.equalsIgnoreCase("NEWTABLE"))
+        {
+            handleNewTable();
+        }
+        else if(message.startsWith("JOINTABLE "))
+        {
+            handleJoinTable(message);
+        }
         else if (message.equalsIgnoreCase("STATE"))
         {
             if(table != null && playerName != null)
             {
                 output.println(table.getGameLogic().getGameState(playerName));
             }
+        }
+        else if(message.equalsIgnoreCase("GET_BALANCE"))
+        {
+            output.println("BALANCE " + getBalance(playerName));
+        }
+        else if (message.startsWith("ADDFUNDS "))
+        {
+            try {
+                int amount = Integer.parseInt(message.substring(9).trim());
+                Player p = new Player(playerName);
+
+                if (database.DatabaseManager.deposit(p, amount)) {
+                    output.println("BALANCE " + getBalance(playerName));
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid fund amount received.");
+            }
+        }
+        else if(message.equalsIgnoreCase("LEAVETABLE"))
+        {
+            if (table != null) {
+                TableManager.removeFromTable(table, this);
+
+                if (!table.isEmpty()) {
+                    table.broadcast(playerName + " has left the table.");
+                    table.getGameLogic().removePlayer(playerName);
+                    table.removeClient(this);
+                    table.updateAllClients();
+                }
+
+                this.table = null;
+            }
+
+            output.println("LEFT_TABLE");
         }
         else if (message.equalsIgnoreCase("BYE"))
         {
@@ -93,7 +154,7 @@ public class ClientConnectionHandler implements Runnable {
     }
 
 
-    // Server message Handlers ---------------------------------------------
+    /** MESSAGE HANDLER HELPER METHODS --------------------------------------------------------------------------------------------------- **/
     private void handleLogin(String message) {
         String[] loginMessage = message.split(" ");
 
@@ -114,31 +175,13 @@ public class ClientConnectionHandler implements Runnable {
         {
             playerName = username;
 
-            table = TableManager.assignToTable(this);
-            Game g = table.getGameLogic();
-
             Player p = new Player(playerName);
             if(p == null)
             {
                 p = new Player(playerName);
             }
 
-            table.addClient(this, p);
-
             output.println("LOGIN_OK");
-
-            table.broadcast("Table #" + table.getTableId() + ": " + playerName + " joined. (" + table.getPlayerCount() + "/" + Table.MAX_PLAYERS + " players)");
-
-            if(table.getPlayerCount() == 1)
-            {
-                g.startGame();
-            }
-            else
-            {
-                g.dealNewPlayer(g.getPlayer(playerName));
-            }
-
-            table.updateAllClients();
         }
 
     }
@@ -176,6 +219,12 @@ public class ClientConnectionHandler implements Runnable {
             g.startGame();
             table.broadcast("A new round has started at Table #" + table.getTableId() + "!");
             table.updateAllClients();
+
+            if (g.isRoundOver())
+            {
+                table.sendResultsToAll();
+                restartRound();
+            }
         } else {
             output.println("Round still in progress!");
         }
@@ -234,6 +283,7 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /** UTILITY METHODS --------------------------------------------------------------------------------------------------- **/
     private void restartRound() {
         new Thread(() ->
         {
@@ -256,10 +306,66 @@ public class ClientConnectionHandler implements Runnable {
                 g.startGame();
                 table.broadcast("A new round has started at Table #" + table.getTableId() + "!");
                 table.updateAllClients();
+                if (g.isRoundOver()) {
+                    table.sendResultsToAll();
+                    restartRound();
+                }
             }
         }).start();
     }
 
+    private void handleNewTable() {
+        this.table = TableManager.assignToTable(this, "NEWTABLE", playerName);
+        Player p = new Player(playerName);
+        this.table.addClient(this, p);
+
+        if(table.getGameLogic().getPlayer(playerName).getBalance() < 100)
+        {
+            output.println("INSUFFICIENT_FUNDS");
+            return;
+        }
+
+        this.table.broadcast("Table #" + this.table.getTableId() + ": " + playerName + " created the table.");
+        this.table.getGameLogic().startGame();
+        this.table.updateAllClients();
+
+        output.println("JOINED_TABLE");
+
+        if (this.table.getGameLogic().isRoundOver()) {
+            this.table.sendResultsToAll();
+            restartRound();
+        }
+    }
+
+    private void handleJoinTable(String message) {
+        String tableIdStr = message.split(" ")[1];
+        Table foundTable = TableManager.assignToTable(this, tableIdStr, playerName);
+
+        if (foundTable != null)
+        {
+            this.table = foundTable;
+            Player p = new Player(playerName);
+            this.table.addClient(this, p);
+
+            this.table.broadcast("Table #" + this.table.getTableId() + ": " + playerName + " joined. (" + this.table.getPlayerCount() + "/" + Table.MAX_PLAYERS + " players)");
+            this.table.getGameLogic().dealNewPlayer(p);
+            this.table.updateAllClients();
+
+            output.println("JOINED_TABLE");
+        }
+        else
+        {
+            output.println("JOIN_FAIL Table is full or does not exist.");
+        }
+    }
+
+    private void handleBet(String message)
+    {
+        String betAmount = message.split(" ")[1];
+        table.getGameLogic().setNextBet(table.getGameLogic().getPlayer(playerName), Integer.parseInt(betAmount));
+    }
+
+    /** CONNECTION ACTION METHODS --------------------------------------------------------------------------------------------------- **/
     public void sendMessage(String message) {
         if(output != null)
         {
@@ -269,6 +375,18 @@ public class ClientConnectionHandler implements Runnable {
 
     public void closeEverything() {
         try {
+            if (table != null) {
+                TableManager.removeFromTable(table, this);
+
+                // If the table didn't dissolve (other players are still there), update their screens
+                if (!table.isEmpty()) {
+                    table.broadcast(playerName + " has left the table.");
+                    // Optional: You may also need to remove the player from the GameLogic's player list here
+                    table.getGameLogic().removePlayer(playerName);
+                    table.removeClient(this);
+                    table.updateAllClients();
+                }
+            }
             if (input != null) {
                 input.close();
             }

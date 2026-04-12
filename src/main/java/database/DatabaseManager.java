@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class DatabaseManager {
 
-    // Initalize db connection
+    /** INITIALIZE DB CONNECTION --------------------------------------------------------------------------------------------------- **/
     private static final String URL = "jdbc:sqlite:blackjack.db";
 
     public static Connection getConnection() throws SQLException {
@@ -37,10 +37,9 @@ public class DatabaseManager {
             e.printStackTrace();
             return false;
         }
-    }  /** To Do: Set up username from client **/
+    }
 
     // Login existing user and return Player object if password matches
-    /** To Do: set up from client**/
     public static boolean loginUser(String username, String plainPassword) {
         String sql = "SELECT id, username, password_hash, balance FROM users WHERE username = ?"; // search query
 
@@ -68,51 +67,27 @@ public class DatabaseManager {
         return false;
     }
 
-//    // Find a.java user by username without checking password
-//    public Player getUserByUsername(String username) {
-//        String sql = "SELECT id, username, balance FROM users WHERE username = ?";
-//
-//        try (Connection conn = DatabaseManager.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(sql)) {
-//
-//            stmt.setString(1, username);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            if (rs.next()) {
-//                int id = rs.getInt("id");
-//                int balance = rs.getInt("balance");
-//
-//                Player player = new Player(username);
-//                player.setBalance(balance);
-//
-//                return player;
-//            }
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
-
     // Get balance
-    public static double getBalance(Player p)
+    public static int getBalance(String p)
     {
         String sql = "SELECT balance FROM users WHERE username = ?";
         double balance = 0;
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement sqlScript = conn.prepareStatement(sql)) {
 
-            sqlScript.setString(1, p.getUsername());
+            sqlScript.setString(1, p);
             ResultSet sqlReturn = sqlScript.executeQuery();
-            balance = sqlReturn.getInt("balance");
 
-            return balance;
+            if (sqlReturn.next()) {
+                balance = sqlReturn.getDouble("balance");
+            }
+
+            return (int)balance;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return balance;
+        return (int)balance;
     }
 
     // Update a.java user's balance

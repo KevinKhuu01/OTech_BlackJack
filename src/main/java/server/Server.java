@@ -7,13 +7,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private ServerSocket serverSocket;
     private final int port;
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public Server(int port) {
         this.port = port;
     }
 
+    /** METHODS --------------------------------------------------------------------------------------------------- **/
     public void startServer() {
         try {
             serverSocket = new ServerSocket(port);

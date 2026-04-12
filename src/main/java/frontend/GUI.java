@@ -1,19 +1,22 @@
 package frontend;
 
-import frontend.GUIClasses.Pages.CreateAccountPage;
-import frontend.GUIClasses.Pages.LoginPage;
-import frontend.GUIClasses.Pages.StartPage;
-import frontend.GUIClasses.Pages.GamePage;
+import frontend.GUIClasses.pages.CreateAccountPage;
+import frontend.GUIClasses.pages.LoginPage;
+import frontend.GUIClasses.pages.StartPage;
+import frontend.GUIClasses.pages.GamePage;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GUI extends JFrame{
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private final Client client;
     private GamePage gamePage;
+    private StartPage startPage;
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public GUI(Client client){
         this.client = client; // connect gui to client
 
@@ -28,7 +31,7 @@ public class GUI extends JFrame{
 
         LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel);
         CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel);
-        StartPage startPage = new StartPage(client, cardLayout, mainPanel);
+        startPage = new StartPage(client, cardLayout, mainPanel);
         gamePage = new GamePage(client);
 
         mainPanel.add(loginPage.createLoginMenu(), "login");
@@ -42,46 +45,80 @@ public class GUI extends JFrame{
         setVisible(true);
     }
 
+    /** METHODS --------------------------------------------------------------------------------------------------- **/
     // Processes and routes server responses
     public void processServerResponse(String message) {
-        // Login responses
+        // Login responses (LoginPage)
         if(message.equals("LOGIN_OK"))
         {
+            startPage.getTableList();
+            startPage.requestBalance();
             cardLayout.show(mainPanel, "start");
         }
-        if(message.equals("LOGIN_FAIL"))
+        else if(message.equals("LOGIN_FAIL"))
         {
-            JOptionPane.showMessageDialog(mainPanel, "Invalid username or password");
+            JOptionPane.showMessageDialog(mainPanel, "Invalid username or password. Passwords are case sensitive.");
         }
-        if(message.equals("REGISTER_OK"))
+        else if(message.equals("REGISTER_OK"))
         {
             JOptionPane.showMessageDialog(mainPanel, "Registration complete. Welcome!");
             cardLayout.show(mainPanel, "login");
         }
-        if(message.equals("REGISTER_FAIL"))
+        else if(message.equals("REGISTER_FAIL"))
         {
             JOptionPane.showMessageDialog(mainPanel, "Username already exists.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
         }
-        
-        // Game responses
-        if(message.equals("DRAW"))
+
+        // Table & Account Balance responses (StartPage)
+        else if(message.startsWith("TABLELIST |"))
+        {
+            startPage.tableList(message);
+        }
+        else if (message.equals("JOINED_TABLE"))
+        {
+            cardLayout.show(mainPanel, "game");
+        }
+        else if (message.equals("LEFT_TABLE"))
+        {
+            startPage.getTableList();
+            startPage.requestBalance();
+            cardLayout.show(mainPanel, "start");
+        }
+        else if (message.startsWith("JOIN_FAIL"))
+        {
+            JOptionPane.showMessageDialog(mainPanel, message.substring(10));
+        }
+        else if(message.startsWith("BALANCE "))
+        {
+            String[] amount = message.split(" ");
+            startPage.updateBalanceLabel(amount[1]);
+        }
+        else if(message.equals("INSUFFICIENT_FUNDS"))
+        {
+            gamePage.checkSufficientFunds();
+        }
+
+        // Game responses (GamePage)
+        else if(message.equals("DRAW"))
         {
             gamePage.setResultLabelText("Draw!", Color.LIGHT_GRAY);
-            resetTimer();
         }
         else if(message.equals("WIN"))
         {
             gamePage.setResultLabelText("You Won!", Color.GREEN);
-            resetTimer();
         }
         else if(message.equals("LOSE"))
         {
             gamePage.setResultLabelText("You Lost!", Color.RED);
-            resetTimer();
+        }
+        else if(message.startsWith("A new round"))
+        {
+            gamePage.resetTable();
         }
         else if (message.startsWith("UPDATE:"))
         {
-            gamePage.updateGameDisplay(message.substring(7));
+            String data = message.substring(7);
+            gamePage.updateGameDisplay(data);
         }
         else if (message.startsWith("BALANCE:"))
         {
@@ -97,14 +134,5 @@ public class GUI extends JFrame{
             gamePage.setResultLabelText("You Win!", Color.GREEN);
             gamePage.disableButtons();
         }
-    }
-
-    // Helper method to keep processServerResponse clean
-    private void resetTimer() {
-        Timer timer = new Timer(1000, e -> {
-            gamePage.resetTable();
-        });
-        timer.setRepeats(false);
-        timer.start();
     }
 }

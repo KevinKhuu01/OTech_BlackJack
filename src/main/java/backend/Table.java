@@ -1,7 +1,6 @@
-package server;
+package backend;
 
-import backend.Game;
-import backend.Player;
+import server.ClientConnectionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,18 +10,19 @@ import java.util.List;
  * Each table owns its own GameLogic instance so game state is fully isolated.
  */
 public class Table {
-
+    /** FIELDS --------------------------------------------------------------------------------------------------- **/
     public static final int MAX_PLAYERS = 3;
-
     private final int tableId;
     private final Game game;
     private final List<ClientConnectionHandler> clients = new ArrayList<>();
 
+    /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public Table(int tableId) {
         this.tableId = tableId;
         this.game = new Game(); // isolated game state per table
     }
 
+    /** GETTER AND SETTER METHODS --------------------------------------------------------------------------------------------------- **/
     public int getTableId() {
         return tableId;
     }
@@ -31,7 +31,6 @@ public class Table {
         return game;
     }
 
-    /** Returns true if this table can accept another player. */
     public boolean hasRoom() {
         return clients.size() < MAX_PLAYERS;
     }
@@ -40,16 +39,15 @@ public class Table {
         return clients.isEmpty();
     }
 
-    /** Add a client/player to this table and register the Player in GameLogic. */
+    public int numClients() {return clients.size();}
+
     public void addClient(ClientConnectionHandler handler, Player player) {
         clients.add(handler);
         game.addPlayer(player);
     }
 
-    /** Remove a client from the table (on disconnect). */
     public void removeClient(ClientConnectionHandler handler) {
         clients.remove(handler);
-        // Note: GameLogic does not need cleanup unless you want to award wins on disconnect.
     }
 
     public List<ClientConnectionHandler> getClients() {
@@ -60,17 +58,13 @@ public class Table {
         return clients.size();
     }
 
-    /** Broadcast a message to every client sitting at this table. */
+    /** TABLE ACTION METHODS --------------------------------------------------------------------------------------------------- **/
     public void broadcast(String message) {
         for (ClientConnectionHandler c : clients) {
             c.sendMessage(message);
         }
     }
 
-    /**
-     * Push the current game state (hand + balance) to every client at the table,
-     * and also send WIN/LOSE/DRAW results to clients whose round is over.
-     */
     public void updateAllClients() {
         for (ClientConnectionHandler c : clients) {
             if (c.getPlayerName() == null) continue;

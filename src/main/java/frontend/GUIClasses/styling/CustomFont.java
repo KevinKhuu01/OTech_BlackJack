@@ -1,4 +1,4 @@
-package frontend.GUIClasses.Styling;
+package frontend.GUIClasses.styling;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -8,8 +8,8 @@ public class CustomFont {
     private Font boldFont;
 
     public CustomFont() {
-        regularFont = newFont("fonts/Ubuntu-Regular.ttf", Font.PLAIN, 16f);
-        boldFont = newFont("fonts/Ubuntu-Bold.ttf", Font.BOLD, 16f);
+        regularFont = newFont("fonts/Ubuntu-Regular.ttf", Font.PLAIN, 25f);
+        boldFont = newFont("fonts/Ubuntu-Bold.ttf", Font.BOLD, 168f);
     }
 
     private Font newFont(String path, int fallbackStyle, float size) {
