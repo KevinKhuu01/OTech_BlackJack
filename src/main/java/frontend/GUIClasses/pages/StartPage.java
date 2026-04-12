@@ -1,8 +1,8 @@
-package frontend.GUIClasses.Pages;
+package frontend.GUIClasses.pages;
 
 import frontend.Client;
-import frontend.GUIClasses.Styling.BackgroundPanel;
-import frontend.GUIClasses.Styling.CustomFont;
+import frontend.GUIClasses.styling.BackgroundPanel;
+import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +33,7 @@ public class StartPage {
         wallpaper.setPreferredSize(new Dimension(900,800));
 
         // Table options
-        JPanel startMenuPanel = new BackgroundPanel("menuWallpaper.png");
+        JPanel startMenuPanel = new BackgroundPanel("menu_wallpaper.png");
         startMenuPanel.setLayout(new BoxLayout(startMenuPanel, BoxLayout.Y_AXIS));
         startMenuPanel.setPreferredSize(new Dimension(300,800));
         startMenuPanel.setBackground(Color.WHITE);

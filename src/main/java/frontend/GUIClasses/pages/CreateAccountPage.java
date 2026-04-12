@@ -1,13 +1,13 @@
-package frontend.GUIClasses.Pages;
+package frontend.GUIClasses.pages;
 
 import frontend.Client;
-import frontend.GUIClasses.Styling.BackgroundPanel;
-import frontend.GUIClasses.Styling.CustomFont;
+import frontend.GUIClasses.styling.BackgroundPanel;
+import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class LoginPage {
+public class CreateAccountPage {
     /** FIELDS --------------------------------------------------------------------------------------------------- **/
     private final Client client;
     private final CardLayout cardLayout;
@@ -15,24 +15,23 @@ public class LoginPage {
     private final CustomFont customFont = new CustomFont();
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
-    public LoginPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
+    public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
         this.client = client;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
     }
-
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
-    public JPanel createLoginMenu() {
+    public JPanel createAccountMenu() {
         JPanel backgroundPanel = new JPanel(new BorderLayout());
         JPanel wallpaper = new BackgroundPanel("wallpaper.png");
         wallpaper.setPreferredSize(new Dimension(900,800));
 
-        JPanel menuPanel = new BackgroundPanel("menuWallpaper.png");
+        JPanel menuPanel = new BackgroundPanel("menu_wallpaper.png");
         menuPanel.setPreferredSize(new Dimension(300, 800));
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBackground(new Color(245, 245, 245, 1));
 
-        JLabel titleLabel = new JLabel("Login");
+        JLabel titleLabel = new JLabel("Registration");
         titleLabel.setFont(customFont.bold(42));
         titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -74,33 +73,44 @@ public class LoginPage {
         // Buttons
         Dimension buttonSize = new Dimension(250, 40);
 
-        JButton loginButton = new JButton("Login");
-        loginButton.setFont(customFont.bold(25));
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginButton.setPreferredSize(buttonSize);
-        loginButton.setMaximumSize(buttonSize);
-        loginButton.setMinimumSize(buttonSize);
+        JButton registerButton = new JButton("Submit");
+        registerButton.setFont(customFont.bold(25));
+        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        registerButton.setPreferredSize(buttonSize);
+        registerButton.setMaximumSize(buttonSize);
+        registerButton.setMinimumSize(buttonSize);
 
-        JButton createAccButton = new JButton("Create Account");
-        createAccButton.setFont(customFont.regular(20));
-        createAccButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        createAccButton.setPreferredSize(buttonSize);
-        createAccButton.setMaximumSize(buttonSize);
-        createAccButton.setMinimumSize(buttonSize);
+        JButton backButton = new JButton("Back to Login");
+        backButton.setFont(customFont.regular(20));
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setPreferredSize(buttonSize);
+        backButton.setMaximumSize(buttonSize);
+        backButton.setMinimumSize(buttonSize);
 
         // Actions
-        loginButton.addActionListener(e -> {
+        registerButton.addActionListener(e -> {
             String username = userField.getText().trim();
             String password = new String(passField.getPassword()).trim();
             if (!username.isEmpty() && !password.isEmpty()) {
-                // Send login request to server
-                client.sendMessage("LOGIN " + username + " " + password);
-            } else {
+                if(username.length() <= 4 || !username.matches(".*[A-Za-z].*"))
+                {
+                    JOptionPane.showMessageDialog(backgroundPanel, "Invalid username! Username must be greater than 3 characters and contain letters", "Registration Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if(password.length() < 5 || !password.matches(".*[A-Za-z].*"))
+                {
+                    JOptionPane.showMessageDialog(backgroundPanel, "Invalid password! Password must be greater than 5 characters and contain letters", "Registration Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    client.sendMessage("REGISTER " + username + " " + password);
+                }
+            }
+            else {
                 JOptionPane.showMessageDialog(mainPanel, "Please fill in both fields.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        createAccButton.addActionListener(e -> cardLayout.show(mainPanel, "create"));
+        backButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
 
         // Assembly
         menuPanel.add(Box.createVerticalStrut(30));
@@ -110,9 +120,9 @@ public class LoginPage {
         menuPanel.add(Box.createVerticalStrut(0));
         menuPanel.add(passPanel);
         menuPanel.add(Box.createVerticalStrut(300));
-        menuPanel.add(loginButton);
+        menuPanel.add(registerButton);
         menuPanel.add(Box.createVerticalStrut(10));
-        menuPanel.add(createAccButton);
+        menuPanel.add(backButton);
         menuPanel.add(Box.createVerticalGlue());
 
         backgroundPanel.add(wallpaper, BorderLayout.WEST);

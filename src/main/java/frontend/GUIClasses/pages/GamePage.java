@@ -1,8 +1,8 @@
-package frontend.GUIClasses.Pages;
+package frontend.GUIClasses.pages;
 
 import frontend.Client;
-import frontend.GUIClasses.Styling.BackgroundPanel;
-import frontend.GUIClasses.Styling.CustomFont;
+import frontend.GUIClasses.styling.BackgroundPanel;
+import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -130,7 +130,7 @@ public class GamePage {
 
     /** BUILD PAGE METHODS ----------------------------------------------------------------------------------------- **/
     public JPanel createGamePanel() {
-        backgroundPanel = new BackgroundPanel("Table.png");
+        backgroundPanel = new BackgroundPanel("table.png");
         backgroundPanel.setLayout(new BorderLayout());
 
         // MAIN PANEL (CLIENT AND DEALER) -----------------------------------------------------------------------------

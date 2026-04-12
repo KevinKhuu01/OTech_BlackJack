@@ -1,9 +1,9 @@
 package frontend;
 
-import frontend.GUIClasses.Pages.CreateAccountPage;
-import frontend.GUIClasses.Pages.LoginPage;
-import frontend.GUIClasses.Pages.StartPage;
-import frontend.GUIClasses.Pages.GamePage;
+import frontend.GUIClasses.pages.CreateAccountPage;
+import frontend.GUIClasses.pages.LoginPage;
+import frontend.GUIClasses.pages.StartPage;
+import frontend.GUIClasses.pages.GamePage;
 
 import javax.swing.*;
 import java.awt.*;
