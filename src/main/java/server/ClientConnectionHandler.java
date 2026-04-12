@@ -21,18 +21,31 @@ public class ClientConnectionHandler implements Runnable {
     private Table table;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+
+    /** Constructs a ClientConnectionHandler for a given client socket.
+     * @param clientSocket the socket representing the client connection
+     **/
     public ClientConnectionHandler(Socket clientSocket)
     {
         this.clientSocket = clientSocket;
     }
 
     /** METHODS --------------------------------------------------------------------------------------------------- **/
+
+    /** Returns the username of the connected player.
+     * @return the player's username
+     **/
     public String getPlayerName()
     {
         return playerName;
     }
 
     /** RUNNABLE OVERRIDE (BUILD CONNECTION TO CLIENT) --------------------------------------------------------------------------------------------------- **/
+
+    /** Entry point for the client handler thread.
+     * Establishes input/output streams and continuously listens for messages
+     * from the client until the connection is closed.
+     **/
     @Override
     public void run() {
         try
@@ -59,6 +72,16 @@ public class ClientConnectionHandler implements Runnable {
     }
 
     /** MESSAGE HANDLING --------------------------------------------------------------------------------------------------- **/
+
+    /** Parses and routes incoming client messages to the appropriate handler.
+     * Supported commands include:
+     * LOGIN, REGISTER
+     * BET, HIT, STAY, START
+     * TABLELIST, NEWTABLE, JOINTABLE
+     * STATE, GET_BALANCE, ADDFUNDS
+     * LEAVETABLE, BYE
+     * @param message the raw message received from the client
+     **/
     private void handleMessage(String message)
     {
         if(message.startsWith("LOGIN"))
@@ -155,6 +178,11 @@ public class ClientConnectionHandler implements Runnable {
 
 
     /** MESSAGE HANDLER HELPER METHODS --------------------------------------------------------------------------------------------------- **/
+
+    /** Handles login requests from the client.
+     * Expected format: LOGIN username password
+     * @param message the login message
+     **/
     private void handleLogin(String message) {
         String[] loginMessage = message.split(" ");
 
@@ -186,6 +214,10 @@ public class ClientConnectionHandler implements Runnable {
 
     }
 
+    /** Handles user registration requests.
+     * Expected format: REGISTER username password
+     * @param message the registration message
+     */
     private void handleRegister(String message)
     {
         String[] registerMessage = message.split(" ");
@@ -261,6 +293,11 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /** Processes a "stay" action from the player.
+     * Ends the player's turn and updates the game state.
+     *
+     * @param message the stay command
+     */
     private void handleStay(String message)
     {
         if (playerName == null || table == null)
@@ -284,6 +321,7 @@ public class ClientConnectionHandler implements Runnable {
     }
 
     /** UTILITY METHODS --------------------------------------------------------------------------------------------------- **/
+
     private void restartRound() {
         new Thread(() ->
         {
@@ -314,6 +352,9 @@ public class ClientConnectionHandler implements Runnable {
         }).start();
     }
 
+    /** Creates a new table and assigns the current player to it.
+     Also initializes the game if sufficient funds are available.
+     **/
     private void handleNewTable() {
         this.table = TableManager.assignToTable(this, "NEWTABLE", playerName);
         Player p = new Player(playerName);
@@ -337,6 +378,11 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /**
+     * Handles requests to join an existing table.
+     * Expected format: JOINTABLE tableId
+     * @param message the join table command
+     **/
     private void handleJoinTable(String message) {
         String tableIdStr = message.split(" ")[1];
         Table foundTable = TableManager.assignToTable(this, tableIdStr, playerName);
@@ -359,6 +405,11 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /**
+     * Sets the player's bet for the next round.
+     * Expected format: BET amount
+     * @param message the bet command
+     **/
     private void handleBet(String message)
     {
         String betAmount = message.split(" ")[1];
@@ -366,6 +417,11 @@ public class ClientConnectionHandler implements Runnable {
     }
 
     /** CONNECTION ACTION METHODS --------------------------------------------------------------------------------------------------- **/
+
+    /**
+     * Sends a message to the connected client.
+     * @param message the message to send
+     */
     public void sendMessage(String message) {
         if(output != null)
         {
@@ -373,6 +429,11 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /** Closes all resources associated with this client connection.
+     * This includes Removing the player from their table,
+     * Closing input/output streams,
+     * Closing the socket
+     **/
     public void closeEverything() {
         try {
             if (table != null) {

@@ -17,6 +17,13 @@ public class Server {
     }
 
     /** METHODS --------------------------------------------------------------------------------------------------- **/
+
+    /** Starts up the server, sending messages to the terminal to confirm:
+     * - The server has started on a given port
+     * - The server is listening and is waiting for a client
+     * - A client has connected
+     * An error occurred while starting
+     **/
     public void startServer() {
         try {
             serverSocket = new ServerSocket(port);
@@ -37,6 +44,9 @@ public class Server {
         }
     }
 
+    /** Prints messages to the terminal indicating that the server is closed or
+     * if there was an error closing the server
+     **/
     public void closeServer() {
         try {
             if (serverSocket != null) {
@@ -49,6 +59,7 @@ public class Server {
         }
     }
 
+    // Main method
     public static void main(String[] args) {
         InitializeDB.initialize();
         Server server = new Server(5050);

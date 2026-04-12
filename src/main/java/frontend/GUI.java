@@ -18,6 +18,10 @@ public class GUI extends JFrame{
     private StartPage startPage;
     private BackGroundMusic bgm;
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+
+    /** Constructs the GUI for the client
+     * @param client: The client starting the application
+     **/
     public GUI(Client client){
         this.client = client; // connect gui to client
 
@@ -47,7 +51,9 @@ public class GUI extends JFrame{
     }
 
     /** METHODS --------------------------------------------------------------------------------------------------- **/
-    // Processes and routes server responses
+    /** Processes and routes server responses
+     * @param message: The message being processed that came from the server
+     **/
     public void processServerResponse(String message) {
         // Login responses (LoginPage)
         if(message.equals("LOGIN_OK"))
