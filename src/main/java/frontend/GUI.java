@@ -4,6 +4,7 @@ import frontend.GUIClasses.pages.CreateAccountPage;
 import frontend.GUIClasses.pages.LoginPage;
 import frontend.GUIClasses.pages.StartPage;
 import frontend.GUIClasses.pages.GamePage;
+import frontend.GUIClasses.styling.BackGroundMusic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ public class GUI extends JFrame{
     private final Client client;
     private GamePage gamePage;
     private StartPage startPage;
-
+    private BackGroundMusic bgm;
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
     public GUI(Client client){
         this.client = client; // connect gui to client
@@ -41,7 +42,6 @@ public class GUI extends JFrame{
 
         setContentPane(mainPanel);
         cardLayout.show(mainPanel, "login");
-
         setVisible(true);
     }
 
@@ -77,12 +77,15 @@ public class GUI extends JFrame{
         else if (message.equals("JOINED_TABLE"))
         {
             cardLayout.show(mainPanel, "game");
+            bgm = new BackGroundMusic();
+            bgm.playMusic("src/main/resources/music/BlackJackBGM.wav");
         }
         else if (message.equals("LEFT_TABLE"))
         {
             startPage.getTableList();
             startPage.requestBalance();
             cardLayout.show(mainPanel, "start");
+            bgm.stopMusic();
         }
         else if (message.startsWith("JOIN_FAIL"))
         {
