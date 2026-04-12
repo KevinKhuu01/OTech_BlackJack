@@ -1,11 +1,13 @@
 package frontend.GUIClasses.pages;
 
 import frontend.Client;
+import frontend.GUIClasses.styling.BackgroundMusic;
 import frontend.GUIClasses.styling.BackgroundPanel;
 import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CreateAccountPage {
     /** FIELDS --------------------------------------------------------------------------------------------------- **/
@@ -13,12 +15,15 @@ public class CreateAccountPage {
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
     private final CustomFont customFont = new CustomFont();
+    private final BackgroundMusic backgroundMusic;
+    private JButton muteMusicButton;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
-    public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
+    public CreateAccountPage(Client client, CardLayout cardLayout, JPanel mainPanel, BackgroundMusic backgroundMusic) {
         this.client = client;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.backgroundMusic = backgroundMusic;
     }
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
     public JPanel createAccountMenu() {
@@ -32,7 +37,7 @@ public class CreateAccountPage {
         menuPanel.setBackground(new Color(245, 245, 245, 1));
 
         JLabel titleLabel = new JLabel("Registration");
-        titleLabel.setFont(customFont.bold(50));
+        titleLabel.setFont(customFont.bold(45));
         titleLabel.setForeground(new Color(0, 60, 113));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -112,6 +117,25 @@ public class CreateAccountPage {
 
         backButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
 
+        muteMusicButton = new JButton("Music Off");
+        backgroundMusic.registerButton(muteMusicButton);
+        muteMusicButton.setFont(customFont.regular(20f));
+        muteMusicButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        muteMusicButton.setPreferredSize(buttonSize);
+        muteMusicButton.setMaximumSize(buttonSize);
+        muteMusicButton.setMinimumSize(buttonSize);
+
+        muteMusicButton.addActionListener(e -> {
+            boolean isMuted = backgroundMusic.toggleMute();
+            if (isMuted)
+            {
+                backgroundMusic.stopMusic();
+            } else
+            {
+                backgroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
+            }
+        });
+
         // Assembly
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
@@ -123,6 +147,8 @@ public class CreateAccountPage {
         menuPanel.add(registerButton);
         menuPanel.add(Box.createVerticalStrut(10));
         menuPanel.add(backButton);
+        menuPanel.add(Box.createVerticalStrut(10));
+        menuPanel.add(muteMusicButton);
         menuPanel.add(Box.createVerticalGlue());
 
         backgroundPanel.add(wallpaper, BorderLayout.WEST);

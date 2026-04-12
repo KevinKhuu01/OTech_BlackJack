@@ -1,11 +1,13 @@
 package frontend.GUIClasses.pages;
 
 import frontend.Client;
+import frontend.GUIClasses.styling.BackgroundMusic;
 import frontend.GUIClasses.styling.BackgroundPanel;
 import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoginPage {
     /** FIELDS --------------------------------------------------------------------------------------------------- **/
@@ -13,12 +15,15 @@ public class LoginPage {
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
     private final CustomFont customFont = new CustomFont();
+    private BackgroundMusic backgroundMusic;
+    private JButton muteMusicButton;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
-    public LoginPage(Client client, CardLayout cardLayout, JPanel mainPanel) {
+    public LoginPage(Client client, CardLayout cardLayout, JPanel mainPanel, BackgroundMusic backgroundMusic) {
         this.client = client;
         this.cardLayout = cardLayout;
         this.mainPanel = mainPanel;
+        this.backgroundMusic = backgroundMusic;
     }
 
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
@@ -103,6 +108,25 @@ public class LoginPage {
 
         createAccButton.addActionListener(e -> cardLayout.show(mainPanel, "create"));
 
+        muteMusicButton = new JButton("Music Off");
+        backgroundMusic.registerButton(muteMusicButton);
+        muteMusicButton.setFont(customFont.regular(20f));
+        muteMusicButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        muteMusicButton.setPreferredSize(buttonSize);
+        muteMusicButton.setMaximumSize(buttonSize);
+        muteMusicButton.setMinimumSize(buttonSize);
+
+        muteMusicButton.addActionListener(e -> {
+            boolean isMuted = backgroundMusic.toggleMute();
+            if (isMuted)
+            {
+                backgroundMusic.stopMusic();
+            } else
+            {
+                backgroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
+            }
+        });
+
         // Assembly
         menuPanel.add(Box.createVerticalStrut(30));
         menuPanel.add(titleLabel);
@@ -114,6 +138,8 @@ public class LoginPage {
         menuPanel.add(loginButton);
         menuPanel.add(Box.createVerticalStrut(10));
         menuPanel.add(createAccButton);
+        menuPanel.add(Box.createVerticalStrut(10));
+        menuPanel.add(muteMusicButton);
         menuPanel.add(Box.createVerticalGlue());
 
         backgroundPanel.add(wallpaper, BorderLayout.WEST);

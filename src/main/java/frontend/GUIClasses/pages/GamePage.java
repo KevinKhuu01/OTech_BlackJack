@@ -1,13 +1,12 @@
 package frontend.GUIClasses.pages;
 
 import frontend.Client;
-import frontend.GUIClasses.styling.BackGroundMusic;
+import frontend.GUIClasses.styling.BackgroundMusic;
 import frontend.GUIClasses.styling.BackgroundPanel;
 import frontend.GUIClasses.styling.CustomFont;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -45,7 +44,7 @@ public class GamePage {
     private JButton hitButton;
     private JButton standButton;
     private JButton leaveGameButton;
-    private BackGroundMusic backGroundMusic;
+    private BackgroundMusic backgroundMusic;
     private JButton muteMusicButton;
     private JTextField betAmountTextField;
     private String betInput = Integer.toString(100);
@@ -53,10 +52,10 @@ public class GamePage {
     private Timer balanceTimer;
 
     /** CONSTRUCTOR -------------------------------------------------------------------------------------------------**/
-    public GamePage(Client client, BackGroundMusic backGroundMusic)
+    public GamePage(Client client, BackgroundMusic backGroundMusic)
     {
         this.client = client;
-        this.backGroundMusic = backGroundMusic;
+        this.backgroundMusic = backGroundMusic;
     }
 
     /** HELPER METHODS --------------------------------------------------------------------------------------------- **/
@@ -354,24 +353,22 @@ public class GamePage {
         leaveGameButton.setFont(customFont.bold(20));
         leaveGameButton.setPreferredSize(new Dimension(150, 40));
         leaveGameButton.addActionListener(e -> {
-            client.sendMessage("LEAVETABLE");
+            client.sendMessage("LEAVE_TABLE");
         });
 
         muteMusicButton = new JButton("Music Off");
+        backgroundMusic.registerButton(muteMusicButton);
         muteMusicButton.setFont(customFont.bold(20f));
         muteMusicButton.setPreferredSize(new Dimension(150, 40));
-        AtomicInteger clickToMute = new AtomicInteger();
+
         muteMusicButton.addActionListener(e -> {
-            clickToMute.getAndIncrement();
-            if (clickToMute.get()%2 != 0) {
-                client.sendMessage("mute");
-                muteMusicButton.setText("Music On");
-                backGroundMusic.stopMusic();
-            }
-            else {
-                client.sendMessage("unmute");
-                muteMusicButton.setText("Music Off");
-                backGroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
+            boolean isMuted = backgroundMusic.toggleMute();
+            if (isMuted)
+            {
+                backgroundMusic.stopMusic();
+            } else
+            {
+                backgroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
             }
         });
 
@@ -521,7 +518,7 @@ public class GamePage {
             {
                 disableButtons();
                 JOptionPane.showMessageDialog(backgroundPanel, "Insufficient funds! Add funds in the main menu.", "Error placing bet", JOptionPane.ERROR_MESSAGE);
-                client.sendMessage("LEAVETABLE");
+                client.sendMessage("LEAVE_TABLE");
             }
         });
         timer.setRepeats(false);
