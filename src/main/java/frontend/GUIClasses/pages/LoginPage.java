@@ -75,7 +75,7 @@ public class LoginPage {
         Dimension buttonSize = new Dimension(250, 40);
 
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(customFont.bold(25));
+        loginButton.setFont(customFont.regular(25));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.setPreferredSize(buttonSize);
         loginButton.setMaximumSize(buttonSize);
@@ -89,8 +89,9 @@ public class LoginPage {
         createAccButton.setMinimumSize(buttonSize);
 
         // Actions
+        passField.addActionListener(e -> loginButton.doClick());
         loginButton.addActionListener(e -> {
-            String username = userField.getText().trim();
+            String username = userField.getText().trim().toLowerCase();
             String password = new String(passField.getPassword()).trim();
             if (!username.isEmpty() && !password.isEmpty()) {
                 // Send login request to server

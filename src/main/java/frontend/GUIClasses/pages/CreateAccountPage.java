@@ -102,7 +102,7 @@ public class CreateAccountPage {
                 }
                 else
                 {
-                    client.sendMessage("REGISTER " + username + " " + password);
+                    client.sendMessage("REGISTER " + username.toLowerCase() + " " + password);
                 }
             }
             else {

@@ -57,7 +57,7 @@ public class GUI extends JFrame{
         }
         else if(message.equals("LOGIN_FAIL"))
         {
-            JOptionPane.showMessageDialog(mainPanel, "Invalid username or password");
+            JOptionPane.showMessageDialog(mainPanel, "Invalid username or password. Passwords are case sensitive.");
         }
         else if(message.equals("REGISTER_OK"))
         {

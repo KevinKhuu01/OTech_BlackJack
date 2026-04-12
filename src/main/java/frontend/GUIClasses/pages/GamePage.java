@@ -80,7 +80,6 @@ public class GamePage {
         if(playerTotalLabel.getText().split(" ")[1].equals("21"))
         {
             setResultLabelText("BlackJack!", Color.GREEN);
-            System.out.println("BLACKJACK");
         }
         else if(Integer.parseInt(playerTotalLabel.getText().split(" ")[1]) > 21)
         {
