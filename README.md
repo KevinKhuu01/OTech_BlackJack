@@ -1,18 +1,7 @@
-****To be removed for actual README****
-
-Remaining tasks:
-Deadline: Sunday April 12
-- Re-factor code
-- Method headers 
-- Add music
-- Readme / documentation
-
-(Below is the actual README content, please do not delete it with the notes above this line)
-
-# CSCI2020U Final Project: Blackjack By Kevin Khuu and Awrron Kavian
+# Blackjack By Kevin Khuu and Awrron Kavian
 
 ## Overview
-This is our final project for the Software Systems Devolopment and Integration course, in which we were given the freedom to choose what sort of project we would like to do. This final project for is an Ontario Tech themed Blackjack app, featuring a betting function, cards and tables with an Ontario Tech inspired design and multiplayer capabilities (up to 3 players at a table). Players can create their own account complete with a starting balance of $10,000 and can add funds whenever they like. After logging in, players can create their own public tables to start playing or join other tables with their friends to play against each other and the dealer. We hope you will enjoy Ontario Tech Blackjack! 
+This project is for an Ontario Tech themed Blackjack app, featuring a betting function, cards, and tables with an Ontario Tech inspired design and multiplayer capabilities (up to 3 players at a table, unlimited number of tables). Players can create their own account complete with a starting balance of $10,000 and can add funds whenever they like. After logging in, players can create their own public tables to start playing or join other tables with their friends to play against each other and the dealer. We hope you will enjoy Ontario Tech Blackjack! 
 
 ## How to run
 Below are the steps on how to get Ontario Tech Blackjack running on your computer. Please note that in order to run the app, an Integrated Development Environment is needed to clone the repository (Intellij IDEA IDE is recommended). Java version <ADD JAVA VERSION HERE> or more recent is also needed. 
