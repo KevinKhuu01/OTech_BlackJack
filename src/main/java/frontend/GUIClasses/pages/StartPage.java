@@ -91,7 +91,7 @@ public class StartPage {
         userBalanceLabel.setFont(customFont.bold(20));
         userBalanceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        addFundsButton = new JButton("Add funds");
+        addFundsButton = new JButton("Add Funds");
         addFundsButton.setFont(customFont.regular(20));
         addFundsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addFundsButton.setPreferredSize(buttonSize);
@@ -133,7 +133,7 @@ public class StartPage {
             }
         });
 
-        logOffButton = new JButton("Log off");
+        logOffButton = new JButton("Log Off");
         logOffButton.setFont(customFont.regular(20));
         logOffButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         logOffButton.setPreferredSize(buttonSize);
