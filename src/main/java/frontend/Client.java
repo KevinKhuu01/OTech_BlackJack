@@ -15,6 +15,11 @@ public class Client {
     private GUI gui;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+
+    /** Creates an instance of Client
+     * @param host The server hosting the client
+     * @param port The port number the server is connected to for the client to connect
+     **/
     public Client(String host, int port)
     {
         try
@@ -36,6 +41,9 @@ public class Client {
     }
 
     /** CONNECTION HANDLER (RECEIVE MESSAGE FROM SERVER) --------------------------------------------------------------------------------------------------- **/
+    /** Receives messages sent from the server.
+     * If there is no socket, input or output, prints that client isnt connected
+     **/
     public void receiveMessage() {
         if (socket == null || input == null || output == null) {
             System.out.println("Client is not connected to the server.");
@@ -63,11 +71,19 @@ public class Client {
     }
 
     /** METHODS --------------------------------------------------------------------------------------------------- **/
+    /** Sends a message to the server
+     * Uses output stream to transmit data
+     **/
     public void sendMessage(String message)
     {
         output.println(message);
     }
 
+    /** CLOSE SOCKETS
+     * Closes all client-side resources
+     * Safely shuts down input, output, and socket
+     * Handles IO exceptions during cleanup
+     **/
     public void closeSockets() {
         try {
             if (input != null) {
@@ -85,6 +101,8 @@ public class Client {
         }
     }
 
+    /** Main method
+     * Initializes client and connects to server**/
     public static void main(String[] args)
     {
         Client client = new Client("localhost", 5050);

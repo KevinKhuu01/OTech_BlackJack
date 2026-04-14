@@ -81,7 +81,9 @@ public class GamePage {
         resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
     }
 
-    // Displays the player's account balance
+    /** Displays the player's account balance
+     * @param text The label for a users balance
+     **/
     public void setBalanceLabel(String text)
     {
         int newBalance = Integer.parseInt(text.trim());
@@ -129,7 +131,7 @@ public class GamePage {
         balanceTimer.start();
     }
 
-    /**Disables player action buttons and updates the result label based on game outcome. **/
+    /** Disables player action buttons and updates the result label based on game outcome. **/
     public void disableButtons()
     {
         hitButton.setEnabled(false);
@@ -146,7 +148,7 @@ public class GamePage {
         }
     }
 
-    // Resets cards and card totals on the table for next round
+    /** Resets cards and card totals on the table for next round **/
     public void resetTable()
     {
         checkSufficientFunds();
@@ -192,6 +194,15 @@ public class GamePage {
     }
 
     /** BUILD PAGE METHODS ----------------------------------------------------------------------------------------- **/
+
+    /** Creates the panel for blackjack games. contains:
+     * Background
+     * player hands
+     * player hand totals
+     * betting amount
+     * buttons to hit, stand, send bets, leave table
+     * player balance
+     **/
     public JPanel createGamePanel() {
         backgroundPanel = new BackgroundPanel("table.png");
         backgroundPanel.setLayout(new BorderLayout());
@@ -402,7 +413,7 @@ public class GamePage {
         return backgroundPanel;
     }
 
-    // styling
+    /** Styling for game panel **/
     private JLabel createStyledLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(customFont.regular(24));
@@ -414,7 +425,7 @@ public class GamePage {
         return label;
     }
 
-    // handles server response for game status
+    /** handles server response for game status **/
     public void updateGameDisplay(String data) {
         try {
             // Expected format: "DealerTotal:DCard1,DCard2|PlayerTotal:PCard1,PCard2"
@@ -526,6 +537,7 @@ public class GamePage {
         }
     }
 
+    /** Checks if a Player has enough funds to place bets during a game **/
     public void checkSufficientFunds()
     {
         Timer timer = new Timer(1200, e -> {

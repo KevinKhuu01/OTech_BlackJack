@@ -13,7 +13,12 @@ public class CustomFont {
         boldFont = newFont("fonts/Ubuntu-Bold.ttf", Font.BOLD, 168f);
     }
 
-    /** **/
+    /** Loads and registers a custom font
+     * Falls back to default if loading fails
+     * @param path The path of the needed font
+     * @param fallbackStyle The style of the font. can be either PLAIN, BOLD or ITALIC
+     * @param size The size of the new font
+     **/
     private Font newFont(String path, int fallbackStyle, float size) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
             if (is == null) {
@@ -30,11 +35,17 @@ public class CustomFont {
             return new Font("SansSerif", fallbackStyle, Math.round(size));
         }
     }
-
+    /**
+     * Returns resized regular font
+     * @param size The size of the font
+     **/
     public Font regular(float size) {
         return regularFont.deriveFont(size);
     }
 
+    /** Returns resized bold font
+     * @param size The size of the font
+     **/
     public Font bold(float size) {
         return boldFont.deriveFont(size);
     }

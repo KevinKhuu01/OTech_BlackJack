@@ -23,7 +23,7 @@ public class ClientConnectionHandler implements Runnable {
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
 
     /** Constructs a ClientConnectionHandler for a given client socket.
-     * @param clientSocket the socket representing the client connection
+     * @param clientSocket The socket representing the client connection
      **/
     public ClientConnectionHandler(Socket clientSocket)
     {
@@ -33,7 +33,7 @@ public class ClientConnectionHandler implements Runnable {
     /** METHODS --------------------------------------------------------------------------------------------------- **/
 
     /** Returns the username of the connected player.
-     * @return the player's username
+     * @return The player's username
      **/
     public String getPlayerName()
     {
@@ -80,7 +80,7 @@ public class ClientConnectionHandler implements Runnable {
      * TABLELIST, NEWTABLE, JOINTABLE
      * STATE, GET_BALANCE, ADDFUNDS
      * LEAVETABLE, BYE
-     * @param message the raw message received from the client
+     * @param message The raw message received from the client
      **/
     private void handleMessage(String message)
     {
@@ -186,7 +186,7 @@ public class ClientConnectionHandler implements Runnable {
 
     /** Handles login requests from the client.
      * Expected format: LOGIN username password
-     * @param message the login message
+     * @param message The login message
      **/
     private void handleLogin(String message) {
         String[] loginMessage = message.split(" ");
@@ -242,6 +242,13 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+
+    /** Starts a new round if the previous round has ended
+     * Validates that player is assigned to a table
+     * Broadcasts round start to all clients at the table
+     * Updates all clients with new game state
+     * Sends results and restarts round if immediately completed
+     **/
     private void handleStart(String message)
     {
         if(playerName == null || table == null)
@@ -267,6 +274,13 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    /** Processes a hit action from the player
+     * Validates that Player is logged in and assigned to a table
+     * Deals a card to the Player
+     * Broadcasts action to all clients
+     * Updates all clients with new game state
+     * Sends result messages (BUST or BLACKJACK) if applicable
+     **/
     private void handleHit(String message)
     {
         if (playerName == null || table == null)
@@ -300,8 +314,7 @@ public class ClientConnectionHandler implements Runnable {
 
     /** Processes a "stay" action from the player.
      * Ends the player's turn and updates the game state.
-     *
-     * @param message the stay command
+     * @param message The stay command
      */
     private void handleStay(String message)
     {
@@ -327,6 +340,12 @@ public class ClientConnectionHandler implements Runnable {
 
     /** UTILITY METHODS --------------------------------------------------------------------------------------------------- **/
 
+    /** Automatically starts a new round after a short delay
+     * Runs in a separate thread to avoid blocking execution
+     * Checks if table still exists before restarting
+     * Broadcasts new round start and updates clients
+     * Recursively continues if rounds end immediately
+     **/
     private void restartRound() {
         new Thread(() ->
         {

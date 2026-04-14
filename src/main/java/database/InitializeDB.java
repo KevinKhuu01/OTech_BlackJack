@@ -6,7 +6,7 @@ import java.sql.Statement;
 
 public class InitializeDB {
     public static void initialize() {
-        // Create table script
+        /** Method to create table script **/
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

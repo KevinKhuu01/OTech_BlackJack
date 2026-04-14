@@ -11,6 +11,9 @@ public class BackgroundMusic {
     private boolean isMuted;
     private List<JButton> registeredButtons = new ArrayList<>();
 
+    /** Handles behavior of music and retreival of music file
+     * @param filePath The directory where the music file is found
+     **/
     public void playMusic(String filePath){
         try {
             File file = new File(filePath);
@@ -26,13 +29,17 @@ public class BackgroundMusic {
         }
     }
 
-    // Adds a button to the list and sets its initial text
+    /** Adds a button to the list and sets its initial text
+     * @param button The register button
+     **/
     public void registerButton(JButton button) {
         registeredButtons.add(button);
         button.setText(isMuted ? "Music On" : "Music Off");
     }
 
-    // Flips the mute state and updates every single button at the same time
+    /** Boolean method that flips the mute state and updates every single button at the same time
+     * @return isMuted; can be true or false
+     **/
     public boolean toggleMute() {
         isMuted = !isMuted;
         for (JButton btn : registeredButtons) {

@@ -74,7 +74,10 @@ public class DatabaseManager {
         return false;
     }
 
-    // Get balance
+    /** Get the balance of a Player from the database
+     * @param p The Player whos balance is being retrieved from the database
+     * @return Balance as an integer number
+     **/
     public static int getBalance(String p)
     {
         String sql = "SELECT balance FROM users WHERE username = ?";
@@ -97,7 +100,10 @@ public class DatabaseManager {
         return (int)balance;
     }
 
-    // Update a.java user's balance
+    /** Boolean method to update a.java user's balance
+     * @param p The Player whose balance is being updated
+     * @param newBalance The updated balance of the Player
+     **/
     public static boolean setBalance(Player p, double newBalance) {
         String sql = "UPDATE users SET balance = ? WHERE username = ?";
 
@@ -116,7 +122,10 @@ public class DatabaseManager {
         }
     }
 
-    // Add amount to current balance
+    /** Add amount to current balance
+     * @param p The player who's doing the deposit
+     * @param amount the amount being deposited into the balance
+     **/
     public static boolean deposit(Player p, int amount) {
         String sql = "UPDATE users SET balance = balance + ? WHERE username = ?";
 
@@ -135,7 +144,10 @@ public class DatabaseManager {
         }
     }
 
-    // Subtract amount from current balance
+    /** Subtract amount from current balance
+     * @param p The player who's doing the withdrawal
+     * @param amount the amount being withdrawn from the balance
+     * **/
     public static boolean withdraw(Player p, int amount) {
         String sql = "UPDATE users SET balance = balance - ? WHERE username = ?";
 

@@ -12,6 +12,9 @@ public class Server {
     private final int port;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+    /** Creates a Server Instance with a port number
+     * @param port The port number being used
+     **/
     public Server(int port) {
         this.port = port;
     }
@@ -59,7 +62,10 @@ public class Server {
         }
     }
 
-    // Main method
+    /** Main method
+     * Initializes database
+     * Creates and starts up a server
+     **/
     public static void main(String[] args) {
         InitializeDB.initialize();
         Server server = new Server(5050);

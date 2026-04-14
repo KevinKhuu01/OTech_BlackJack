@@ -20,6 +20,9 @@ public class BackgroundPanel extends JPanel {
         }
     }
 
+    /** Creates background images using Graphics
+     * @param g Instance of Graphics to create background images
+     **/
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); // Clears page

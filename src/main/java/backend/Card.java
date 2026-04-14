@@ -13,26 +13,41 @@ public class Card {
     private final Suit suit;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+    /** Constructor for Card
+     * @param face The value or 'face' of the card. ranges from TWO-TEN and JACK,QUEEN,KING,ACE.
+     * @param suit The type of the card. Can be one of either CLUBS, DIAMONDS, HEARTS or SPADES.
+     **/
     public Card(Face face, Suit suit) {
         this.face = face;
         this.suit = suit;
     }
 
     /** METHODS (GETTERS) --------------------------------------------------------------------------------------------------- **/
+
+    /** toString method to show the cards face and suit
+     *@return 'face' of 'suit' **/
     @Override
     public String toString() {
         return this.face + " of " + this.suit;
     }
 
-    // Getters for face, suit and value of cards
+    /** Getter for face of a card
+     * @return face of card
+     **/
     public Face getFace() {
         return this.face;
     }
 
+    /** Getter for suit of a card
+     * @return suit of card
+     **/
     public Suit getSuit() {
         return this.suit;
     }
 
+    /** Getter for value of a card
+     * @return value of card
+     **/
     public int getValue()
     {
         switch (face) {

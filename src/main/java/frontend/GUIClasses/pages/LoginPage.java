@@ -19,6 +19,13 @@ public class LoginPage {
     private JButton muteMusicButton;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
+
+    /** Creates and instance of the login page
+     * @param client The client the login page is being made for
+     * @param cardLayout The cards to be used
+     * @param mainPanel The main panel being used for the login page
+     * @param backgroundMusic The background music to be used
+     **/
     public LoginPage(Client client, CardLayout cardLayout, JPanel mainPanel, BackgroundMusic backgroundMusic) {
         this.client = client;
         this.cardLayout = cardLayout;
@@ -27,6 +34,8 @@ public class LoginPage {
     }
 
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
+
+    /** Builds login menu with backgrounds, titles, textfields and buttons to register and login **/
     public JPanel createLoginMenu() {
         JPanel backgroundPanel = new JPanel(new BorderLayout());
         JPanel wallpaper = new BackgroundPanel("wallpaper.png");

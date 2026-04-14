@@ -16,6 +16,10 @@ public class TableManager {
 
 
     /** GETTER --------------------------------------------------------------------------------------------------- **/
+
+    /** Getter for the List of tables
+     * @return tables
+     **/
     public static List<Table> getTables() {
         return tables;
     }
@@ -26,7 +30,7 @@ public class TableManager {
      * Reuses the first table that has room; otherwise creates a new table.
      *
      * @return The Table the player was assigned to.
-     */
+     **/
     public static synchronized Table assignToTable(ClientConnectionHandler handler, String message, String playerName) {
         if(message.equals("NEWTABLE"))
         {
@@ -62,7 +66,7 @@ public class TableManager {
     /**
      * Removes a client from their table. If the table becomes empty, it is
      * dissolved so its ID can be reused in the future.
-     */
+     **/
     public static synchronized void removeFromTable(Table table, ClientConnectionHandler handler) {
         if (table == null) return;
         table.removeClient(handler);
