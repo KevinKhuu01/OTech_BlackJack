@@ -17,6 +17,8 @@ public class LoginPage {
     private final CustomFont customFont = new CustomFont();
     private BackgroundMusic backgroundMusic;
     private JButton muteMusicButton;
+    private JTextField userField;
+    private JPasswordField passField;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
 
@@ -35,7 +37,10 @@ public class LoginPage {
 
     /** PAGE BUILDER --------------------------------------------------------------------------------------------------- **/
 
-    /** Builds login menu with backgrounds, titles, textfields and buttons to register and login **/
+    /** Builds login menu with backgrounds, titles, textfields and buttons to register and login
+     * Initializes components and actions
+     * @return JPanel login menu panel for card layout
+     **/
     public JPanel createLoginMenu() {
         JPanel backgroundPanel = new JPanel(new BorderLayout());
         JPanel wallpaper = new BackgroundPanel("wallpaper.png");
@@ -61,7 +66,7 @@ public class LoginPage {
         userLabel.setFont(customFont.regular(25));
         userLabel.setForeground(new Color(0, 60, 113));
 
-        JTextField userField = new JTextField(16);
+        userField = new JTextField(16);
         userField.setPreferredSize(fieldSize);
         userField.setMaximumSize(fieldSize);
         userField.setMinimumSize(fieldSize);
@@ -77,7 +82,7 @@ public class LoginPage {
         passLabel.setFont(customFont.regular(25));
         passLabel.setForeground(new Color(0, 60, 113));
 
-        JPasswordField passField = new JPasswordField(16);
+        passField = new JPasswordField(16);
         passField.setPreferredSize(fieldSize);
         passField.setMaximumSize(fieldSize);
         passField.setMinimumSize(fieldSize);
@@ -154,5 +159,11 @@ public class LoginPage {
         backgroundPanel.add(wallpaper, BorderLayout.WEST);
         backgroundPanel.add(menuPanel, BorderLayout.EAST);
         return backgroundPanel;
+    }
+
+    public void clearTextFields()
+    {
+        userField.setText("");
+        passField.setText("");
     }
 }

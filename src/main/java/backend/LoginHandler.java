@@ -8,6 +8,7 @@ public class LoginHandler {
     public LoginHandler(){}
 
     /** Check login information
+     * @return boolean true if login was successful, false otherwise (password and username match database record)
      * @param username The username the user has entered
      * @param password The password the user has entered
      **/
@@ -17,8 +18,9 @@ public class LoginHandler {
     }
 
     /** Create new login/player
+     * Calls the database manager to create a new user with a random integer id (primary key)
      * @param username The username that the new user has entered
-     * @param password The password the the new user has entered
+     * @param password The password that the new user has entered
      **/
     public static boolean newUser(String username, String password)
     {

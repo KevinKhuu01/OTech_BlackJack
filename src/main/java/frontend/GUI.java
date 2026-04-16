@@ -2,7 +2,7 @@ package frontend;
 
 import frontend.GUIClasses.pages.CreateAccountPage;
 import frontend.GUIClasses.pages.LoginPage;
-import frontend.GUIClasses.pages.StartPage;
+import frontend.GUIClasses.pages.LobbyPage;
 import frontend.GUIClasses.pages.GamePage;
 import frontend.GUIClasses.styling.BackgroundMusic;
 
@@ -11,12 +11,14 @@ import java.awt.*;
 
 public class GUI extends JFrame{
     /** FIELDS --------------------------------------------------------------------------------------------------- **/
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel;
     private final Client client;
-    private GamePage gamePage;
-    private StartPage startPage;
-    private BackgroundMusic backgroundMusic;
+    private final GamePage gamePage;
+    private final LobbyPage lobbyPage;
+    private final BackgroundMusic backgroundMusic;
+    private final LoginPage loginPage;
+    private final CreateAccountPage createAccountPage;
 
     /** CONSTRUCTOR --------------------------------------------------------------------------------------------------- **/
 
@@ -36,14 +38,14 @@ public class GUI extends JFrame{
         mainPanel = new JPanel(cardLayout);
         backgroundMusic = new BackgroundMusic();
 
-        LoginPage loginPage = new LoginPage(client, cardLayout, mainPanel, backgroundMusic);
-        CreateAccountPage createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel, backgroundMusic);
-        startPage = new StartPage(client, cardLayout, mainPanel, backgroundMusic);
+        loginPage = new LoginPage(client, cardLayout, mainPanel, backgroundMusic);
+        createAccountPage = new CreateAccountPage(client, cardLayout, mainPanel, backgroundMusic);
+        lobbyPage = new LobbyPage(client, cardLayout, mainPanel, backgroundMusic);
         gamePage = new GamePage(client, backgroundMusic);
 
         mainPanel.add(loginPage.createLoginMenu(), "login");
         mainPanel.add(createAccountPage.createAccountMenu(), "create");
-        mainPanel.add(startPage.createStartMenu(), "start");
+        mainPanel.add(lobbyPage.createStartMenu(), "start");
         mainPanel.add(gamePage.createGamePanel(), "game");
 
         backgroundMusic.playMusic("src/main/resources/music/BlackJackBGM.wav");
@@ -60,8 +62,9 @@ public class GUI extends JFrame{
         // Login responses (LoginPage)
         if(message.equals("LOGIN_OK"))
         {
-            startPage.getTableList();
-            startPage.requestBalance();
+            loginPage.clearTextFields();
+            lobbyPage.getTableList();
+            lobbyPage.requestBalance();
             cardLayout.show(mainPanel, "start");
         }
         else if(message.equals("LOGIN_FAIL"))
@@ -85,7 +88,7 @@ public class GUI extends JFrame{
         // Table & Account Balance responses (StartPage)
         else if(message.startsWith("TABLE_LIST |"))
         {
-            startPage.tableList(message);
+            lobbyPage.tableList(message);
         }
         else if (message.equals("JOINED_TABLE"))
         {
@@ -93,8 +96,8 @@ public class GUI extends JFrame{
         }
         else if (message.equals("LEFT_TABLE"))
         {
-            startPage.getTableList();
-            startPage.requestBalance();
+            lobbyPage.getTableList();
+            lobbyPage.requestBalance();
             cardLayout.show(mainPanel, "start");
         }
         else if (message.startsWith("JOIN_FAIL"))
@@ -104,7 +107,7 @@ public class GUI extends JFrame{
         else if(message.startsWith("BALANCE "))
         {
             String[] amount = message.split(" ");
-            startPage.updateBalanceLabel(amount[1]);
+            lobbyPage.updateBalanceLabel(amount[1]);
         }
         else if(message.equals("INSUFFICIENT_FUNDS"))
         {

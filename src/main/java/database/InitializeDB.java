@@ -6,7 +6,12 @@ import java.sql.Statement;
 
 public class InitializeDB {
     public static void initialize() {
-        /** Method to create table script **/
+        /** Creates database file if it does not already exit
+         * Primary key identifier is id (integer) - could have used username as the rest of the classes reference player name.
+         * Username is unique
+         * Password cannot be null
+         * Balance cannot be null and is 1000 by default (fail safe)
+         **/
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

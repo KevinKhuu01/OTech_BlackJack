@@ -37,7 +37,8 @@ public class CreateAccountPage {
      * This method creates a form that allows users to input a username
      * and password, validates the input, and sends a registration request
      * to the server if the input is valid.
-     @return a Jpanel containing the registration interface**/
+     @return a Jpanel containing the registration interface for card layout
+     **/
     public JPanel createAccountMenu() {
         JPanel backgroundPanel = new JPanel(new BorderLayout());
         JPanel wallpaper = new BackgroundPanel("wallpaper.png");
@@ -105,6 +106,7 @@ public class CreateAccountPage {
         backButton.setMinimumSize(buttonSize);
 
         // Actions
+        passField.addActionListener(e -> registerButton.doClick());
         registerButton.addActionListener(e -> {
             String username = userField.getText().trim();
             String password = new String(passField.getPassword()).trim();
