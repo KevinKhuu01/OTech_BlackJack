@@ -1,7 +1,7 @@
 # CSCI 2020U Project Charter & Work Contract
 
 ## 1. Project Overview
-* **Project members:** Awrron Kavian, Gabriel Valerio, Kevin Khuu, Maria Jose Alarcon, Zakariah Patel
+* **Project members:** Awrron Kavian & Kevin Khuu
 * **Product Name:** Otech_Blackjack
 * **Project Description:** Blackjack
 * **Tech Stack:** Java/JavaFX
@@ -16,15 +16,15 @@
 
 | Task / Module | Assigned Member (Plan) | Actual Contribution (Final) |
 | :--- | :--- | :--- |
-| **Multi-threaded s** | Awrron Kavian, Gabriel Valerio | Sockets and clientconnectionhandler |
-| **Frontend** | Maria Jose | frontend.GUIClasses, client communications |
+| **Multi-threaded s** | Kevin Khuu | Sockets and clientconnectionhandler |
+| **Frontend** | Awrron | frontend.GUIClasses, client communications |
 | **Backend** | Kevin Khuu | Game Logic, s communications |
-| **Documentation/README** | Zakariah Patel | Project Charter, Readme, Progress Reports |
-| **Github Maintenance** | Kevin Khuu | Managing branches, template code, merging |
+| **Documentation/README** | Awrron | Project Charter, Readme, Progress Reports |
+| **Github Maintenance** | Awrron | Managing branches, template code, merging |
 
 ## 4. Final Contribution Status (Tag one at Final Submission)
 At the end of the project, the team must agree on one of the following tags:
-* **[ ] (1) EVEN CONTRIBUTION:** All members met expectations from the original charter.
+* **[ x ] (1) EVEN CONTRIBUTION:** All members met expectations from the original charter.
 * **[ ] (2) UNEVEN CONTRIBUTION:** One or more members did not meet expectations.
 
 *Note: Graders will use the "Actual Contribution" column above to apply uneven grades if necessary.*
