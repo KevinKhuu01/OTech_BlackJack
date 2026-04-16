@@ -12,7 +12,8 @@ OTech_BlackJack is a Ontario Tech University themed BlackJack with multiplayer f
 - Table lobby with active table list and join options
 - Automatic round progression and game state updates
 
-## Video Demo: [Click Here](https://drive.google.com/file/d/1i6s_HDHFzvN3d7ByuyxPQUV5q5ZpxPwy/view?usp=sharing)
+## Video Demo: 
+### [Please Click Here](https://drive.google.com/file/d/1i6s_HDHFzvN3d7ByuyxPQUV5q5ZpxPwy/view?usp=sharing)
 
 ## Project Structure
 
@@ -70,22 +71,22 @@ OTech_BlackJack is a Ontario Tech University themed BlackJack with multiplayer f
 
 
 ## Login Page
-![Login Page](readme_images/Login%20Page.png)
+![Login Page](readme_media/Login%20Page.png)
 
 ## Lobby Page
-![Lobby Page](readme_images/Lobby%20Page.png)
+![Lobby Page](readme_media/Lobby%20Page.png)
 
 ## Single Player
-![Single Player](readme_images/Single%20Player.png)
+![Single Player](readme_media/Single%20Player.png)
 
 ## Multiplayer
-![Multi Player](readme_images/Multiplayer.png)
+![Multi Player](readme_media/Multiplayer.png)
 
 ## Live Round Updates
-![Game States](readme_images/Game%20States.png)
+![Game States](readme_media/Game%20States.png)
 
 ## Database Sample Entries
-![Database Entries](readme_images/Database%20Entries.png)
+![Database Entries](readme_media/Database%20Entries.png)
 
 ## How to run
 Below are the steps on how to get Ontario Tech Blackjack running on your computer. Please note that in order to run the app, an Integrated Development Environment is needed to clone the repository (Intellij IDEA IDE is recommended). Java version <ADD JAVA VERSION HERE> or more recent is also needed.

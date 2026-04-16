@@ -2,6 +2,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+.readme_media/*.mp4
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -35,4 +36,4 @@ build/
 .vscode/
 
 ### Mac OS ###
-.DS_Store
+.DS_Storereadme_media/*.mp4
